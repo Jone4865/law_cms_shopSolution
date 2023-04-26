@@ -1,0 +1,1 @@
+export { ProductInquiryDetailModal } from './ProductInquiryDetailModal';

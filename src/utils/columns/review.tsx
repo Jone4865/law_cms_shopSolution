@@ -32,7 +32,7 @@ export const reviewColumns: ColumnsType<any> = [
     key: 'rate',
     dataIndex: 'rate',
     align: 'center',
-    render: (val) => <Rate count={val} />,
+    render: (val) => <Rate count={5} value={val} disabled />,
   },
   {
     title: '내용',
@@ -56,7 +56,7 @@ export const reviewColumns: ColumnsType<any> = [
     align: 'center',
     render: (val) => (
       <Popconfirm title="정말 삭제하시겠습니까?">
-        <Button type="primary" danger>
+        <Button type="primary" danger onClick={(e) => e.stopPropagation()}>
           삭제
         </Button>
       </Popconfirm>

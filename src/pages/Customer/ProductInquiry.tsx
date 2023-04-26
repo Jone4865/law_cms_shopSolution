@@ -7,12 +7,44 @@ import React, { useEffect, useState } from 'react';
 import { InquiryDetailModal } from '../../components/InquiryDetailModal';
 import { UserDetailModal } from '../../components/UserDetailModal';
 import { InquiryType, productInquiryColumns } from '../../utils/columns';
+import { ProductInquiryDetailModal } from '../../components/ProductInquiryDetailModal';
 
 export function ProductInquiry() {
   const [open, setOpen] = useState(false);
   const [detailModalopen, setDetailModalopen] = useState(false);
   const [modalData, setModalData] = useState<any>();
-  const [inquiryData, setInquiryData] = useState<any[]>([]);
+  const [inquiryData, setInquiryData] = useState<any[]>([
+    {
+      id: 1,
+      product: {
+        name: '상품상품',
+      },
+      user: {
+        name: '카포네',
+        email: 'capone@lawdians.com',
+        phone: '01058336015',
+      },
+      title: '상품 문의입니다',
+      reply: undefined,
+      content: '이거 이렇게 팔아도 돼요?.',
+      createdAt: '2023-04-26',
+    },
+    {
+      id: 2,
+      product: {
+        name: '상품상품',
+      },
+      user: {
+        name: '카포네',
+        email: 'capone@lawdians.com',
+        phone: '01058336015',
+      },
+      title: '사이즈 문의',
+      reply: '해당 상품은 프리 사이즈입니다.',
+      content: '이거 사이즈 뭐까지 있나요?',
+      createdAt: '2023-04-26',
+    },
+  ]);
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
   const [current, setCurrent] = useState(1);
@@ -96,7 +128,7 @@ export function ProductInquiry() {
         open={open}
         email={modalData?.user?.email ?? ''}
       />
-      <InquiryDetailModal
+      <ProductInquiryDetailModal
         data={modalData}
         open={detailModalopen}
         handleCancel={handleCancelDetail}

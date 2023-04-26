@@ -11,15 +11,15 @@ export const productInquiryColumns: ColumnsType<any> = [
   },
   {
     title: '상품명',
-    key: 'inquiryKind',
-    dataIndex: 'inquiryKind',
+    key: 'product',
+    dataIndex: 'product',
     align: 'center',
     render: (val) => {
       return val.name;
     },
   },
   {
-    title: '작성자',
+    title: '회원명',
     key: 'user',
     dataIndex: 'user',
     render: (val) => {
@@ -35,8 +35,8 @@ export const productInquiryColumns: ColumnsType<any> = [
   },
   {
     title: '문의 날짜',
-    key: 'reportingDate',
-    dataIndex: 'reportingDate',
+    key: 'createdAt',
+    dataIndex: 'createdAt',
     align: 'center',
     render: (val) => {
       return moment(val).format('YYYY-MM-DD HH:mm:ss');
