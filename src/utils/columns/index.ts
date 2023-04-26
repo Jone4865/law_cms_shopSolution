@@ -17,3 +17,5 @@ export { noticeColumns } from './customer.notice';
 
 export type { PolicyType } from './policy';
 export { policyColumns } from './policy';
+
+export { productInquiryColumns } from './productInquiry';

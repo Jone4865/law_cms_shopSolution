@@ -15,7 +15,7 @@ export const ChartContainer = styled.div`
 
 export const ChartTitle = styled.h4`
   color: ${PRIMARY};
-  margin-left: 30px;
+
   @media only screen and (max-width: 768px) {
     margin: 0;
   }
@@ -24,4 +24,10 @@ export const ChartTitle = styled.h4`
 export const Head = styled.div`
   display: flex;
   justify-content: space-between;
+`;
+
+export const CardTitle = styled.span`
+  font-size: 24px;
+  font-weight: bold;
+  color: ${PRIMARY};
 `;
