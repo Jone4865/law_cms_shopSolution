@@ -11,11 +11,11 @@ import TransformBox from '../TransformBox';
 type Props = {
   handleCancel: () => void;
   open: boolean;
-  data: InquiryType | undefined;
+  data: any | undefined;
   refetch: () => void;
 };
 
-export function InquiryDetailModal({
+export function ProductInquiryDetailModal({
   open,
   handleCancel,
   data,
@@ -78,6 +78,10 @@ export function InquiryDetailModal({
       }}
     >
       <S.Wrap>
+        <S.Label>상품명</S.Label>
+        {data?.product.name}
+      </S.Wrap>
+      <S.Wrap>
         <S.Label>회원명</S.Label>
         {data?.user?.name}
       </S.Wrap>
@@ -93,7 +97,7 @@ export function InquiryDetailModal({
             width={'100%'}
             justifyContent="space-between"
           >
-            {data.inquiryImages.map((v) => {
+            {data.inquiryImages.map((v: any) => {
               return (
                 <Image
                   src={`${process.env.REACT_APP_INQUIRY_IMAGE_URL}/${v.name}`}

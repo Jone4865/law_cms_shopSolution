@@ -1,1 +1,1 @@
-export * from './ReviewDetailModal';
+export { ReviewDetailModal } from './ReviewDetailModal';
