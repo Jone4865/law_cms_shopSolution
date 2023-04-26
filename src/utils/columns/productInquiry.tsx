@@ -1,4 +1,4 @@
-import { Tag } from 'antd';
+import { Button, Popconfirm, Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 
@@ -43,15 +43,6 @@ export const productInquiryColumns: ColumnsType<any> = [
     },
   },
   {
-    title: '처리 날짜',
-    key: 'processingDate',
-    dataIndex: 'processingDate',
-    align: 'center',
-    render: (val) => {
-      return val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '-';
-    },
-  },
-  {
     title: '상태',
     key: 'isReply',
     dataIndex: 'reply',
@@ -63,5 +54,18 @@ export const productInquiryColumns: ColumnsType<any> = [
         <Tag color="error">미처리</Tag>
       );
     },
+  },
+  {
+    title: '관리',
+    key: 'delete',
+    dataIndex: 'id',
+    align: 'center',
+    render: (val) => (
+      <Popconfirm title="정말 삭제하시겠습니까?">
+        <Button type="primary" danger>
+          삭제
+        </Button>
+      </Popconfirm>
+    ),
   },
 ];

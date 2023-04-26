@@ -6,6 +6,7 @@ import { AsideMenu } from '../AsideMenu';
 import { Badge, Button } from 'antd';
 import TransformBox from '../TransformBox';
 import useResponsive from '../../hooks/useResponsive';
+import { useNavigate } from 'react-router-dom';
 
 export type BadgeType = {
   [index: string]: number;
@@ -24,7 +25,7 @@ const statusText = [
   },
   {
     text: '상품 문의',
-    path: '/customer/partner',
+    path: '/customer/product',
     keyword: 'productInquiryCount',
     role: 'READ_PARTNERSHIP_INQUIRY',
   },
@@ -51,6 +52,9 @@ function Layout() {
   });
 
   const { isLessThanEitherMobile } = useResponsive();
+  const navigator = useNavigate();
+
+  const handleClick = (path: string) => () => navigator(path);
 
   return (
     <S.Layout>
@@ -67,7 +71,7 @@ function Layout() {
             >
               {statusText.map((v, i) => {
                 return (
-                  <S.StatusWrap key={i}>
+                  <S.StatusWrap key={i} onClick={handleClick(v.path)}>
                     <Badge count={badgeData ? badgeData[v.keyword] : 0}>
                       <Button
                         key={i}

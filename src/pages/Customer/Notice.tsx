@@ -15,7 +15,7 @@ export function Notice() {
   const [skip, setSkip] = useState(0);
   const [current, setCurrent] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [searchText, setSearchText] = useState('');
+  const [searchWord, setSearchWord] = useState('');
 
   const handlePagination = (e: number) => {
     setCurrent(e);
@@ -54,17 +54,17 @@ export function Notice() {
     // }
   };
 
-  const handleSearch = (value: { searchText?: string }) => {
+  const handleSearch = (value: { searchWord?: string }) => {
     // getNotices({
     //   variables: {
-    //     searchText: value.searchText,
+    //     searchWord: value.searchWord,
     //     skip: 0,
     //     take,
     //   },
     // });
     setSkip(0);
     setCurrent(1);
-    setSearchText(value.searchText ?? '');
+    setSearchWord(value.searchWord ?? '');
   };
 
   // get notice list
@@ -88,7 +88,7 @@ export function Notice() {
   //     variables: {
   //       take,
   //       skip,
-  //       searchText,
+  //       searchWord,
   //     },
   //   });
   // }, [take, skip]);
@@ -103,12 +103,12 @@ export function Notice() {
         refetch={handleRefetch}
       />
       <Form layout="inline" onFinish={handleSearch}>
-        <Form.Item name="searchText">
+        <Form.Item name="searchWord">
           <Input.Search
             enterButton
             placeholder="검색어(제목, 내용)"
             onSearch={(e) => {
-              handleSearch({ searchText: e });
+              handleSearch({ searchWord: e });
             }}
           />
         </Form.Item>

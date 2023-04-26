@@ -4,7 +4,7 @@ type IsPaginationBaseParams = {
 };
 
 type IsSearchTextBaseParams = {
-  searchText?: string;
+  searchWord?: string;
 } & IsPaginationBaseParams;
 
 type KindType = {
