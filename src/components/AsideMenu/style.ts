@@ -13,12 +13,12 @@ export const Container = styled.section`
 
 export const ImageWrap = styled.div`
   width: 100%;
-  margin: 0.75em auto;
+  margin: 1.5em auto;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  @media only screen and (max-width: 768px) {
+  @media ${(props) => props.theme.mobile} {
     margin: 0;
     margin-left: 20px;
     justify-content: flex-start;
@@ -28,8 +28,8 @@ export const ImageWrap = styled.div`
 `;
 
 export const Image = styled.img`
-  width: 40%;
-  height: 40%;
+  width: 50%;
+  height: 50%;
   /* object-fit: cover; */
 `;
 

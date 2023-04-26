@@ -19,7 +19,7 @@ export const Layout = styled(AntdLayout)<LayoutProps>`
   margin-left: ${(props) => (props.$marginLeft ? props.$marginLeft : 0)}px;
   min-height: 100vh;
 
-  @media only screen and (max-width: 740px) {
+  @media ${(props) => props.theme.mobile} {
     margin-left: 0px;
   }
 `;
@@ -51,7 +51,7 @@ export const StatusBar = styled.div`
   background-color: white;
   box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
   margin-top: 30px;
-  @media only screen and (max-width: 768px) {
+  @media ${(props) => props.theme.mobile} {
     height: auto;
     box-shadow: none;
     background: transparent;
@@ -63,7 +63,7 @@ export const StatusBar = styled.div`
 
 export const StatusWrap = styled.div`
   margin-left: 30px;
-  @media only screen and (max-width: 768px) {
+  @media ${(props) => props.theme.mobile} {
     margin: 0;
     margin-right: 15px;
   }

@@ -61,7 +61,7 @@ export function Dashboard() {
             <Card
               title={card.title}
               headStyle={{
-                backgroundColor: 'rgb(31 113 201)',
+                backgroundColor: 'rgb(6 84 169)',
                 color: '#fff',
                 fontWeight: 'bold',
               }}
