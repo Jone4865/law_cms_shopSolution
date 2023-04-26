@@ -75,7 +75,7 @@ export function Users() {
         handleCancel={handleCancel}
         email={modalData?.email ?? ''}
       />
-      <Divider>회원</Divider>
+
       <Form layout="inline" onFinish={handleSearch}>
         <Form.Item name="searchText">
           <Input.Search

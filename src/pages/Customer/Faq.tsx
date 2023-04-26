@@ -117,7 +117,6 @@ export function Faq() {
         refetch={handleRefetch}
         faqKind={faqKind}
       />
-      <Divider>FAQ</Divider>
       <Form layout="inline" onFinish={handleSearch}>
         <Form.Item name="searchText">
           <Input.Search

@@ -111,7 +111,7 @@ export function Policy() {
         refetch={handleRefetch}
         policyKind={policyKind}
       />
-      <Divider>약관 관리</Divider>
+
       <Form layout="inline" onFinish={handleSearch}>
         <Form.Item name="searchText">
           <Input.Search

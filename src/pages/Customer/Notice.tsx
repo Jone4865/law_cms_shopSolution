@@ -102,7 +102,6 @@ export function Notice() {
         isEdit={isEdit}
         refetch={handleRefetch}
       />
-      <Divider>공지사항</Divider>
       <Form layout="inline" onFinish={handleSearch}>
         <Form.Item name="searchText">
           <Input.Search

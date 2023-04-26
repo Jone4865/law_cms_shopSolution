@@ -68,3 +68,12 @@ export const StatusWrap = styled.div`
     margin-right: 15px;
   }
 `;
+
+export const TtlBox = styled.div`
+  padding: 10px;
+  background-color: ${PRIMARY};
+  font-weight: bold;
+  color: #fff;
+  border-radius: 10px;
+  margin-right: 30px;
+`;

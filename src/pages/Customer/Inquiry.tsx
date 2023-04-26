@@ -177,7 +177,6 @@ export function Inquiry() {
         handleCancel={handleCancelDetail}
         refetch={handleRefetch}
       />
-      <Divider>1:1 문의</Divider>
       <Form layout="inline" onFinish={handleSearch}>
         <Form.Item name="searchText">
           <Input.Search enterButton placeholder="검색어(문의내용, 닉네임)" />

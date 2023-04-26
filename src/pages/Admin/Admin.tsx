@@ -275,7 +275,6 @@ export function Admin() {
         onCancel={handleCancelOtp}
         handleFinish={handleFinish}
       />
-      <Divider>관리자 계정</Divider>
       <Form
         layout="inline"
         onFinish={handleSearch}
