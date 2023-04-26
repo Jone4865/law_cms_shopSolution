@@ -5,12 +5,14 @@ import Main from '../Main';
 import { AsideMenu } from '../AsideMenu';
 import { Badge, Button } from 'antd';
 import TransformBox from '../TransformBox';
+import useResponsive from '../../hooks/useResponsive';
 
 export type BadgeType = {
   [index: string]: number;
   inquiryCount: number;
   orderCount: number;
   productInquiryCount: number;
+  refundCount: number;
 };
 
 const statusText = [
@@ -27,6 +29,12 @@ const statusText = [
     role: 'READ_PARTNERSHIP_INQUIRY',
   },
   {
+    text: '교환/반품',
+    path: '/customer/partner',
+    keyword: 'refundCount',
+    role: 'READ_PARTNERSHIP_INQUIRY',
+  },
+  {
     text: '1:1 문의',
     path: '/customer/inquiry',
     keyword: 'inquiryCount',
@@ -39,7 +47,10 @@ function Layout() {
     inquiryCount: 1,
     orderCount: 3,
     productInquiryCount: 0,
+    refundCount: 2,
   });
+
+  const { isLessThanEitherMobile } = useResponsive();
 
   return (
     <S.Layout>
@@ -48,7 +59,12 @@ function Layout() {
       <S.Layout $marginLeft={200}>
         <S.Content>
           <S.StatusBar>
-            <TransformBox>
+            <TransformBox
+              justifyContent={
+                isLessThanEitherMobile ? 'space-between' : 'flex-start'
+              }
+              width={isLessThanEitherMobile ? '100%' : undefined}
+            >
               {statusText.map((v, i) => {
                 return (
                   <S.StatusWrap key={i}>
@@ -59,6 +75,7 @@ function Layout() {
                         style={{
                           fontWeight: 'bold',
                         }}
+                        size={isLessThanEitherMobile ? 'small' : 'middle'}
                       >
                         {v.text}
                       </Button>
