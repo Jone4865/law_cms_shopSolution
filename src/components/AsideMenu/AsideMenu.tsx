@@ -1,10 +1,11 @@
 import { useLayoutEffect, useState } from 'react';
 import { Menu } from 'antd';
-
+import { MenuOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import * as S from './style';
 import { menuItems } from '../../utils/menuItems';
 import { logoB, logoW } from '../../assets/images';
+import useResponsive from '../../hooks/useResponsive';
 
 type MenuInfo = {
   key: string;
@@ -17,11 +18,7 @@ type MenuData = {
 };
 
 export function AsideMenu() {
-  const handleLogout = () => {
-    localStorage.setItem('accessToken', '');
-    window.location.reload();
-  };
-
+  const [visible, setVisible] = useState(false);
   const [menu, setMenu] = useState<MenuData>({
     subMenu: '',
     item: '',
@@ -29,6 +26,12 @@ export function AsideMenu() {
 
   const navigator = useNavigate();
   const { pathname } = useLocation();
+  const { isLessThanEitherMobile } = useResponsive();
+
+  const handleLogout = () => {
+    localStorage.setItem('accessToken', '');
+    window.location.reload();
+  };
 
   const handleMoveHome = () => {
     navigator('/');
@@ -80,20 +83,49 @@ export function AsideMenu() {
   }, [pathname]);
 
   return (
-    <S.Sider>
-      <S.ImageWrap onClick={handleMoveHome}>
-        <S.Image alt="logo" src={logoW} />
-      </S.ImageWrap>
+    <>
+      {visible && isLessThanEitherMobile && (
+        <S.Mask
+          onClick={() => {
+            setVisible(false);
+            window.document.body.style.overflowY = 'auto';
+          }}
+        />
+      )}
+      {isLessThanEitherMobile && (
+        <S.NavTop>
+          <S.MenuIcon>
+            <MenuOutlined
+              style={{
+                fontSize: 20,
+              }}
+              onClick={() => {
+                setVisible(true);
+                window.document.body.style.overflowY = 'hidden';
+              }}
+            />
+          </S.MenuIcon>
+          <S.HeaderImage src={logoB} alt="로고" onClick={handleMoveHome} />
+        </S.NavTop>
+      )}
+      {(!isLessThanEitherMobile || visible) && (
+        <S.Sider>
+          <S.ImageWrap onClick={handleMoveHome}>
+            <S.Image alt="logo" src={logoW} />
+          </S.ImageWrap>
 
-      <Menu
-        theme="dark"
-        mode="inline"
-        onClick={handleClickMenu}
-        onOpenChange={handleChangeSubMenu}
-        openKeys={[menu.subMenu ?? '']}
-        selectedKeys={[menu.item]}
-        items={menuItems}
-      />
-    </S.Sider>
+          <Menu
+            theme={isLessThanEitherMobile ? 'dark' : 'dark'}
+            // theme={isLessThanEitherMobile ? 'light' : 'dark'}
+            mode="inline"
+            onClick={handleClickMenu}
+            onOpenChange={handleChangeSubMenu}
+            openKeys={[menu.subMenu ?? '']}
+            selectedKeys={[menu.item]}
+            items={menuItems}
+          />
+        </S.Sider>
+      )}
+    </>
   );
 }

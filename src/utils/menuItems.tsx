@@ -25,20 +25,20 @@ export const menuItems: ItemType[] = [
   },
   {
     label: '회원 관리',
-    key: 'users',
+    key: 'user',
     icon: <UserOutlined />,
     children: [
       {
         label: '회원 목록',
-        key: 'users-normal',
+        key: 'user-normal',
       },
       {
         label: '휴면 회원 목록',
-        key: 'users-sleep',
+        key: 'user-sleep',
       },
       {
         label: '탈퇴 회원 목록',
-        key: 'users-delete',
+        key: 'user-delete',
       },
     ],
   },
@@ -120,7 +120,7 @@ export const menuItems: ItemType[] = [
       },
       {
         label: '상품 문의',
-        key: 'customer-product-inquiry',
+        key: 'customer-product',
       },
       {
         label: '상품 리뷰',

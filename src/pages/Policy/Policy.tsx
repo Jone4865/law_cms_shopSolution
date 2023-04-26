@@ -16,7 +16,7 @@ export function Policy() {
   const [skip, setSkip] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [current, setCurrent] = useState(1);
-  const [searchText, setSearchText] = useState('');
+  const [searchWord, setSearchWord] = useState('');
 
   const handlePagination = (e: number) => {
     setSkip((e - 1) * take);
@@ -51,17 +51,17 @@ export function Policy() {
     // }
   };
 
-  const handleSearch = (value: { searchText?: string }) => {
+  const handleSearch = (value: { searchWord?: string }) => {
     // getPolicies({
     //   variables: {
-    //     searchText: value.searchText,
+    //     searchWord: value.searchWord,
     //     skip: 0,
     //     take,
     //   },
     // });
     setSkip(0);
     setCurrent(1);
-    setSearchText(value.searchText ?? '');
+    setSearchWord(value.searchWord ?? '');
   };
 
   // get policy list
@@ -96,7 +96,7 @@ export function Policy() {
   //     variables: {
   //       skip,
   //       take,
-  //       searchText,
+  //       searchWord,
   //     },
   //   });
   // }, [take, skip]);
@@ -113,12 +113,12 @@ export function Policy() {
       />
 
       <Form layout="inline" onFinish={handleSearch}>
-        <Form.Item name="searchText">
+        <Form.Item name="searchWord">
           <Input.Search
             enterButton
             placeholder="검색어(종류, 내용)"
             onSearch={(e) => {
-              handleSearch({ searchText: e });
+              handleSearch({ searchWord: e });
             }}
           />
         </Form.Item>

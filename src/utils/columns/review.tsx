@@ -1,8 +1,8 @@
-import { Button, Popconfirm, Tag } from 'antd';
+import { Button, Popconfirm, Rate, Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 
-export const productInquiryColumns: ColumnsType<any> = [
+export const reviewColumns: ColumnsType<any> = [
   {
     title: 'no',
     key: 'id',
@@ -11,8 +11,8 @@ export const productInquiryColumns: ColumnsType<any> = [
   },
   {
     title: '상품명',
-    key: 'inquiryKind',
-    dataIndex: 'inquiryKind',
+    key: 'product',
+    dataIndex: 'product',
     align: 'center',
     render: (val) => {
       return val.name;
@@ -28,31 +28,25 @@ export const productInquiryColumns: ColumnsType<any> = [
     align: 'center',
   },
   {
-    title: '문의 내용',
+    title: '별점',
+    key: 'rate',
+    dataIndex: 'rate',
+    align: 'center',
+    render: (val) => <Rate count={val} />,
+  },
+  {
+    title: '내용',
     key: 'content',
     dataIndex: 'content',
     align: 'center',
   },
   {
-    title: '문의 날짜',
+    title: '등록일',
     key: 'reportingDate',
     dataIndex: 'reportingDate',
     align: 'center',
     render: (val) => {
       return moment(val).format('YYYY-MM-DD HH:mm:ss');
-    },
-  },
-  {
-    title: '상태',
-    key: 'isReply',
-    dataIndex: 'reply',
-    align: 'center',
-    render: (val) => {
-      return val ? (
-        <Tag color="blue">완료</Tag>
-      ) : (
-        <Tag color="error">미처리</Tag>
-      );
     },
   },
   {

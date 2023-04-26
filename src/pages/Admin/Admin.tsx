@@ -25,7 +25,7 @@ export function Admin() {
   const [skip, setSkip] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [current, setCurrent] = useState(1);
-  const [searchText, setSearchText] = useState('');
+  const [searchWord, setSearchWord] = useState('');
   const [authDescData, setAuthDescData] = useState<AuthDescType[]>([]);
 
   const handlePagination = (e: number) => {
@@ -176,7 +176,7 @@ export function Admin() {
     // }
   };
 
-  const handleSearch = (value: { searchText?: string }) => {
+  const handleSearch = (value: { searchWord?: string }) => {
     // getAllAdmins({
     //   variables: {
     //     take,
@@ -186,7 +186,7 @@ export function Admin() {
     // });
     setSkip(0);
     setCurrent(1);
-    setSearchText(value.searchText ?? '');
+    setSearchWord(value.searchWord ?? '');
   };
 
   // get admin list
@@ -242,7 +242,7 @@ export function Admin() {
   //     variables: {
   //       take,
   //       skip,
-  //       searchText,
+  //       searchWord,
   //     },
   //   });
   // }, [take, skip]);
@@ -282,12 +282,12 @@ export function Admin() {
           marginBottom: 30,
         }}
       >
-        <Form.Item name="searchText">
+        <Form.Item name="searchWord">
           <Input.Search
             enterButton
             placeholder="검색어(이메일, 이름, 연락처)"
             onSearch={(e) => {
-              handleSearch({ searchText: e });
+              handleSearch({ searchWord: e });
             }}
           />
         </Form.Item>

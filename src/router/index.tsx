@@ -7,6 +7,8 @@ import { Dashboard } from '../pages/Dashboard';
 import { Login } from '../pages/Login';
 import { Policy } from '../pages/Policy';
 import { Users } from '../pages/Users';
+import { Review } from '../pages/Customer/Review';
+import { ProductInquiry } from '../pages/Customer/ProductInquiry';
 
 function Root() {
   const accessToken = localStorage.getItem('accessToken') ?? '';
@@ -19,14 +21,17 @@ function Root() {
             <Route path="*" element={<Navigate to="/" />} />
             <Route index element={<Dashboard />} />
             <Route path="admin" element={<Admin />} />
-            <Route path="users" element={<Users />} />
+            <Route path="/user">
+              <Route path="normal" element={<Users />} />
+            </Route>
 
             <Route path="/customer">
               <Route path="inquiry" element={<Inquiry />} />
-
               <Route path="faq" element={<Faq />} />
 
               <Route path="notice" element={<Notice />} />
+              <Route path="review" element={<Review />} />
+              <Route path="product" element={<ProductInquiry />} />
             </Route>
             <Route path="policy" element={<Policy />} />
           </Route>

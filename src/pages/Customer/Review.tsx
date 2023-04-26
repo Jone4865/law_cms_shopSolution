@@ -1,14 +1,14 @@
 import { useLazyQuery } from '@apollo/client';
-import { Button, Divider, Form, Input, Tag, Table, notification } from 'antd';
+import { Button, Form, Input, Tag, Table } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { InquiryDetailModal } from '../../components/InquiryDetailModal';
 import { UserDetailModal } from '../../components/UserDetailModal';
-import { InquiryType } from '../../utils/columns';
+import { InquiryType, reviewColumns } from '../../utils/columns';
 
-export function Inquiry() {
+export function Review() {
   const [open, setOpen] = useState(false);
   const [detailModalopen, setDetailModalopen] = useState(false);
   const [modalData, setModalData] = useState<InquiryType>();
@@ -179,11 +179,11 @@ export function Inquiry() {
       />
       <Form layout="inline" onFinish={handleSearch}>
         <Form.Item name="searchWord">
-          <Input.Search enterButton placeholder="검색어(문의내용, 닉네임)" />
+          <Input.Search enterButton placeholder="검색어(내용, 작성자)" />
         </Form.Item>
       </Form>
       <Table
-        columns={columns}
+        columns={reviewColumns}
         dataSource={inquiryData}
         pagination={{
           position: ['bottomCenter'],
