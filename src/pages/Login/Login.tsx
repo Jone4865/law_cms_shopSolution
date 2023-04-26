@@ -5,6 +5,7 @@ import { useForm } from 'antd/lib/form/Form';
 import { OtpInputModal } from '../../components/OtpInputModal';
 
 import * as S from './style';
+import { logo, logoB } from '../../assets/images';
 
 type SubmitType = {
   email: string;
@@ -60,7 +61,7 @@ export function Login() {
         <S.FormWrap>
           <Form layout="vertical" onFinish={handleSubmit} form={form}>
             <S.ImageWrap>
-              <S.Image src={''} alt="logo" />
+              <S.Image src={logo} alt="logo" />
             </S.ImageWrap>
             <Form.Item label="이메일" name="email">
               <Input />

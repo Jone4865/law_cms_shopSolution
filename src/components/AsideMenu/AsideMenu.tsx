@@ -4,6 +4,7 @@ import { Menu } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import * as S from './style';
 import { menuItems } from '../../utils/menuItems';
+import { logoB, logoW } from '../../assets/images';
 
 type MenuInfo = {
   key: string;
@@ -81,7 +82,7 @@ export function AsideMenu() {
   return (
     <S.Sider>
       <S.ImageWrap onClick={handleMoveHome}>
-        <S.Image alt="logo" src={''} />
+        <S.Image alt="logo" src={logoW} />
       </S.ImageWrap>
 
       <Menu
