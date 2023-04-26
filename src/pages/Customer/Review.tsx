@@ -1,98 +1,35 @@
-import { useLazyQuery } from '@apollo/client';
-import { Button, Form, Input, Tag, Table } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
+import { Button, Form, Input, Table } from 'antd';
 
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { InquiryDetailModal } from '../../components/InquiryDetailModal';
 import { UserDetailModal } from '../../components/UserDetailModal';
 import { InquiryType, reviewColumns } from '../../utils/columns';
+import { ReviewDetailModal } from '../../components/ReviewDetailModal';
 
 export function Review() {
   const [open, setOpen] = useState(false);
   const [detailModalopen, setDetailModalopen] = useState(false);
-  const [modalData, setModalData] = useState<InquiryType>();
-  const [inquiryData, setInquiryData] = useState<InquiryType[]>([]);
+  const [modalData, setModalData] = useState<any>();
+  const [reviewData, setReviewData] = useState<any[]>([
+    {
+      id: 1,
+      product: {
+        name: '상품상품',
+      },
+      user: {
+        name: '카포네',
+        email: 'capone@lawdians.com',
+        phone: '01058336015',
+      },
+      rate: 1,
+      content: '사장님이 친절한데 맛은 없었어요.',
+      createdAt: '2023-04-26',
+    },
+  ]);
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
   const [current, setCurrent] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [searchWord, setSearchWord] = useState('');
-
-  const columns: ColumnsType<InquiryType> = [
-    {
-      title: 'no',
-      key: 'id',
-      dataIndex: 'id',
-      align: 'center',
-    },
-    {
-      title: '문의 종류',
-      key: 'inquiryKind',
-      dataIndex: 'inquiryKind',
-      align: 'center',
-      render: (val) => {
-        return val.name;
-      },
-    },
-    {
-      title: '문의내용',
-      key: 'content',
-      dataIndex: 'content',
-      align: 'center',
-    },
-    {
-      title: '닉네임',
-      key: 'user',
-      dataIndex: 'user',
-      render: (val, record) => {
-        return (
-          <Button
-            type="link"
-            onClick={(e) => {
-              setOpen(true);
-              setModalData(record);
-              e.stopPropagation();
-            }}
-          >
-            {val.nickname}
-          </Button>
-        );
-      },
-      align: 'center',
-    },
-    {
-      title: '접수일시',
-      key: 'reportingDate',
-      dataIndex: 'reportingDate',
-      render: (val) => {
-        return moment(val).format('YYYY-MM-DD hh:mm');
-      },
-      align: 'center',
-    },
-    {
-      title: '처리일시',
-      key: 'processingDate',
-      dataIndex: 'processingDate',
-      render: (val, record) => {
-        return record.reply ? moment(val).format('YYYY-MM-DD hh:mm') : '-';
-      },
-      align: 'center',
-    },
-    {
-      title: '처리',
-      key: 'isReply',
-      dataIndex: 'reply',
-      render: (val?: string) => {
-        return val ? (
-          <Tag color="blue">완료</Tag>
-        ) : (
-          <Tag color="error">미처리</Tag>
-        );
-      },
-      align: 'center',
-    },
-  ];
 
   const handlePagination = (e: number) => {
     setCurrent(e);
@@ -129,7 +66,7 @@ export function Review() {
     // if (refetch) {
     //   refetch({ take, skip })
     //     .then((data) => {
-    //       setInquiryData(data.data.seeAllInquiryHistoryByAdmin.inquiries);
+    //       setReviewData(data.data.seeAllInquiryHistoryByAdmin.inquiries);
     //       setTotalCount(data.data.seeAllInquiryHistoryByAdmin.totalCount);
     //     })
     //     .catch((e) => {
@@ -144,7 +81,7 @@ export function Review() {
   //   SeeAllInquiryHistoryByAdminParams
   // >(SEE_ALL_INQUIRY_HISTORY_BY_ADMIN, {
   //   onCompleted: (data) => {
-  //     setInquiryData(data.seeAllInquiryHistoryByAdmin.inquiries);
+  //     setReviewData(data.seeAllInquiryHistoryByAdmin.inquiries);
   //     setTotalCount(data.seeAllInquiryHistoryByAdmin.totalCount);
   //   },
   //   onError: (e) => {
@@ -171,7 +108,7 @@ export function Review() {
         open={open}
         email={modalData?.user?.email ?? ''}
       />
-      <InquiryDetailModal
+      <ReviewDetailModal
         data={modalData}
         open={detailModalopen}
         handleCancel={handleCancelDetail}
@@ -184,7 +121,7 @@ export function Review() {
       </Form>
       <Table
         columns={reviewColumns}
-        dataSource={inquiryData}
+        dataSource={reviewData}
         pagination={{
           position: ['bottomCenter'],
           showSizeChanger: true,
