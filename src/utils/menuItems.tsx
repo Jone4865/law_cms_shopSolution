@@ -7,7 +7,7 @@ import {
   UserOutlined,
   LogoutOutlined,
   ShoppingCartOutlined,
-  GiftOutlined,
+  CreditCardOutlined,
   DollarOutlined,
   CarOutlined,
 } from '@ant-design/icons';
@@ -65,7 +65,7 @@ export const menuItems: ItemType[] = [
   {
     label: '주문 관리',
     key: 'order',
-    icon: <CarOutlined />,
+    icon: <CreditCardOutlined />,
     children: [
       {
         label: '전체 주문',
@@ -92,7 +92,7 @@ export const menuItems: ItemType[] = [
   {
     label: '배송 관리',
     key: 'delivery',
-    icon: <GiftOutlined />,
+    icon: <CarOutlined />,
     children: [
       {
         label: '주문 별 배송처리',
