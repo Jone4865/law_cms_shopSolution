@@ -18,12 +18,9 @@ ReactDOM.render(
         },
         algorithm: [theme.defaultAlgorithm],
         components: {
-          Layout: {
-            colorBgHeader: PRIMARY,
-          },
           Menu: {
             colorItemBg: PRIMARY,
-            colorItemBgSelected: 'rgb(77 149 226)', // 선택된 메뉴의 배경색
+            colorItemBgSelected: 'rgb(32 111 197)', // 선택된 메뉴의 배경색
             colorSubItemBg: PRIMARY,
           },
         },

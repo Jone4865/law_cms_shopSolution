@@ -8,7 +8,7 @@ export const QRWrap = styled.div`
 
 export const KeyWrap = styled.div`
   text-align: center;
-  @media only screen and (max-width: 768px) {
+  @media ${(props) => props.theme.mobile} {
     font-size: 12px;
   }
 `;

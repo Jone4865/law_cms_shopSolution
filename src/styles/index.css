@@ -15,7 +15,7 @@ code {
   right: 0;
 }
 
-@media only screen and (max-width: 740px) {
+@media ${(props) => props.theme.mobile} {
   .ant-form-item-control:first-child:not([class^='ant-col-']):not([class*=' ant-col-']) {
     width: 79vw !important;
   }

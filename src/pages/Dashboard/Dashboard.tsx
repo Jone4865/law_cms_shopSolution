@@ -10,6 +10,7 @@ import {
 
 import * as S from './style';
 import TransformBox from '../../components/TransformBox';
+import useResponsive from '../../hooks/useResponsive';
 
 type DashboardStats = {
   [index: string]: any[];
@@ -19,14 +20,12 @@ type DashboardStats = {
   }[];
 };
 
-const { useToken } = theme;
-
 export function Dashboard() {
   const [inquiryData, setInquiryData] = useState<InquiryType[]>([]);
   const [dashboardData, setDashboardData] = useState<DashboardStats>();
 
   const navigator = useNavigate();
-  const { token } = useToken();
+  const { isLessThanEitherTablet } = useResponsive();
 
   const chartTitle = [
     { title: '회원수', keyword: 'userCount' },
@@ -50,18 +49,13 @@ export function Dashboard() {
 
   return (
     <>
-      <Row
-        gutter={16}
-        style={{
-          marginTop: 50,
-        }}
-      >
+      <Row gutter={[16, 24]}>
         {cardData.map((card, i) => (
-          <Col span={6} key={i}>
+          <Col span={isLessThanEitherTablet ? 12 : 6} key={i}>
             <Card
               title={card.title}
               headStyle={{
-                backgroundColor: 'rgb(31 113 201)',
+                backgroundColor: 'rgb(6 84 169)',
                 color: '#fff',
                 fontWeight: 'bold',
               }}
@@ -92,10 +86,10 @@ export function Dashboard() {
         style={{
           marginTop: 30,
         }}
-        gutter={16}
+        gutter={[16, 16]}
       >
         {chartTitle.map((v, i) => (
-          <Col key={i} span={12}>
+          <Col key={i} span={isLessThanEitherTablet ? 24 : 12}>
             <Card
               title={v.title}
               headStyle={{

@@ -5,12 +5,15 @@ import Main from '../Main';
 import { AsideMenu } from '../AsideMenu';
 import { Badge, Button } from 'antd';
 import TransformBox from '../TransformBox';
+import useResponsive from '../../hooks/useResponsive';
+import { useNavigate } from 'react-router-dom';
 
 export type BadgeType = {
   [index: string]: number;
   inquiryCount: number;
   orderCount: number;
   productInquiryCount: number;
+  refundCount: number;
 };
 
 const statusText = [
@@ -22,8 +25,14 @@ const statusText = [
   },
   {
     text: '상품 문의',
-    path: '/customer/partner',
+    path: '/customer/product',
     keyword: 'productInquiryCount',
+    role: 'READ_PARTNERSHIP_INQUIRY',
+  },
+  {
+    text: '교환/반품',
+    path: '/customer/partner',
+    keyword: 'refundCount',
     role: 'READ_PARTNERSHIP_INQUIRY',
   },
   {
@@ -39,7 +48,13 @@ function Layout() {
     inquiryCount: 1,
     orderCount: 3,
     productInquiryCount: 0,
+    refundCount: 2,
   });
+
+  const { isLessThanEitherMobile } = useResponsive();
+  const navigator = useNavigate();
+
+  const handleClick = (path: string) => () => navigator(path);
 
   return (
     <S.Layout>
@@ -48,10 +63,15 @@ function Layout() {
       <S.Layout $marginLeft={200}>
         <S.Content>
           <S.StatusBar>
-            <TransformBox>
+            <TransformBox
+              justifyContent={
+                isLessThanEitherMobile ? 'space-between' : 'flex-start'
+              }
+              width={isLessThanEitherMobile ? '100%' : undefined}
+            >
               {statusText.map((v, i) => {
                 return (
-                  <S.StatusWrap key={i}>
+                  <S.StatusWrap key={i} onClick={handleClick(v.path)}>
                     <Badge count={badgeData ? badgeData[v.keyword] : 0}>
                       <Button
                         key={i}
@@ -59,6 +79,7 @@ function Layout() {
                         style={{
                           fontWeight: 'bold',
                         }}
+                        size={isLessThanEitherMobile ? 'small' : 'middle'}
                       >
                         {v.text}
                       </Button>

@@ -15,7 +15,7 @@ export function Faq() {
   const [skip, setSkip] = useState(0);
   const [current, setCurrent] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [searchText, setSearchText] = useState('');
+  const [searchWord, setSearchWord] = useState('');
   const [faqKind, setFaqKind] = useState<KindType[]>([]);
 
   const handlePagination = (e: number) => {
@@ -40,7 +40,7 @@ export function Faq() {
 
   const handleRefetch = () => {
     // if (refetch) {
-    //   refetch({ searchText, skip, take })
+    //   refetch({ searchWord, skip, take })
     //     .then((data) => {
     //       setFaqData(data.data.seeFaqHistoryByAdmin.faqs);
     //       setTotalCount(data.data.seeFaqHistoryByAdmin.totalCount);
@@ -57,7 +57,7 @@ export function Faq() {
     // }
   };
 
-  const handleSearch = (value: { searchText?: string }) => {
+  const handleSearch = (value: { searchWord?: string }) => {
     // getFaqs({
     //   variables: {
     //     take,
@@ -67,7 +67,7 @@ export function Faq() {
     // });
     setCurrent(1);
     setSkip(0);
-    setSearchText(value.searchText ?? '');
+    setSearchWord(value.searchWord ?? '');
   };
 
   // get faq list
@@ -102,7 +102,7 @@ export function Faq() {
   //     variables: {
   //       skip,
   //       take,
-  //       searchText,
+  //       searchWord,
   //     },
   //   });
   // }, [skip, take]);
@@ -118,13 +118,13 @@ export function Faq() {
         faqKind={faqKind}
       />
       <Form layout="inline" onFinish={handleSearch}>
-        <Form.Item name="searchText">
+        <Form.Item name="searchWord">
           <Input.Search
             enterButton
             placeholder="검색어(질문)"
             onSearch={(e) => {
               handleSearch({
-                searchText: e,
+                searchWord: e,
               });
             }}
           />

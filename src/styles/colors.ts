@@ -1,4 +1,4 @@
-export const PRIMARY = '#0e6eb8';
+export const PRIMARY = 'rgb(26 30 148)';
 export const BORDER = '#e5e5e5';
 export const BORDER_LINE = '#f5f5f5';
 export const BORDER_TEXT = '#888888';

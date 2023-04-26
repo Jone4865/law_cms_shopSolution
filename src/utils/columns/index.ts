@@ -19,3 +19,4 @@ export type { PolicyType } from './policy';
 export { policyColumns } from './policy';
 
 export { productInquiryColumns } from './productInquiry';
+export { reviewColumns } from './review';

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Layout as AntdLayout } from 'antd';
+import { PRIMARY } from '../../styles/colors';
 
 const {
   Sider: AntdSider,
@@ -13,23 +14,19 @@ export const Container = styled.section`
 
 export const ImageWrap = styled.div`
   width: 100%;
-  margin: 0.75em auto;
+  margin: 1.5em auto;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  @media only screen and (max-width: 768px) {
-    margin: 0;
-    margin-left: 20px;
-    justify-content: flex-start;
-    align-items: flex-start;
-    width: auto;
+  @media ${(props) => props.theme.mobile} {
+    display: none;
   }
 `;
 
 export const Image = styled.img`
-  width: 40%;
-  height: 40%;
+  width: 50%;
+  height: 50%;
   /* object-fit: cover; */
 `;
 
@@ -45,6 +42,10 @@ export const Sider = styled(AntdSider)`
   overflow: auto;
   height: 100vh;
   position: fixed !important;
+  background-color: ${PRIMARY} !important;
+  @media ${(props) => props.theme.mobile} {
+    z-index: 10;
+  }
 `;
 
 export const Content = styled(AntdContent)`
@@ -63,7 +64,7 @@ type NavProps = {
 export const NavTop = styled.div<NavProps>`
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   button {
     background: transparent;
@@ -71,9 +72,9 @@ export const NavTop = styled.div<NavProps>`
   }
   position: fixed;
   top: 0;
-  z-index: 1000;
-  height: 50px;
-  /* background: ${(props) => (props.isOpen ? '#fff' : 'transparent')}; */
+  z-index: 3;
+  height: 70px;
+
   background: #fff;
 `;
 
@@ -85,5 +86,15 @@ export const Mask = styled.div`
   left: 0;
   background-color: #000;
   opacity: 0.5;
-  z-index: 1;
+  z-index: 4;
+`;
+
+export const MenuIcon = styled.div`
+  position: absolute;
+  left: 15px;
+`;
+
+export const HeaderImage = styled.img`
+  object-fit: contain;
+  max-height: 50px;
 `;

@@ -7,7 +7,7 @@ export const ChartContainer = styled.div`
   row-gap: 30px;
   margin-bottom: 50px;
 
-  @media only screen and (max-width: 768px) {
+  @media ${(props) => props.theme.mobile} {
     grid-template-columns: repeat(1, 1fr);
     row-gap: 30px;
   }
@@ -16,7 +16,7 @@ export const ChartContainer = styled.div`
 export const ChartTitle = styled.h4`
   color: ${PRIMARY};
 
-  @media only screen and (max-width: 768px) {
+  @media ${(props) => props.theme.mobile} {
     margin: 0;
   }
 `;

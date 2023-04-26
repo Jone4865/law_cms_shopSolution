@@ -13,7 +13,7 @@ export function Users() {
   const [skip, setSkip] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [current, setCurrent] = useState(1);
-  const [searchText, setSearchText] = useState('');
+  const [searchWord, setSearchWord] = useState('');
 
   const handleCancel = () => {
     setOpen(false);
@@ -24,7 +24,7 @@ export function Users() {
     setOpen(true);
   };
 
-  const handleSearch = (value: { searchText?: string }) => {
+  const handleSearch = (value: { searchWord?: string }) => {
     // seeAllUsers({
     //   variables: {
     //     take,
@@ -34,7 +34,7 @@ export function Users() {
     // });
     setSkip(0);
     setCurrent(1);
-    setSearchText(value.searchText ?? '');
+    setSearchWord(value.searchWord ?? '');
   };
 
   const handlePagination = (e: number) => {
@@ -63,7 +63,7 @@ export function Users() {
   //     variables: {
   //       take,
   //       skip,
-  //       searchText,
+  //       searchWord,
   //     },
   //   });
   // }, [skip, take]);
@@ -77,12 +77,12 @@ export function Users() {
       />
 
       <Form layout="inline" onFinish={handleSearch}>
-        <Form.Item name="searchText">
+        <Form.Item name="searchWord">
           <Input.Search
             enterButton
             placeholder="검색어(아이디(이메일), 닉네임, 이름, 휴대폰)"
             onSearch={(e) => {
-              handleSearch({ searchText: e });
+              handleSearch({ searchWord: e });
             }}
           />
         </Form.Item>

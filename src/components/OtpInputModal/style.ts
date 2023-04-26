@@ -25,7 +25,7 @@ export const OtpInput = styled.input`
     padding: 0px;
     margin: 0px;
   }
-  @media only screen and (max-width: 768px) {
+  @media ${(props) => props.theme.mobile} {
     width: 12vw;
     height: 12vw;
     font-size: 5vw;
