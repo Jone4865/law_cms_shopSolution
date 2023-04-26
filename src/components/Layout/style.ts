@@ -55,7 +55,7 @@ export const StatusBar = styled.div`
     height: auto;
     box-shadow: none;
     background: transparent;
-    margin-top: 70px;
+    margin-top: 90px;
     z-index: 0;
     position: relative;
   }
@@ -65,7 +65,6 @@ export const StatusWrap = styled.div`
   margin-left: 30px;
   @media ${(props) => props.theme.mobile} {
     margin: 0;
-    margin-right: 15px;
   }
 `;
 
@@ -76,4 +75,7 @@ export const TtlBox = styled.div`
   color: #fff;
   border-radius: 10px;
   margin-right: 30px;
+  @media ${(props) => props.theme.mobile} {
+    display: none;
+  }
 `;
