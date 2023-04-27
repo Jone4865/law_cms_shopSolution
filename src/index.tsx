@@ -1,31 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider } from 'antd';
 import locale from 'antd/es/locale/ko_KR';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { PRIMARY } from './styles/colors';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ConfigProvider
-      locale={locale}
-      theme={{
-        token: {
-          colorPrimary: PRIMARY,
-          colorPrimaryBg: PRIMARY,
-        },
-        algorithm: [theme.defaultAlgorithm],
-        components: {
-          Menu: {
-            colorItemBg: PRIMARY,
-            colorItemBgSelected: 'rgb(32 111 197)', // 선택된 메뉴의 배경색
-            colorSubItemBg: PRIMARY,
-          },
-        },
-      }}
-    >
+    <ConfigProvider locale={locale}>
       <App />
     </ConfigProvider>
   </React.StrictMode>,

@@ -45,6 +45,7 @@ export const Sider = styled(AntdSider)`
   background-color: ${PRIMARY} !important;
   @media ${(props) => props.theme.mobile} {
     z-index: 10;
+    background-color: #fff !important;
   }
 `;
 
