@@ -115,8 +115,8 @@ export function AsideMenu() {
           </S.ImageWrap>
 
           <Menu
-            theme={isLessThanEitherMobile ? 'dark' : 'dark'}
-            // theme={isLessThanEitherMobile ? 'light' : 'dark'}
+            // theme={isLessThanEitherMobile ? 'dark' : 'dark'}
+            theme={isLessThanEitherMobile ? 'light' : 'dark'}
             mode="inline"
             onClick={handleClickMenu}
             onOpenChange={handleChangeSubMenu}
