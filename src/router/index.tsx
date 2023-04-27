@@ -9,6 +9,7 @@ import { Policy } from '../pages/Policy';
 import { Users } from '../pages/Users';
 import { Review } from '../pages/Customer/Review';
 import { ProductInquiry } from '../pages/Customer/ProductInquiry';
+import { ProductList, ProductsSetting, ProductCategory } from '../pages/Gift';
 
 function Root() {
   const accessToken = localStorage.getItem('accessToken') ?? '';
@@ -21,6 +22,12 @@ function Root() {
             <Route path="*" element={<Navigate to="/" />} />
             <Route index element={<Dashboard />} />
             <Route path="admin" element={<Admin />} />
+            <Route path="/product">
+              <Route path="list" element={<ProductList />} />
+              <Route path="setting" element={<ProductsSetting />} />
+              <Route path="category" element={<ProductCategory />} />
+            </Route>
+
             <Route path="/user">
               <Route path="normal" element={<Users />} />
             </Route>
