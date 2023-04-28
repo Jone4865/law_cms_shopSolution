@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import * as S from './style';
 import { DropdownComponent } from '../../Dropdown';
-import { Checkbox } from 'antd';
-import { CheckboxValueType } from 'antd/es/checkbox/Group';
+import { Button, Checkbox } from 'antd';
 
 type Props = {
   title: string;
@@ -12,7 +11,7 @@ type Props = {
   checkBoxArr?: string[];
 };
 
-export function SearchDetail({
+export function SearchDetailRow({
   title,
   saveNames,
   changeHandle,
@@ -25,30 +24,9 @@ export function SearchDetail({
     changeHandle(saveNames[idx], checkBoxValue);
   };
   return (
-    <div
-      style={{
-        display: 'flex',
-        fontSize: '13px',
-        fontWeight: 'bold',
-        alignItems: 'center',
-        border: 'solid 1px #8d86863a',
-      }}
-    >
-      <div
-        style={{
-          marginRight: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          width: '180px',
-          paddingLeft: '20px',
-          height: '40px',
-          borderRight: 'solid 1px #1d171738',
-          backgroundColor: '#f3f3f3',
-        }}
-      >
-        {title}
-      </div>
-      <div style={{ display: 'flex' }}>
+    <S.Container>
+      <S.TitleWrap>{title}</S.TitleWrap>
+      <S.BottomWrap>
         {dropdownArrs &&
           dropdownArrs.map((item, idx) => (
             <DropdownComponent
@@ -71,7 +49,7 @@ export function SearchDetail({
             ))}
           </Checkbox.Group>
         )}
-      </div>
-    </div>
+      </S.BottomWrap>
+    </S.Container>
   );
 }
