@@ -20,3 +20,5 @@ export { policyColumns } from './policy';
 
 export { productInquiryColumns } from './productInquiry';
 export { reviewColumns } from './review';
+export { userSleepColumns } from './user.sleep';
+export { userDeleteColumns } from './user.delete';

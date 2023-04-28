@@ -6,7 +6,7 @@ import { Inquiry, Faq, Notice } from '../pages/Customer';
 import { Dashboard } from '../pages/Dashboard';
 import { Login } from '../pages/Login';
 import { Policy } from '../pages/Policy';
-import { Users } from '../pages/Users';
+import { UserDelete, UserSleep, Users } from '../pages/Users';
 import { Review } from '../pages/Customer/Review';
 import { ProductInquiry } from '../pages/Customer/ProductInquiry';
 import { ProductList, ProductsSetting, ProductCategory } from '../pages/Gift';
@@ -30,6 +30,8 @@ function Root() {
 
             <Route path="/user">
               <Route path="normal" element={<Users />} />
+              <Route path="sleep" element={<UserSleep />} />
+              <Route path="delete" element={<UserDelete />} />
             </Route>
 
             <Route path="/customer">
