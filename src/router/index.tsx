@@ -9,7 +9,11 @@ import { Policy } from '../pages/Policy';
 import { Users } from '../pages/Users';
 import { Review } from '../pages/Customer/Review';
 import { ProductInquiry } from '../pages/Customer/ProductInquiry';
-import { ProductList, ProductsSetting, ProductCategory } from '../pages/Gift';
+import {
+  ProductList,
+  ProductsSetting,
+  ProductCategory,
+} from '../pages/Product';
 
 function Root() {
   const accessToken = localStorage.getItem('accessToken') ?? '';

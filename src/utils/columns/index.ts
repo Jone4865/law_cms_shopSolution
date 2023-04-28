@@ -20,3 +20,6 @@ export { policyColumns } from './policy';
 
 export { productInquiryColumns } from './productInquiry';
 export { reviewColumns } from './review';
+
+export type { ProductListType } from './product.list';
+export { productListColumns } from './product.list';

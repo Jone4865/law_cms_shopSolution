@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import { Button, Dropdown, MenuProps, Space, message } from 'antd';
+import { Button, Dropdown, MenuProps, Space } from 'antd';
+import * as S from './style';
+
 type Props = {
   menus: string[];
   saveName: string;
@@ -14,7 +16,7 @@ export function DropdownComponent({
   saveName,
   changeHandle,
 }: Props) {
-  const [able, setAble] = useState('전체');
+  const [able, setAble] = useState(menus[0]);
 
   const handleMenuClick: MenuProps['onClick'] = (e: any) => {
     setAble(e.key);
@@ -34,13 +36,19 @@ export function DropdownComponent({
   useEffect(() => {}, [able]);
 
   return (
-    <Dropdown menu={menuProps}>
-      <Button style={{ width: width ? width : '80px', marginRight: '10px' }}>
-        <Space>
-          {able}
-          <DownOutlined />
-        </Space>
-      </Button>
-    </Dropdown>
+    <S.Container>
+      <Dropdown menu={menuProps}>
+        <Button
+          style={{
+            width: width ? width : 'auto',
+          }}
+        >
+          <Space>
+            {able}
+            <DownOutlined />
+          </Space>
+        </Button>
+      </Dropdown>
+    </S.Container>
   );
 }
