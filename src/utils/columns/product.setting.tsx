@@ -3,17 +3,20 @@ import { Button, Checkbox, Image, Switch } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 
-export type ProductListType = {
+export type ProductSettingType = {
   id: number;
   visible: boolean;
-  state: number;
   name: string;
   imgUrl: string;
+  supplyPlice: number;
+  originPrice: number;
   price: number;
   count: number;
-  originPrice: number;
-  createdAt: Date;
   code: string;
+  accumulationRate: number;
+  firstCategory: string;
+  secondCategory: string;
+  createdAt: Date;
 };
 
 type Props = {
@@ -24,13 +27,13 @@ type Props = {
   onToggleClick: (id: number) => void;
 };
 
-export const productListColumns = ({
+export const productSettingColumns = ({
   checkAllState,
   checkedProduct,
   checkAll,
   onCheckRow,
   onToggleClick,
-}: Props): ColumnsType<ProductListType> => [
+}: Props): ColumnsType<ProductSettingType> => [
   {
     title: (
       <Checkbox
@@ -85,13 +88,13 @@ export const productListColumns = ({
       return (
         <Switch
           defaultChecked={val ? true : false}
-          onChange={() => onToggleClick(record?.id)}
+          onChange={() => onToggleClick(record.id)}
         />
       );
     },
   },
   {
-    title: '판매가/정상가',
+    title: '가격정보',
     key: 'price',
     dataIndex: 'price',
     align: 'center',
@@ -101,6 +104,15 @@ export const productListColumns = ({
         '/' +
         record?.originPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
       );
+    },
+  },
+  {
+    title: '적립율',
+    key: 'accumulationRate',
+    dataIndex: 'accumulationRate',
+    align: 'center',
+    render(val) {
+      return val;
     },
   },
   {
@@ -119,6 +131,21 @@ export const productListColumns = ({
     align: 'center',
     render(val) {
       return moment(val).format('YYYY-MM-DD hh:mm');
+    },
+  },
+  {
+    title: '카테고리',
+    key: 'firstCategory',
+    dataIndex: 'firstCategory',
+    align: 'center',
+    render(val, record) {
+      return (
+        <S.CategoryContainer>
+          <span>{val}</span>
+          <div />
+          <span>{record.secondCategory}</span>
+        </S.CategoryContainer>
+      );
     },
   },
   {

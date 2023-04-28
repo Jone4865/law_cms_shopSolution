@@ -87,3 +87,10 @@ export const FilterWrap = styled.div`
 export const Flex = styled.div`
   display: flex;
 `;
+
+export const Title = styled.div`
+  font-size: 20px;
+  font-weight: bold;
+`;
+
+export const Line = styled.hr``;

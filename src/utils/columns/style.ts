@@ -49,3 +49,36 @@ export const ProductListMangementContainer = styled.div`
     margin-right: 3px;
   }
 `;
+
+export const ProductListProductContainer = styled.div`
+  display: flex;
+  img {
+    border-radius: 8px;
+  }
+  div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-right: 5px;
+  }
+  span:first-child {
+    font-weight: bold;
+  }
+  span:last-child {
+    color: gray;
+  }
+`;
+
+export const CategoryContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: skyblue;
+  div {
+    border: dashed 0.1px #281c1c1d;
+    width: 100%;
+    height: 0px;
+    margin: 5px 0;
+  }
+`;

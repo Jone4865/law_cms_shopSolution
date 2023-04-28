@@ -5,7 +5,6 @@ import * as S from './style';
 import { DropdownComponent } from '../../components/Dropdown';
 import { SearchDetailRow } from '../../components/Product';
 import { ProductListType, productListColumns } from '../../utils/columns';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 export function ProductList() {
   const [take, setTake] = useState(10);
@@ -18,23 +17,11 @@ export function ProductList() {
   const [checkedProduct, setCheckedProduct] = useState<number[]>([]);
   const [checkAllState, setCheckAllState] = useState(false);
 
-  const [productData, setProductData] = useState<ProductListType[]>([
-    {
-      id: 0,
-      count: 1000,
-      createdAt: 'dd',
-      price: 1000,
-      product: ['dadaw', 'dadaw'],
-      rank: 1000,
-      state: 1,
-      visible: true,
-    },
-  ]);
+  const [variables, setVariables] = useState<ProductListType[]>([]);
 
   const dropdownArrs = [
     ['1차분류선택', '1', '2', '3'],
     ['2차분류선택', '5', '6'],
-    ['3차분류선택', '8', '9'],
   ];
 
   const onSubmitHandle = (values: { searchText?: string }) => {
@@ -65,9 +52,7 @@ export function ProductList() {
   const checkAll = (state: boolean) => {
     setCheckAllState(state);
     if (state) {
-      productData.map((data) =>
-        setCheckedProduct((prev) => [...prev, data.id]),
-      );
+      variables.map((data) => setCheckedProduct((prev) => [...prev, data.id]));
     } else {
       setCheckedProduct([]);
     }
@@ -82,10 +67,18 @@ export function ProductList() {
 
   const onDeleteHandle = () => {
     //TODO: 삭제요청 연결 id는 chececkedProduct에 있음
+    setCheckedProduct([]);
+    setCheckAllState(false);
   };
 
   const onEditHandle = () => {
     //TODO: 수정요청 연결 id는 chececkedProduct에 있음
+    setCheckedProduct([]);
+    setCheckAllState(false);
+  };
+
+  const onToggleClick = (id: number) => {
+    console.log(id);
   };
 
   useEffect(() => {
@@ -95,6 +88,21 @@ export function ProductList() {
 
     window.addEventListener('resize', handleResize);
 
+    setVariables([
+      {
+        id: 1,
+        count: 1000,
+        createdAt: new Date(),
+        price: 1000,
+        name: '이름',
+        imgUrl: 'https://danonline.kr/snoopym/images/redpop.png?crc=92367325',
+        state: 1,
+        visible: true,
+        originPrice: 1000,
+        code: 'dwadwad-dwadaw-ddds',
+      },
+    ]);
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -102,6 +110,10 @@ export function ProductList() {
 
   return (
     <div>
+      <S.Title style={{ fontSize: '20px', fontWeight: 'bold' }}>
+        상품관리
+      </S.Title>
+      <S.Line />
       <S.Container
         style={{ flexDirection: windowWidth < 850 ? 'column' : 'row' }}
       >
@@ -238,8 +250,9 @@ export function ProductList() {
           checkedProduct,
           checkAll,
           onCheckRow,
+          onToggleClick,
         })}
-        dataSource={productData}
+        dataSource={variables}
         pagination={{
           position: ['bottomCenter'],
           showSizeChanger: true,

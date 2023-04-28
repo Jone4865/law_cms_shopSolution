@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Table } from 'antd';
 import * as S from './style';
 import { DropdownComponent } from '../../components/Dropdown';
 import { SearchDetailRow } from '../../components/Product';
-import { ProductListType, productListColumns } from '../../utils/columns';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { ProductSettingType, productSettingColumns } from '../../utils/columns';
 
 export function ProductsSetting() {
   const [take, setTake] = useState(10);
@@ -18,23 +17,11 @@ export function ProductsSetting() {
   const [checkedProduct, setCheckedProduct] = useState<number[]>([]);
   const [checkAllState, setCheckAllState] = useState(false);
 
-  const [productData, setProductData] = useState<ProductListType[]>([
-    {
-      id: 0,
-      count: 1000,
-      createdAt: 'dd',
-      price: 1000,
-      product: ['dadaw', 'dadaw'],
-      rank: 1000,
-      state: 1,
-      visible: true,
-    },
-  ]);
+  const [variables, setVariables] = useState<ProductSettingType[]>([]);
 
   const dropdownArrs = [
     ['1차분류선택', '1', '2', '3'],
     ['2차분류선택', '5', '6'],
-    ['3차분류선택', '8', '9'],
   ];
 
   const onSubmitHandle = (values: { searchText?: string }) => {
@@ -65,9 +52,7 @@ export function ProductsSetting() {
   const checkAll = (state: boolean) => {
     setCheckAllState(state);
     if (state) {
-      productData.map((data) =>
-        setCheckedProduct((prev) => [...prev, data.id]),
-      );
+      variables.map((data) => setCheckedProduct((prev) => [...prev, data.id]));
     } else {
       setCheckedProduct([]);
     }
@@ -82,11 +67,17 @@ export function ProductsSetting() {
 
   const onDeleteHandle = () => {
     //TODO: 삭제요청 연결 id는 chececkedProduct에 있음
+    setCheckedProduct([]);
+    setCheckAllState(false);
   };
 
   const onEditHandle = () => {
     //TODO: 수정요청 연결 id는 chececkedProduct에 있음
+    setCheckedProduct([]);
+    setCheckAllState(false);
   };
+
+  const onToggleClick = (id: number) => {};
 
   useEffect(() => {
     const handleResize = () => {
@@ -94,6 +85,24 @@ export function ProductsSetting() {
     };
 
     window.addEventListener('resize', handleResize);
+
+    setVariables([
+      {
+        id: 0,
+        visible: true,
+        name: 'string',
+        imgUrl: 'https://danonline.kr/snoopym/images/redpop.png?crc=92367325',
+        supplyPlice: 1000,
+        originPrice: 1000,
+        price: 1000,
+        count: 1000,
+        accumulationRate: 1000,
+        firstCategory: 'string',
+        secondCategory: 'string',
+        code: 'dadwad-dwadwa-ddad',
+        createdAt: new Date(),
+      },
+    ]);
 
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -211,13 +220,14 @@ export function ProductsSetting() {
         </S.Flex>
       </S.FilterContainer>
       <Table
-        columns={productListColumns({
+        columns={productSettingColumns({
           checkAllState,
           checkedProduct,
           checkAll,
           onCheckRow,
+          onToggleClick,
         })}
-        dataSource={productData}
+        dataSource={variables}
         pagination={{
           position: ['bottomCenter'],
           showSizeChanger: true,
