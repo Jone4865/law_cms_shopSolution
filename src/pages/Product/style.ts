@@ -44,11 +44,13 @@ export const BtnWrap = styled.div`
 export const MoreBtn = styled.div`
   border: solid 1px skyblue;
   color: skyblue;
+  min-width: 100px;
 `;
 
 export const AddBtn = styled.div`
   border: solid 1px red;
   color: red;
+  min-width: 100px;
 `;
 
 export const SearchTitle = styled.p`
@@ -75,6 +77,7 @@ export const Dashed = styled.div`
 export const FilterContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  overflow: scroll;
 `;
 
 export const FilterWrap = styled.div`
@@ -94,3 +97,68 @@ export const Title = styled.div`
 `;
 
 export const Line = styled.hr``;
+
+export const CategoryContainer = styled.div`
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+`;
+
+export const CategoryTitle = styled.div`
+  display: flex;
+  justify-content: center;
+  border-bottom: solid 10px gray;
+  width: 100%;
+  font-weight: bold;
+`;
+
+export const CategoryWrap = styled.div`
+  overflow: scroll;
+  height: 60vh;
+  width: 100%;
+`;
+
+export const CategoryArrContainer = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: 5px 10px;
+  align-items: center;
+  font-weight: bold;
+  span {
+    margin-right: 10px;
+  }
+`;
+
+export const VisibleDiv = styled.div`
+  width: 50px;
+  border: solid 1px skyblue;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+  align-items: center;
+  margin-right: 5px;
+  height: 25px;
+  color: skyblue;
+`;
+
+export const EnVisibleDiv = styled.div`
+  width: 50px;
+  border: solid 1px orangered;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+  align-items: center;
+  height: 25px;
+  margin-right: 5px;
+  color: orangered;
+`;
+
+export const EditBtn = styled.button`
+  border: none;
+  border-radius: 8px;
+  min-width: 50px;
+`;

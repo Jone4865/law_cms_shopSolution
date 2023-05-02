@@ -135,7 +135,7 @@ export function ProductList() {
             </Form.Item>
           </Form>
         </S.Wrap>
-        <S.BtnWrap>
+        <S.BtnWrap style={{ margin: windowWidth < 850 ? '10px 0' : '' }}>
           <S.MoreBtn onClick={() => setMoreVisible(!moreVisible)}>
             <PlusOutlined />
             <p>상세검색</p>

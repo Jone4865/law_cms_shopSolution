@@ -82,3 +82,28 @@ export const CategoryContainer = styled.div`
     margin: 5px 0;
   }
 `;
+
+export const ProductGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+`;
+
+export const ProductGridWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  input {
+    width: 100px;
+    text-align: right;
+  }
+`;
+
+export const ProductFlexWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  input {
+    width: 100px;
+    text-align: right;
+  }
+`;
