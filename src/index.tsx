@@ -5,11 +5,14 @@ import locale from 'antd/es/locale/ko_KR';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { RecoilRoot } from 'recoil';
 
 ReactDOM.render(
   <React.StrictMode>
     <ConfigProvider locale={locale}>
-      <App />
+      <RecoilRoot>
+        <App />
+      </RecoilRoot>
     </ConfigProvider>
   </React.StrictMode>,
   document.getElementById('root') as HTMLElement,
