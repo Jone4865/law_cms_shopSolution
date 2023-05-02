@@ -201,13 +201,16 @@ enum LoginKind {
 
   """카카오"""
   KAKAO
+
+  """네이버"""
+  NAVER
 }
 
 type Mutation {
   """회원가입 (회원)"""
   signUpByUser(
     """로그인 종류"""
-    loginKind: LoginKind!
+    loginKind: LoginKind! = EMAIL
 
     """이름"""
     name: String!
@@ -217,6 +220,12 @@ type Mutation {
 
     """비밀번호"""
     password: String!
+
+    """해시값"""
+    hash: String!
+
+    """휴대전화"""
+    phone: String!
   ): UserModel!
 
   """로그아웃 (회원)"""
@@ -778,6 +787,27 @@ type ProductsByFindManyProductOutput {
 type Query {
   findMyInfo: UserModel!
 
+  """휴대폰 인증번호 발송 (180초)"""
+  sendPhoneAuthNumber(
+    """휴대전화"""
+    phone: String!
+  ): Boolean!
+
+  """휴대폰 인증번호 잔여시간 확인"""
+  checkRemainTimePhoneAuthNumber(
+    """휴대전화"""
+    phone: String!
+  ): Int!
+
+  """휴대폰 인증번호 확인"""
+  confirmPhoneAuthNumber(
+    """휴대전화"""
+    phone: String!
+
+    """인증번호"""
+    authNumber: String!
+  ): String!
+
   """로그인 (회원)"""
   signInByUser(
     """이메일"""
@@ -983,6 +1013,9 @@ type UserModel {
 
   """이메일"""
   email: String
+
+  """휴대전화"""
+  phone: String
 
   """생성일"""
   createdAt: DateTime!

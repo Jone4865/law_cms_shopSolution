@@ -1,10 +1,4 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  HttpLink,
-  InMemoryCache,
-  split,
-} from '@apollo/client';
+import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { message } from 'antd';
 import { createUploadLink } from 'apollo-upload-client';
@@ -35,7 +29,6 @@ function apolloClient() {
   const wsLink = new GraphQLWsLink(
     createClient({
       url: SOCKET,
-
       connectionParams: {
         credential: 'include',
       },
@@ -85,11 +78,6 @@ function apolloClient() {
     cache: new InMemoryCache({
       addTypename: false,
     }),
-    headers: {
-      //   'keep-alive': 'true',
-      //   'Access-Control-Allow-Origin': '*',
-      //   'Access-Control-Allow-Headers': '*',
-    },
     credentials: 'include',
   });
 
