@@ -1,5 +1,5 @@
 import * as S from './style';
-import { Button, Checkbox, Image, Switch } from 'antd';
+import { Button, Checkbox, Image, Input, Switch } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 
@@ -25,6 +25,7 @@ type Props = {
   checkAll: (state: boolean) => void;
   onCheckRow: (id: number) => void;
   onToggleClick: (id: number) => void;
+  changeHandle: (key: string, value: string) => void;
 };
 
 export const productSettingColumns = ({
@@ -33,6 +34,7 @@ export const productSettingColumns = ({
   checkAll,
   onCheckRow,
   onToggleClick,
+  changeHandle,
 }: Props): ColumnsType<ProductSettingType> => [
   {
     title: (
@@ -100,9 +102,30 @@ export const productSettingColumns = ({
     align: 'center',
     render(val, record) {
       return (
-        val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') +
-        '/' +
-        record?.originPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        <S.ProductGrid>
+          <S.ProductGridWrap>
+            <span>공급가(원)</span>
+            <Input
+              value={record.supplyPlice
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            />
+          </S.ProductGridWrap>
+          <S.ProductGridWrap>
+            <span>정상가(원)</span>
+            <Input
+              value={record.originPrice
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            />
+          </S.ProductGridWrap>
+          <S.ProductGridWrap>
+            <span>판매가(원)</span>
+            <Input
+              value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            />
+          </S.ProductGridWrap>
+        </S.ProductGrid>
       );
     },
   },
@@ -112,7 +135,14 @@ export const productSettingColumns = ({
     dataIndex: 'accumulationRate',
     align: 'center',
     render(val) {
-      return val;
+      return (
+        <S.ProductFlexWrap>
+          <span>적립율(%)</span>
+          <Input
+            value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          />
+        </S.ProductFlexWrap>
+      );
     },
   },
   {
@@ -121,7 +151,14 @@ export const productSettingColumns = ({
     dataIndex: 'count',
     align: 'center',
     render(val) {
-      return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return (
+        <S.ProductFlexWrap>
+          <span>재고량(개)</span>
+          <Input
+            value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          />
+        </S.ProductFlexWrap>
+      );
     },
   },
   {
@@ -153,7 +190,7 @@ export const productSettingColumns = ({
     key: 'id',
     dataIndex: 'id',
     align: 'center',
-    render(val) {
+    render(_val) {
       return (
         <S.ProductListMangementContainer>
           <Button type="primary">수정</Button>
