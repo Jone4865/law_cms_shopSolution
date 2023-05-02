@@ -154,7 +154,7 @@ export function Admin() {
     setOtpModalopen(true);
   };
 
-  const handleFinish = (otp: string[]) => {
+  const handleFinish = () => {
     // setOtpSecret({
     //   variables: {
     //     email,
@@ -269,12 +269,12 @@ export function Admin() {
         otpSecret={secret}
         setOtpSecret={setSecret}
       />
-      <OtpInputModal
+      {/* <OtpInputModal
         loading={false}
         open={otpModalopen}
-        onCancel={handleCancelOtp}
+        handleCancel={handleCancelOtp}
         handleFinish={handleFinish}
-      />
+      /> */}
       <Form
         layout="inline"
         onFinish={handleSearch}

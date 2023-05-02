@@ -1,29 +1,15 @@
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import { phoneFormat } from '../phoneFormat';
+import { Button } from 'antd';
 
-export type UserType = {
-  nickname: string;
-  email: string;
-  name: string;
-  createdAt: string;
-  phone: string;
-  shippingAddresses: {
-    id: number;
-    address: string;
-    addressDetail: string;
-    isDefault: boolean;
-  }[];
-};
-
-export const userListColumns: ColumnsType<UserType> = [
+export const userSleepColumns: ColumnsType<any> = [
   {
     title: '이메일',
     key: 'email',
     dataIndex: 'email',
     align: 'center',
   },
-
   {
     title: '이름',
     key: 'name',
@@ -36,6 +22,15 @@ export const userListColumns: ColumnsType<UserType> = [
     dataIndex: 'phone',
     align: 'center',
     render: (val) => phoneFormat(val),
+  },
+  {
+    title: '휴면 전환일',
+    key: 'sleepedAt',
+    dataIndex: 'sleepedAt',
+    align: 'center',
+    render: (val: string) => {
+      return moment(val).format('YYYY-MM-DD');
+    },
   },
   {
     title: '최근 접속일',
@@ -54,5 +49,12 @@ export const userListColumns: ColumnsType<UserType> = [
     render: (val: string) => {
       return moment(val).format('YYYY-MM-DD HH:mm:ss');
     },
+  },
+  {
+    title: '관리',
+    key: 'change',
+    dataIndex: 'email',
+    align: 'center',
+    render: (val) => <Button>휴면해제</Button>,
   },
 ];

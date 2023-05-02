@@ -1,11 +1,19 @@
-import { useState } from 'react';
-import { Form, Input, notification } from 'antd';
+import { useEffect, useRef, useState } from 'react';
+import { Form, Input, message, notification } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 
 import { OtpInputModal } from '../../components/OtpInputModal';
 
 import * as S from './style';
-import { logo, logoB } from '../../assets/images';
+import { logo } from '../../assets/images';
+import { useLazyQuery } from '@apollo/client';
+import { SIGN_IN_BY_ADMIN } from '../../graphql/query/signInByAdmin';
+import {
+  signInByAdmin,
+  signInByAdminVariables,
+} from '../../graphql/generated/signInByAdmin';
+import { useRecoilState } from 'recoil';
+import { userTokenState } from '../../recoil/atoms/userToken';
 
 type SubmitType = {
   email: string;
@@ -14,13 +22,17 @@ type SubmitType = {
 
 export function Login() {
   const [open, setOpen] = useState(false);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
 
+  const [, setTokenInfo] = useRecoilState(userTokenState);
+  const inputRef = useRef<HTMLInputElement[]>([]);
   const [form] = useForm<SubmitType>();
 
   const emailReg =
     /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
 
   const handleCancel = () => {
+    setOtp(['', '', '', '', '', '']);
     setOpen(false);
   };
 
@@ -34,29 +46,67 @@ export function Login() {
     if (!values.password?.trim().length) {
       return notification.error({ message: '비밀번호를 입력해주세요' });
     }
+
+    // handleFocus(0);
+
     setOpen(true);
   };
 
-  const handleFinish = (otp: string[]) => {
+  const handleFinish = () => {
     const userInfo: SubmitType = {
       email: form.getFieldValue('email'),
       password: form.getFieldValue('password'),
     };
     const code = otp.concat().join().replaceAll(',', '');
 
-    // TODO: 로그인 로직 구현
-    localStorage.setItem('accessToken', 'sdfjklasdjfkldsjf;aklsdjfkal');
-    return (window.location.href = '/');
+    signInByAdmin({
+      variables: {
+        code,
+        ...userInfo,
+      },
+    });
   };
+
+  const handleFocus = (idx: number) => {
+    inputRef.current[idx]!.focus();
+  };
+
+  const [signInByAdmin, { loading }] = useLazyQuery<
+    signInByAdmin,
+    signInByAdminVariables
+  >(SIGN_IN_BY_ADMIN, {
+    onCompleted: () => {
+      setTokenInfo({
+        hasToken: true,
+      });
+    },
+    onError: (e) => {
+      message.error(e.message ?? `${e}`);
+      handleCancel();
+    },
+    fetchPolicy: 'no-cache',
+    notifyOnNetworkStatusChange: true,
+  });
+
+  useEffect(() => {
+    return () => {
+      setOpen(false);
+    };
+  }, []);
 
   return (
     <S.Container>
       <OtpInputModal
-        loading={false}
+        loading={loading}
         open={open}
         handleFinish={handleFinish}
-        onCancel={handleCancel}
+        handleCancel={handleCancel}
+        handleFocus={handleFocus}
+        inputRef={inputRef}
+        otp={otp}
+        setOtp={setOtp}
       />
+
       <S.Wrapper>
         <S.FormWrap>
           <Form layout="vertical" onFinish={handleSubmit} form={form}>

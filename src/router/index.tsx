@@ -1,14 +1,16 @@
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
 import Layout from '../components/Layout';
 import { Admin } from '../pages/Admin';
 import { Inquiry, Faq, Notice } from '../pages/Customer';
 import { Dashboard } from '../pages/Dashboard';
 import { Login } from '../pages/Login';
 import { Policy } from '../pages/Policy';
-import { Users } from '../pages/Users';
+import { UserDelete, UserSleep, Users } from '../pages/Users';
 import { Review } from '../pages/Customer/Review';
 import { ProductInquiry } from '../pages/Customer/ProductInquiry';
+import { useRecoilValue } from 'recoil';
+import { userTokenState } from '../recoil/atoms/userToken';
 import {
   ProductList,
   ProductsSetting,
@@ -16,12 +18,11 @@ import {
 } from '../pages/Product';
 
 function Root() {
-  const accessToken = localStorage.getItem('accessToken') ?? '';
-
+  const tokenInfo = useRecoilValue(userTokenState);
   return (
     <BrowserRouter>
       <Routes>
-        {accessToken?.length && (
+        {tokenInfo.hasToken && (
           <Route path="/" element={<Layout />}>
             <Route path="*" element={<Navigate to="/" />} />
             <Route index element={<Dashboard />} />
@@ -34,6 +35,8 @@ function Root() {
 
             <Route path="/user">
               <Route path="normal" element={<Users />} />
+              <Route path="sleep" element={<UserSleep />} />
+              <Route path="delete" element={<UserDelete />} />
             </Route>
 
             <Route path="/customer">
@@ -47,7 +50,7 @@ function Root() {
             <Route path="policy" element={<Policy />} />
           </Route>
         )}
-        {!accessToken?.length && (
+        {!tokenInfo.hasToken && (
           <>
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<Navigate to="/login" />} />

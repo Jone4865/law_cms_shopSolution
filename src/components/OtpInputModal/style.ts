@@ -20,14 +20,14 @@ export const OtpInput = styled.input`
   font-size: 46px;
   text-align: center;
   padding: 10px;
-  &:focus-open {
+  &:focus-visible {
     outline: none;
     padding: 0px;
     margin: 0px;
   }
   @media ${(props) => props.theme.mobile} {
-    width: 12vw;
-    height: 12vw;
+    width: 11vw;
+    height: 11vw;
     font-size: 5vw;
   }
 `;
