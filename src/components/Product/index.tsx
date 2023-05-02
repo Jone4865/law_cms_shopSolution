@@ -1,1 +1,1 @@
-export { SearchDetail } from './SearchDetail/SearchDetail';
+export { SearchDetailRow } from './SearchDetailRow/SearchDetail';

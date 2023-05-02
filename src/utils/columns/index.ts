@@ -22,3 +22,9 @@ export { productInquiryColumns } from './productInquiry';
 export { reviewColumns } from './review';
 export { userSleepColumns } from './user.sleep';
 export { userDeleteColumns } from './user.delete';
+
+export type { ProductListType } from './product.list';
+export { productListColumns } from './product.list';
+
+export type { ProductSettingType } from './product.setting';
+export { productSettingColumns } from './product.setting';

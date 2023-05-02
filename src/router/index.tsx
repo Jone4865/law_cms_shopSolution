@@ -1,5 +1,5 @@
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
 import Layout from '../components/Layout';
 import { Admin } from '../pages/Admin';
 import { Inquiry, Faq, Notice } from '../pages/Customer';
@@ -9,9 +9,13 @@ import { Policy } from '../pages/Policy';
 import { UserDelete, UserSleep, Users } from '../pages/Users';
 import { Review } from '../pages/Customer/Review';
 import { ProductInquiry } from '../pages/Customer/ProductInquiry';
-import { ProductList, ProductsSetting, ProductCategory } from '../pages/Gift';
 import { useRecoilValue } from 'recoil';
 import { userTokenState } from '../recoil/atoms/userToken';
+import {
+  ProductList,
+  ProductsSetting,
+  ProductCategory,
+} from '../pages/Product';
 
 function Root() {
   const tokenInfo = useRecoilValue(userTokenState);
