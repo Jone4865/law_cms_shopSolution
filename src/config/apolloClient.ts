@@ -5,11 +5,16 @@ import { createUploadLink } from 'apollo-upload-client';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
+import { userTokenTypes } from '../recoil/atoms/userToken';
+import { SetterOrUpdater } from 'recoil';
 
 export const SERVER = process.env.REACT_APP_BASE_URL!;
 export const SOCKET = process.env.REACT_APP_SOCKET_URL!;
 
-function apolloClient() {
+function apolloClient(
+  state: userTokenTypes,
+  setState: SetterOrUpdater<userTokenTypes>,
+) {
   const enhancedFetch = async (url: RequestInfo, init: RequestInit) => {
     return await fetch(url, {
       ...init,
@@ -65,6 +70,9 @@ function apolloClient() {
 
       if (unauthorizedError) {
         message.error('장기간 사용하지 않아 자동 로그아웃되었습니다.');
+        setState({
+          hasToken: false,
+        });
       }
 
       if (networkError) {
