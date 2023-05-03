@@ -4,13 +4,20 @@ import { Divider, Form, Input, notification, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { UserDetailModal } from '../../components/UserDetailModal';
 import { userDeleteColumns } from '../../utils/columns';
+import {
+  findManyUser,
+  findManyUserVariables,
+} from '../../graphql/generated/findManyUser';
+import { FIND_MANY_USER } from '../../graphql/query/findManyUser';
+import { UserStatus } from '../../graphql/generated/graphql-global-types';
 
 export function UserDelete() {
   const [userData, setUserData] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [modalData, setModalData] = useState<any>();
   const [take, setTake] = useState(10);
-  const [skip, setSkip] = useState(0);
+  const [cursorId, setCursorId] = useState('');
+
   const [totalCount, setTotalCount] = useState(0);
   const [current, setCurrent] = useState(1);
   const [searchWord, setSearchWord] = useState('');
@@ -24,49 +31,49 @@ export function UserDelete() {
     setOpen(true);
   };
 
-  const handleSearch = (value: { searchWord?: string }) => {
-    // seeAllUsers({
-    //   variables: {
-    //     take,
-    //     skip: 0,
-    //     ...value,
-    //   },
-    // });
-    setSkip(0);
-    setCurrent(1);
-    setSearchWord(value.searchWord ?? '');
-  };
+  // const handleSearch = (value: { searchWord?: string }) => {
+  //   // seeAllUsers({
+  //   //   variables: {
+  //   //     take,
+  //   //     skip: 0,
+  //   //     ...value,
+  //   //   },
+  //   // });
+  //   setSkip(0);
+  //   setCurrent(1);
+  //   setSearchWord(value.searchWord ?? '');
+  // };
 
   const handlePagination = (e: number) => {
-    setSkip((e - 1) * take);
+    const idx = userData.length - 1;
+    setCursorId(userData[idx].id);
     setCurrent(e);
   };
 
-  // get user list
-  // const [seeAllUsers, { loading }] = useLazyQuery<
-  //   SeeUserHistoryByAdminResponse,
-  //   SeeUserHistoryByAdminParams
-  // >(SEE_USER_HISTORY_BY_ADMIN, {
-  //   onCompleted: (data) => {
-  //     setUserData(data.seeUserHistoryByAdmin.users);
-  //     setTotalCount(data.seeUserHistoryByAdmin.totalCount);
-  //   },
-  //   onError: (e) => {
-  //     notification.error({ message: e.message });
-  //   },
-  //   fetchPolicy: 'no-cache',
-  // });
+  const [findManyUser, { loading }] = useLazyQuery<
+    findManyUser,
+    findManyUserVariables
+  >(FIND_MANY_USER, {
+    onCompleted: (data) => {
+      setUserData(data.findManyUser.users);
+      setTotalCount(data.findManyUser.totalCount);
+    },
+    onError: (e) => {
+      notification.error({ message: e.message });
+    },
+    fetchPolicy: 'no-cache',
+  });
 
   // pagination
-  // useEffect(() => {
-  //   seeAllUsers({
-  //     variables: {
-  //       take,
-  //       skip,
-  //       searchWord,
-  //     },
-  //   });
-  // }, [skip, take]);
+  useEffect(() => {
+    findManyUser({
+      variables: {
+        take,
+        cursorId,
+        userStatus: UserStatus.WITHDRAWAL,
+      },
+    });
+  }, [cursorId, take, findManyUser]);
 
   return (
     <>
@@ -76,7 +83,7 @@ export function UserDelete() {
         email={modalData?.email ?? ''}
       />
 
-      <Form layout="inline" onFinish={handleSearch}>
+      {/* <Form layout="inline" onFinish={handleSearch}>
         <Form.Item name="searchWord">
           <Input.Search
             enterButton
@@ -86,7 +93,7 @@ export function UserDelete() {
             }}
           />
         </Form.Item>
-      </Form>
+      </Form> */}
       <Table
         columns={userDeleteColumns}
         dataSource={userData}
@@ -98,7 +105,7 @@ export function UserDelete() {
           total: totalCount,
           current: current,
         }}
-        // loading={loading}
+        loading={loading}
         style={{
           marginTop: 30,
         }}
