@@ -52,8 +52,11 @@ export const ProductListMangementContainer = styled.div`
 
 export const ProductListProductContainer = styled.div`
   display: flex;
+  white-space: nowrap;
   img {
     border-radius: 8px;
+    min-width: 60px;
+    min-height: 60px;
   }
   div {
     display: flex;
@@ -75,6 +78,8 @@ export const CategoryContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   color: skyblue;
+  white-space: nowrap;
+  min-width: 60px;
   div {
     border: dashed 0.1px #281c1c1d;
     width: 100%;
@@ -106,4 +111,8 @@ export const ProductFlexWrap = styled.div`
     width: 100px;
     text-align: right;
   }
+`;
+
+export const WhiteSpaceNoWrap = styled.div`
+  white-space: nowrap;
 `;

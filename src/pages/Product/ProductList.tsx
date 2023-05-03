@@ -5,6 +5,7 @@ import * as S from './style';
 import { DropdownComponent } from '../../components/Dropdown';
 import { SearchDetailRow } from '../../components/Product';
 import { ProductListType, productListColumns } from '../../utils/columns';
+import { SearchMore } from '../../components/Product/SearchMore/SearchMore';
 
 export function ProductList() {
   const [take, setTake] = useState(10);
@@ -18,6 +19,7 @@ export function ProductList() {
   const [checkAllState, setCheckAllState] = useState(false);
 
   const [variables, setVariables] = useState<ProductListType[]>([]);
+  const [tableData, setTableData] = useState<ProductListType[]>([]);
 
   const dropdownArrs = [
     ['1차분류선택', '1', '2', '3'],
@@ -65,20 +67,39 @@ export function ProductList() {
     setSearchText('');
   };
 
-  const onDeleteHandle = () => {
-    //TODO: 삭제요청 연결 id는 chececkedProduct에 있음
+  const onDeleteHandle = (id: number | undefined) => {
+    if (id === undefined) {
+      //TODO: 선택 삭제요청 연결 id는 chececkedProduct에 있음 map으로 요청
+    } else {
+      //한개 삭제요청 연결
+    }
     setCheckedProduct([]);
     setCheckAllState(false);
   };
 
-  const onEditHandle = () => {
-    //TODO: 수정요청 연결 id는 chececkedProduct에 있음
+  const onEditHandle = (id: number, number: number) => {
+    //TODO: 수정요청 연결
+    console.log(id, number);
     setCheckedProduct([]);
     setCheckAllState(false);
   };
 
   const onToggleClick = (id: number) => {
     console.log(id);
+  };
+
+  const onChangeNumberHandle = (id: number, number: number) => {
+    const updatedTableData = [...tableData];
+    const targetIndex = updatedTableData.findIndex(
+      (product) => product.id === id,
+    );
+    if (targetIndex !== -1) {
+      updatedTableData[targetIndex] = {
+        ...updatedTableData[targetIndex],
+        number: number,
+      };
+      setTableData(updatedTableData);
+    }
   };
 
   useEffect(() => {
@@ -88,7 +109,7 @@ export function ProductList() {
 
     window.addEventListener('resize', handleResize);
 
-    setVariables([
+    setTableData([
       {
         id: 1,
         count: 1000,
@@ -100,6 +121,7 @@ export function ProductList() {
         visible: true,
         originPrice: 1000,
         code: 'dwadwad-dwadaw-ddds',
+        number: 100,
       },
     ]);
 
@@ -147,64 +169,8 @@ export function ProductList() {
         </S.BtnWrap>
       </S.Container>
 
-      {moreVisible && (
-        <>
-          <S.SearchTitle>Search</S.SearchTitle>
-          <SearchDetailRow
-            title={'카테고리'}
-            dropdownArrs={dropdownArrs}
-            saveNames={['d', 'r', 'o', 'p']}
-            changeHandle={changeHandle}
-          />
-          <S.Grid
-            style={{
-              gridTemplateColumns:
-                windowWidth > 600 ? 'repeat(2, 50%)' : 'repeat(1, 100%)',
-            }}
-          >
-            <SearchDetailRow
-              title={'노출여부'}
-              checkBoxArr={['전체', '노출', '숨김']}
-              changeHandle={changeHandle}
-              saveNames={['d', 'r', 'o', 'p']}
-            />
-            <SearchDetailRow
-              title={'판매기간'}
-              checkBoxArr={['전체', '상시판매', '판매전', '판매중', '판매종료']}
-              changeHandle={changeHandle}
-              saveNames={['d', 'r', 'o', 'p']}
-            />
-          </S.Grid>
-          <S.Grid
-            style={{
-              gridTemplateColumns:
-                windowWidth > 600 ? 'repeat(2, 50%)' : 'repeat(1, 100%)',
-            }}
-          >
-            <SearchDetailRow
-              title={'재고검색'}
-              checkBoxArr={[
-                '전체',
-                '품절',
-                '1개~50개',
-                '50개~100개',
-                '100개 초과',
-              ]}
-              changeHandle={changeHandle}
-              saveNames={['d', 'r', 'o', 'p']}
-            />
-            <SearchDetailRow
-              title={'과세여부'}
-              checkBoxArr={['전체', '과세', '면세']}
-              changeHandle={changeHandle}
-              saveNames={['d', 'r', 'o', 'p']}
-            />
-          </S.Grid>
-          <S.BottomBtnWrap>
-            <Button type="primary">검색</Button>
-          </S.BottomBtnWrap>
-        </>
-      )}
+      {moreVisible && <SearchMore changeHandle={changeHandle} />}
+
       <S.Dashed />
       <S.FilterContainer
         style={{
@@ -213,10 +179,7 @@ export function ProductList() {
       >
         <S.FilterWrap>
           <Button onClick={() => checkAll(!checkAllState)}>전체선택</Button>
-          <Button onClick={onDeleteHandle}>선택삭제</Button>
-          <Button onClick={onEditHandle} type="primary">
-            선택순위수정
-          </Button>
+          <Button onClick={() => onDeleteHandle(undefined)}>선택삭제</Button>
         </S.FilterWrap>
         <S.Flex>
           <DropdownComponent
@@ -239,7 +202,7 @@ export function ProductList() {
           />
           <DropdownComponent
             menus={['20개', '50개', '100개']}
-            saveName={'solt'}
+            saveName={'solt2'}
             changeHandle={onChangeFilter}
           />
         </S.Flex>
@@ -251,8 +214,11 @@ export function ProductList() {
           checkAll,
           onCheckRow,
           onToggleClick,
+          onEditHandle,
+          onDeleteHandle,
+          onChangeNumberHandle,
         })}
-        dataSource={variables}
+        dataSource={tableData}
         pagination={{
           position: ['bottomCenter'],
           showSizeChanger: true,
@@ -265,7 +231,6 @@ export function ProductList() {
           marginTop: 30,
         }}
         rowKey={(rec) => rec.id}
-        // loading={loading}
         scroll={{ x: 800 }}
       />
     </div>

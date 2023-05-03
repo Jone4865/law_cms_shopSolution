@@ -1,20 +1,16 @@
 import * as S from './style';
-import { Button, Checkbox, Image, Input, Switch } from 'antd';
+import { Button, Checkbox, Image, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import moment from 'moment';
 
-export type ProductListType = {
+export type ProductCategoryType = {
   id: number;
+  number: number;
   visible: boolean;
-  state: number;
   name: string;
+  code: string;
   imgUrl: string;
   price: number;
   count: number;
-  originPrice: number;
-  createdAt: Date;
-  code: string;
-  number: number;
 };
 
 type Props = {
@@ -22,22 +18,20 @@ type Props = {
   checkedProduct: number[];
   checkAll: (state: boolean) => void;
   onCheckRow: (id: number) => void;
-  onToggleClick: (id: number) => void;
-  onEditHandle: (id: number, number: number) => void;
-  onDeleteHandle: (id: number) => void;
+  changeHandle: (key: string, value: string) => void;
   onChangeNumberHandle: (id: number, number: number) => void;
+  onEditHandle: (id: number, number: number) => void;
 };
 
-export const productListColumns = ({
+export const productCategoryColumns = ({
   checkAllState,
   checkedProduct,
   checkAll,
   onCheckRow,
-  onToggleClick,
-  onEditHandle,
-  onDeleteHandle,
+  changeHandle,
   onChangeNumberHandle,
-}: Props): ColumnsType<ProductListType> => [
+  onEditHandle,
+}: Props): ColumnsType<ProductCategoryType> => [
   {
     title: (
       <Checkbox
@@ -62,21 +56,23 @@ export const productListColumns = ({
     key: 'id',
     dataIndex: 'id',
     align: 'center',
-    render(val) {
-      return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    },
   },
   {
-    title: '순위',
+    title: '순서',
     key: 'number',
     dataIndex: 'number',
     align: 'center',
     render(val, record) {
       return (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
           <Input
-            style={{ width: '100px', marginRight: '5px' }}
             value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            style={{ width: '100px', marginRight: '5px' }}
             onChange={(e) =>
               onChangeNumberHandle(
                 record.id,
@@ -87,6 +83,15 @@ export const productListColumns = ({
           <Button onClick={() => onEditHandle(record.id, val)}>수정</Button>
         </div>
       );
+    },
+  },
+  {
+    title: '노출',
+    key: 'visible',
+    dataIndex: 'visible',
+    align: 'center',
+    render(val) {
+      return val ? '노출' : '비노출';
     },
   },
   {
@@ -107,30 +112,12 @@ export const productListColumns = ({
     },
   },
   {
-    title: '노출',
-    key: 'visible',
-    dataIndex: 'visible',
-    align: 'center',
-    render(val, record) {
-      return (
-        <Switch
-          defaultChecked={val ? true : false}
-          onChange={() => onToggleClick(record?.id)}
-        />
-      );
-    },
-  },
-  {
-    title: '판매가/정상가',
+    title: '상품가격',
     key: 'price',
     dataIndex: 'price',
     align: 'center',
-    render(val, record) {
-      return (
-        val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') +
-        '/' +
-        record?.originPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      );
+    render(val) {
+      return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
     },
   },
   {
@@ -139,29 +126,9 @@ export const productListColumns = ({
     dataIndex: 'count',
     align: 'center',
     render(val) {
-      return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    },
-  },
-  {
-    title: '등록일',
-    key: 'createdAt',
-    dataIndex: 'createdAt',
-    align: 'center',
-    render(val) {
-      return (
-        <S.WhiteSpaceNoWrap>
-          {moment(val).format('YYYY-MM-DD hh:mm')}
-        </S.WhiteSpaceNoWrap>
-      );
-    },
-  },
-  {
-    title: '관리',
-    key: 'id',
-    dataIndex: 'id',
-    align: 'center',
-    render(val) {
-      return <Button onClick={() => onDeleteHandle(val)}>삭제</Button>;
+      return val > 0
+        ? val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '개'
+        : '품절';
     },
   },
 ];

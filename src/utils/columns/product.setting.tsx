@@ -25,7 +25,7 @@ type Props = {
   checkAll: (state: boolean) => void;
   onCheckRow: (id: number) => void;
   onToggleClick: (id: number) => void;
-  changeHandle: (key: string, value: string) => void;
+  onChangeHandle: (id: number, key: string, value: number) => void;
 };
 
 export const productSettingColumns = ({
@@ -34,7 +34,7 @@ export const productSettingColumns = ({
   checkAll,
   onCheckRow,
   onToggleClick,
-  changeHandle,
+  onChangeHandle,
 }: Props): ColumnsType<ProductSettingType> => [
   {
     title: (
@@ -106,6 +106,13 @@ export const productSettingColumns = ({
           <S.ProductGridWrap>
             <span>공급가(원)</span>
             <Input
+              onChange={(e) =>
+                onChangeHandle(
+                  record.id,
+                  'supplyPlice',
+                  parseInt(e.target?.value.replace(/,/g, '')),
+                )
+              }
               value={record.supplyPlice
                 ?.toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -114,6 +121,13 @@ export const productSettingColumns = ({
           <S.ProductGridWrap>
             <span>정상가(원)</span>
             <Input
+              onChange={(e) =>
+                onChangeHandle(
+                  record.id,
+                  'originPrice',
+                  parseInt(e.target?.value.replace(/,/g, '')),
+                )
+              }
               value={record.originPrice
                 ?.toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -122,6 +136,13 @@ export const productSettingColumns = ({
           <S.ProductGridWrap>
             <span>판매가(원)</span>
             <Input
+              onChange={(e) =>
+                onChangeHandle(
+                  record.id,
+                  'price',
+                  parseInt(e.target?.value.replace(/,/g, '')),
+                )
+              }
               value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
           </S.ProductGridWrap>
@@ -134,11 +155,18 @@ export const productSettingColumns = ({
     key: 'accumulationRate',
     dataIndex: 'accumulationRate',
     align: 'center',
-    render(val) {
+    render(val, record) {
       return (
         <S.ProductFlexWrap>
           <span>적립율(%)</span>
           <Input
+            onChange={(e) =>
+              onChangeHandle(
+                record.id,
+                'accumulationRate',
+                parseInt(e.target?.value.replace(/,/g, '')),
+              )
+            }
             value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
         </S.ProductFlexWrap>
@@ -150,11 +178,18 @@ export const productSettingColumns = ({
     key: 'count',
     dataIndex: 'count',
     align: 'center',
-    render(val) {
+    render(val, record) {
       return (
         <S.ProductFlexWrap>
           <span>재고량(개)</span>
           <Input
+            onChange={(e) =>
+              onChangeHandle(
+                record.id,
+                'count',
+                parseInt(e.target?.value.replace(/,/g, '')),
+              )
+            }
             value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
         </S.ProductFlexWrap>
@@ -167,7 +202,11 @@ export const productSettingColumns = ({
     dataIndex: 'createdAt',
     align: 'center',
     render(val) {
-      return moment(val).format('YYYY-MM-DD hh:mm');
+      return (
+        <S.WhiteSpaceNoWrap>
+          {moment(val).format('YYYY-MM-DD hh:mm')}
+        </S.WhiteSpaceNoWrap>
+      );
     },
   },
   {
