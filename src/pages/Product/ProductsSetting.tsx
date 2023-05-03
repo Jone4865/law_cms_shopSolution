@@ -5,6 +5,7 @@ import * as S from './style';
 import { DropdownComponent } from '../../components/Dropdown';
 import { SearchDetailRow } from '../../components/Product';
 import { ProductSettingType, productSettingColumns } from '../../utils/columns';
+import { SearchMore } from '../../components/Product/SearchMore/SearchMore';
 
 export function ProductsSetting() {
   const [take, setTake] = useState(10);
@@ -18,6 +19,7 @@ export function ProductsSetting() {
   const [checkAllState, setCheckAllState] = useState(false);
 
   const [variables, setVariables] = useState<ProductSettingType[]>([]);
+  const [data, setData] = useState<ProductSettingType[]>([]);
 
   const dropdownArrs = [
     ['1차분류선택', '1', '2', '3'],
@@ -79,6 +81,20 @@ export function ProductsSetting() {
 
   const onToggleClick = (id: number) => {};
 
+  const onChangeHandle = (id: number, key: string, value: number) => {
+    const updatedTableData = [...data];
+    const targetIndex = updatedTableData.findIndex(
+      (product) => product.id === id,
+    );
+    if (targetIndex !== -1) {
+      updatedTableData[targetIndex] = {
+        ...updatedTableData[targetIndex],
+        [key]: value,
+      };
+      setData(updatedTableData);
+    }
+  };
+
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -86,9 +102,9 @@ export function ProductsSetting() {
 
     window.addEventListener('resize', handleResize);
 
-    setVariables([
+    setData([
       {
-        id: 0,
+        id: 1,
         visible: true,
         name: 'string',
         imgUrl: 'https://danonline.kr/snoopym/images/redpop.png?crc=92367325',
@@ -111,6 +127,10 @@ export function ProductsSetting() {
 
   return (
     <div>
+      <S.Title style={{ fontSize: '20px', fontWeight: 'bold' }}>
+        상품 일괄 설정
+      </S.Title>
+      <S.Line />
       <S.Container
         style={{ flexDirection: windowWidth < 850 ? 'column' : 'row' }}
       >
@@ -140,64 +160,8 @@ export function ProductsSetting() {
         </S.BtnWrap>
       </S.Container>
 
-      {moreVisible && (
-        <>
-          <S.SearchTitle>Search</S.SearchTitle>
-          <SearchDetailRow
-            title={'카테고리'}
-            dropdownArrs={dropdownArrs}
-            saveNames={['d', 'r', 'o', 'p']}
-            changeHandle={changeHandle}
-          />
-          <S.Grid
-            style={{
-              gridTemplateColumns:
-                windowWidth > 600 ? 'repeat(2, 50%)' : 'repeat(1, 100%)',
-            }}
-          >
-            <SearchDetailRow
-              title={'노출여부'}
-              checkBoxArr={['전체', '노출', '숨김']}
-              changeHandle={changeHandle}
-              saveNames={['d', 'r', 'o', 'p']}
-            />
-            <SearchDetailRow
-              title={'판매기간'}
-              checkBoxArr={['전체', '상시판매', '판매전', '판매중', '판매종료']}
-              changeHandle={changeHandle}
-              saveNames={['d', 'r', 'o', 'p']}
-            />
-          </S.Grid>
-          <S.Grid
-            style={{
-              gridTemplateColumns:
-                windowWidth > 600 ? 'repeat(2, 50%)' : 'repeat(1, 100%)',
-            }}
-          >
-            <SearchDetailRow
-              title={'재고검색'}
-              checkBoxArr={[
-                '전체',
-                '품절',
-                '1개~50개',
-                '50개~100개',
-                '100개 초과',
-              ]}
-              changeHandle={changeHandle}
-              saveNames={['d', 'r', 'o', 'p']}
-            />
-            <SearchDetailRow
-              title={'과세여부'}
-              checkBoxArr={['전체', '과세', '면세']}
-              changeHandle={changeHandle}
-              saveNames={['d', 'r', 'o', 'p']}
-            />
-          </S.Grid>
-          <S.BottomBtnWrap>
-            <Button type="primary">검색</Button>
-          </S.BottomBtnWrap>
-        </>
-      )}
+      {moreVisible && <SearchMore changeHandle={changeHandle} />}
+
       <S.Dashed />
       <S.FilterContainer
         style={{
@@ -207,9 +171,6 @@ export function ProductsSetting() {
         <S.FilterWrap>
           <Button onClick={() => checkAll(!checkAllState)}>전체선택</Button>
           <Button onClick={onDeleteHandle}>선택삭제</Button>
-          <Button onClick={onEditHandle} type="primary">
-            선택수정
-          </Button>
         </S.FilterWrap>
         <S.Flex>
           <DropdownComponent
@@ -226,9 +187,9 @@ export function ProductsSetting() {
           checkAll,
           onCheckRow,
           onToggleClick,
-          changeHandle,
+          onChangeHandle,
         })}
-        dataSource={variables}
+        dataSource={data}
         pagination={{
           position: ['bottomCenter'],
           showSizeChanger: true,
@@ -241,7 +202,6 @@ export function ProductsSetting() {
           marginTop: 30,
         }}
         rowKey={(rec) => rec.id}
-        // loading={loading}
         scroll={{ x: 800 }}
       />
     </div>
