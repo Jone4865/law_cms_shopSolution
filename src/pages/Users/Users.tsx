@@ -1,5 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
-import { Divider, Form, Input, notification, Table } from 'antd';
+import { Form, Input, notification, Table } from 'antd';
 
 import React, { useEffect, useState } from 'react';
 import { UserDetailModal } from '../../components/UserDetailModal';
