@@ -3,14 +3,22 @@ import { Divider, Form, Input, notification, Table } from 'antd';
 
 import React, { useEffect, useState } from 'react';
 import { UserDetailModal } from '../../components/UserDetailModal';
-import { UserType, userListColumns } from '../../utils/columns';
+import { userListColumns } from '../../utils/columns';
+import {
+  findManyUser,
+  findManyUser_findManyUser_users,
+  findManyUserVariables,
+} from '../../graphql/generated/findManyUser';
+import { FIND_MANY_USER } from '../../graphql/query/findManyUser';
 
 export function Users() {
-  const [userData, setUserData] = useState<UserType[]>([]);
+  const [userData, setUserData] = useState<findManyUser_findManyUser_users[]>(
+    [],
+  );
   const [open, setOpen] = useState(false);
-  const [modalData, setModalData] = useState<UserType>();
+  const [modalData, setModalData] = useState<findManyUser_findManyUser_users>();
   const [take, setTake] = useState(10);
-  const [skip, setSkip] = useState(0);
+  const [cursorId, setCursorId] = useState('');
   const [totalCount, setTotalCount] = useState(0);
   const [current, setCurrent] = useState(1);
   const [searchWord, setSearchWord] = useState('');
@@ -19,54 +27,54 @@ export function Users() {
     setOpen(false);
   };
 
-  const handleClickRow = (rec: UserType) => {
+  const handleClickRow = (rec: findManyUser_findManyUser_users) => {
     setModalData(rec);
     setOpen(true);
   };
 
-  const handleSearch = (value: { searchWord?: string }) => {
-    // seeAllUsers({
-    //   variables: {
-    //     take,
-    //     skip: 0,
-    //     ...value,
-    //   },
-    // });
-    setSkip(0);
-    setCurrent(1);
-    setSearchWord(value.searchWord ?? '');
-  };
+  // const handleSearch = (value: { searchWord?: string }) => {
+  //   // seeAllUsers({
+  //   //   variables: {
+  //   //     take,
+
+  //   //     ...value,
+  //   //   },
+  //   // });
+  //   setCursorId(0);
+  //   setCurrent(1);
+  //   setSearchWord(value.searchWord ?? '');
+  // };
 
   const handlePagination = (e: number) => {
-    setSkip((e - 1) * take);
+    const idx = userData.length - 1;
+    setCursorId(userData[idx].id);
     setCurrent(e);
   };
 
   // get user list
-  // const [seeAllUsers, { loading }] = useLazyQuery<
-  //   SeeUserHistoryByAdminResponse,
-  //   SeeUserHistoryByAdminParams
-  // >(SEE_USER_HISTORY_BY_ADMIN, {
-  //   onCompleted: (data) => {
-  //     setUserData(data.seeUserHistoryByAdmin.users);
-  //     setTotalCount(data.seeUserHistoryByAdmin.totalCount);
-  //   },
-  //   onError: (e) => {
-  //     notification.error({ message: e.message });
-  //   },
-  //   fetchPolicy: 'no-cache',
-  // });
+  const [findManyUser, { loading }] = useLazyQuery<
+    findManyUser,
+    findManyUserVariables
+  >(FIND_MANY_USER, {
+    onCompleted: (data) => {
+      setUserData(data.findManyUser.users);
+      setTotalCount(data.findManyUser.totalCount);
+    },
+    onError: (e) => {
+      notification.error({ message: e.message });
+    },
+    fetchPolicy: 'no-cache',
+  });
 
   // pagination
-  // useEffect(() => {
-  //   seeAllUsers({
-  //     variables: {
-  //       take,
-  //       skip,
-  //       searchWord,
-  //     },
-  //   });
-  // }, [skip, take]);
+  useEffect(() => {
+    findManyUser({
+      variables: {
+        take,
+        cursorId,
+      },
+    });
+  }, [cursorId, take, findManyUser]);
 
   return (
     <>
@@ -76,7 +84,7 @@ export function Users() {
         email={modalData?.email ?? ''}
       />
 
-      <Form layout="inline" onFinish={handleSearch}>
+      {/* <Form layout="inline" onFinish={handleSearch}>
         <Form.Item name="searchWord">
           <Input.Search
             enterButton
@@ -86,7 +94,7 @@ export function Users() {
             }}
           />
         </Form.Item>
-      </Form>
+      </Form> */}
       <Table
         columns={userListColumns}
         dataSource={userData}
@@ -98,7 +106,7 @@ export function Users() {
           total: totalCount,
           current: current,
         }}
-        // loading={loading}
+        loading={loading}
         style={{
           marginTop: 30,
         }}
@@ -107,7 +115,7 @@ export function Users() {
             onClick: () => handleClickRow(rec),
           };
         }}
-        rowKey={(rec) => rec.email}
+        rowKey={(rec) => rec.id}
         scroll={{ x: 800 }}
       />
     </>

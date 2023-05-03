@@ -7,7 +7,15 @@
 // START Enums and Input Objects
 //==============================================================
 
+/**
+ * 회원상태
+ */
+export enum UserStatus {
+  BLACKLIST = "BLACKLIST",
+  REST = "REST",
+  WITHDRAWAL = "WITHDRAWAL",
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================
-export {};
