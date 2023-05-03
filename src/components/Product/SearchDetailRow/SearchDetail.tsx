@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import * as S from './style';
 import { DropdownComponent } from '../../Dropdown';
-import { Button, Checkbox } from 'antd';
+import { Checkbox } from 'antd';
+import { CheckOutlined } from '@ant-design/icons';
 
 type Props = {
   title: string;
@@ -9,6 +10,7 @@ type Props = {
   changeHandle: (key: string, serchCategory: string) => void;
   dropdownArrs?: string[][];
   checkBoxArr?: string[];
+  essential?: boolean;
 };
 
 export function SearchDetailRow({
@@ -17,6 +19,7 @@ export function SearchDetailRow({
   changeHandle,
   dropdownArrs,
   checkBoxArr,
+  essential,
 }: Props) {
   const [checkBoxAble, setCheckBoxAble] = useState('');
   const onChangeHandle = (checkBoxValue: string, idx: number) => {
@@ -25,7 +28,10 @@ export function SearchDetailRow({
   };
   return (
     <S.Container>
-      <S.TitleWrap>{title}</S.TitleWrap>
+      <S.TitleWrap>
+        <span>{title}</span>
+        {essential && <CheckOutlined style={{ color: 'red' }} />}
+      </S.TitleWrap>
       <S.BottomWrap>
         {dropdownArrs &&
           dropdownArrs.map((item, idx) => (

@@ -16,9 +16,9 @@ export const TitleWrap = styled.div`
   background-color: #f3f3f3;
   padding: 0 10px;
   margin-right: 10px;
-  min-width: 85px;
+  min-width: 100px;
   span:first-child {
-    margin-left: 5px;
+    margin-right: 5px;
   }
 `;
 

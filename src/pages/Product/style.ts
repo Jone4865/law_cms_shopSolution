@@ -56,6 +56,7 @@ export const AddBtn = styled.div`
 export const SearchTitle = styled.p`
   font-size: 20px;
   font-weight: bold;
+  margin-top: 30px;
 `;
 
 export const Grid = styled.div`
@@ -96,26 +97,29 @@ export const Title = styled.div`
   font-weight: bold;
 `;
 
-export const Line = styled.hr``;
+export const Line = styled.hr`
+  margin-bottom: 30px;
+`;
 
 export const CategoryContainer = styled.div`
   width: 50%;
   display: flex;
   justify-content: center;
   flex-direction: column;
+  border: solid 1px gray;
 `;
 
 export const CategoryTitle = styled.div`
   display: flex;
   justify-content: center;
-  border-bottom: solid 10px gray;
+  border-bottom: solid 2px gray;
   width: 100%;
   font-weight: bold;
 `;
 
 export const CategoryWrap = styled.div`
   overflow: scroll;
-  height: 60vh;
+  height: 30vh;
   width: 100%;
 `;
 
@@ -126,6 +130,8 @@ export const CategoryArrContainer = styled.div`
   padding: 5px 10px;
   align-items: center;
   font-weight: bold;
+  cursor: pointer;
+  border: solid 0.2px #f3f3f3;
   span {
     margin-right: 10px;
   }
@@ -161,4 +167,5 @@ export const EditBtn = styled.button`
   border: none;
   border-radius: 8px;
   min-width: 50px;
+  cursor: pointer;
 `;

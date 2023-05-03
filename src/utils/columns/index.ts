@@ -26,3 +26,6 @@ export { productListColumns } from './product.list';
 
 export type { ProductSettingType } from './product.setting';
 export { productSettingColumns } from './product.setting';
+
+export type { ProductCategoryType } from './product.category';
+export { productCategoryColumns } from './product.category';
