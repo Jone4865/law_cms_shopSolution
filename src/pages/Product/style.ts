@@ -114,7 +114,12 @@ export const CategoryTitle = styled.div`
   justify-content: center;
   border-bottom: solid 2px gray;
   width: 100%;
+  height: 50px;
+  align-items: center;
   font-weight: bold;
+  button {
+    margin-left: 5px;
+  }
 `;
 
 export const CategoryWrap = styled.div`

@@ -2,6 +2,7 @@ import * as S from './style';
 import { Button, Checkbox, Image, Input, Switch } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
+import { findManyProduct } from '../../graphql/generated/findManyProduct';
 
 export type ProductListType = {
   id: number;
@@ -19,13 +20,13 @@ export type ProductListType = {
 
 type Props = {
   checkAllState: boolean;
-  checkedProduct: number[];
+  checkedProduct: string[];
   checkAll: (state: boolean) => void;
-  onCheckRow: (id: number) => void;
-  onToggleClick: (id: number) => void;
-  onEditHandle: (id: number, number: number) => void;
-  onDeleteHandle: (id: number) => void;
-  onChangeNumberHandle: (id: number, number: number) => void;
+  onCheckRow: (id: string) => void;
+  onToggleClick: (id: string) => void;
+  onEditHandle: (id: string, number: number) => void;
+  onDeleteHandle: (id: string) => void;
+  onChangeNumberHandle: (id: string, position: number) => void;
 };
 
 export const productListColumns = ({
@@ -37,7 +38,7 @@ export const productListColumns = ({
   onEditHandle,
   onDeleteHandle,
   onChangeNumberHandle,
-}: Props): ColumnsType<ProductListType> => [
+}: Props): ColumnsType<findManyProduct['findManyProduct']['products'][0]> => [
   {
     title: (
       <Checkbox
@@ -45,8 +46,8 @@ export const productListColumns = ({
         onChange={(e) => checkAll(e.target.checked)}
       />
     ),
-    key: 'id',
-    dataIndex: 'id',
+    key: 'code',
+    dataIndex: 'code',
     align: 'center',
     render(val) {
       return (
@@ -59,8 +60,8 @@ export const productListColumns = ({
   },
   {
     title: 'No',
-    key: 'id',
-    dataIndex: 'id',
+    key: 'code',
+    dataIndex: 'code',
     align: 'center',
     render(val) {
       return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -68,8 +69,8 @@ export const productListColumns = ({
   },
   {
     title: '순위',
-    key: 'number',
-    dataIndex: 'number',
+    key: 'position',
+    dataIndex: 'position',
     align: 'center',
     render(val, record) {
       return (
@@ -122,24 +123,24 @@ export const productListColumns = ({
   },
   {
     title: '판매가/정상가',
-    key: 'price',
-    dataIndex: 'price',
+    key: 'salePrice',
+    dataIndex: 'salePrice',
     align: 'center',
     render(val, record) {
       return (
         val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') +
         '/' +
-        record?.originPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        record?.sellingPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
       );
     },
   },
   {
     title: '재고량',
-    key: 'count',
-    dataIndex: 'count',
+    key: 'productOptions',
+    dataIndex: 'productOptions',
     align: 'center',
     render(val) {
-      return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return val?.stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
   },
   {
