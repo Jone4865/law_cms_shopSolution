@@ -54,7 +54,10 @@ export function ProductCategory() {
     e.stopPropagation();
   };
 
+  console.log(categoryMoreVisible);
   const onClickAddCategory = () => {
+    setCategoryMoreVisible(true);
+    setParentId('');
     setAbleCategoryVariables({
       isVisible: false,
       createdAt: new Date(),
@@ -63,7 +66,6 @@ export function ProductCategory() {
       children: [],
     });
     setIsEdit(false);
-    setCategoryMoreVisible(true);
   };
 
   const changeHandleCategoryVariables = (
@@ -135,7 +137,7 @@ export function ProductCategory() {
               ))}
           </S.CategoryWrap>
         </S.CategoryContainer>
-        <S.CategoryContainer onClick={() => setCategoryMoreVisible(false)}>
+        <S.CategoryContainer>
           <S.CategoryTitle>
             <span>2차 메뉴</span>
             <Button onClick={() => onClickAddCategory()}>추가</Button>
