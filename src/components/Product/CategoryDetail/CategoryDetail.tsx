@@ -154,9 +154,9 @@ export function CategoryDetail({
             <Button onClick={onEditCategory} type="primary">
               {isEdit ? '카테고리 수정' : '카테고리 생성'}
             </Button>
-            <Button onClick={onDeleteCategory}>
-              {isEdit ? '취소' : '카테고리 삭제'}
-            </Button>
+            {isEdit && (
+              <Button onClick={onDeleteCategory}>카테고리 삭제</Button>
+            )}
           </S.BtnWrap>
         </S.Wrap>
         {isEdit && (
