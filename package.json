@@ -36,7 +36,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "schemagenerate": "apollo client:download-schema --endpoint http://10.10.200.140:4321/graphql ./src/graphql/generated/schema.graphqls",
+    "schemagenerate": "apollo client:download-schema --endpoint http://localhost:8001/graphql ./src/graphql/generated/schema.graphqls",
     "codegen": "apollo client:codegen --target typescript --localSchemaFile ./src/graphql/generated/schema.graphqls --outputFlat --includes \"src/graphql/**/*.ts\" --excludes \"src/graphql/generated/**\" --no-addTypename --globalTypesFile \"src/graphql/generated/graphql-global-types.ts\" ./src/graphql/generated",
     "start:prod": "npx serve -s build",
     "start:dev": "react-app-rewired start",

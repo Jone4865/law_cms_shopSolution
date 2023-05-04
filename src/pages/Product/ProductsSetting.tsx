@@ -54,7 +54,7 @@ export function ProductsSetting() {
   const checkAll = (state: boolean) => {
     setCheckAllState(state);
     if (state) {
-      variables.map((data) => setCheckedProduct((prev) => [...prev, data.id]));
+      setCheckedProduct(data.map((v) => v.id));
     } else {
       setCheckedProduct([]);
     }
@@ -96,34 +96,19 @@ export function ProductsSetting() {
   };
 
   useEffect(() => {
+    setCheckAllState(checkedProduct?.length === data?.length ? true : false);
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize);
+    // 카테고리 id로 값을 세팅
 
-    setData([
-      {
-        id: 1,
-        visible: true,
-        name: 'string',
-        imgUrl: 'https://danonline.kr/snoopym/images/redpop.png?crc=92367325',
-        supplyPlice: 1000,
-        originPrice: 1000,
-        price: 1000,
-        count: 1000,
-        accumulationRate: 1000,
-        firstCategory: 'string',
-        secondCategory: 'string',
-        code: 'dadwad-dwadwa-ddad',
-        createdAt: new Date(),
-      },
-    ]);
+    window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [checkedProduct, data]);
 
   return (
     <div>
@@ -169,7 +154,6 @@ export function ProductsSetting() {
         }}
       >
         <S.FilterWrap>
-          <Button onClick={() => checkAll(!checkAllState)}>전체선택</Button>
           <Button onClick={onDeleteHandle}>선택삭제</Button>
         </S.FilterWrap>
         <S.Flex>

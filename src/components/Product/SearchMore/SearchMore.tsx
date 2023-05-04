@@ -10,31 +10,38 @@ type Props = {
 export function SearchMore({ changeHandle }: Props) {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   return (
     <div>
       <>
         <S.SearchTitle>Search</S.SearchTitle>
-        <SearchDetailRow
-          title={'카테고리'}
-          dropdownArrs={[
-            ['1차분류선택', '1', '2', '3'],
-            ['2차분류선택', '5', '6'],
-          ]}
-          saveNames={['d', 'r', 'o', 'p']}
-          changeHandle={changeHandle}
-        />
+        <S.Grid
+          style={{
+            gridTemplateColumns:
+              windowWidth > 600 ? 'repeat(2, 50%)' : 'repeat(1, 100%)',
+          }}
+        >
+          <SearchDetailRow
+            title={'카테고리'}
+            dropdownArrs={[
+              ['1차분류선택', '1', '2', '3'],
+              ['2차분류선택', '5', '6'],
+            ]}
+            saveNames={['d', 'r', 'o', 'p']}
+            changeHandle={changeHandle}
+          />
+          <SearchDetailRow
+            title={'재고검색'}
+            checkBoxArr={[
+              '전체',
+              '품절',
+              '1개~50개',
+              '50개~100개',
+              '100개 초과',
+            ]}
+            changeHandle={changeHandle}
+            saveNames={['d', 'r', 'o', 'p']}
+          />
+        </S.Grid>
         <S.Grid
           style={{
             gridTemplateColumns:
@@ -50,31 +57,6 @@ export function SearchMore({ changeHandle }: Props) {
           <SearchDetailRow
             title={'판매기간'}
             checkBoxArr={['전체', '상시판매', '판매전', '판매중', '판매종료']}
-            changeHandle={changeHandle}
-            saveNames={['d', 'r', 'o', 'p']}
-          />
-        </S.Grid>
-        <S.Grid
-          style={{
-            gridTemplateColumns:
-              windowWidth > 600 ? 'repeat(2, 50%)' : 'repeat(1, 100%)',
-          }}
-        >
-          <SearchDetailRow
-            title={'재고검색'}
-            checkBoxArr={[
-              '전체',
-              '품절',
-              '1개~50개',
-              '50개~100개',
-              '100개 초과',
-            ]}
-            changeHandle={changeHandle}
-            saveNames={['d', 'r', 'o', 'p']}
-          />
-          <SearchDetailRow
-            title={'과세여부'}
-            checkBoxArr={['전체', '과세', '면세']}
             changeHandle={changeHandle}
             saveNames={['d', 'r', 'o', 'p']}
           />

@@ -8,12 +8,21 @@
 //==============================================================
 
 /**
+
  * 회원상태
  */
 export enum UserStatus {
-  BLACKLIST = "BLACKLIST",
-  REST = "REST",
-  WITHDRAWAL = "WITHDRAWAL",
+  BLACKLIST = 'BLACKLIST',
+  REST = 'REST',
+  WITHDRAWAL = 'WITHDRAWAL',
+}
+
+/**
+
+ * 상품 파일
+ */
+export enum FileKind {
+  IMAGE = 'IMAGE',
 }
 
 //==============================================================

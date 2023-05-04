@@ -1,43 +1,101 @@
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import * as S from './style';
 import { useEffect, useState } from 'react';
 import { CategoryDetail } from '../../components/Product';
+import { FIND_MANY_PRODUCT_CATEGORY } from '../../graphql/query/findManyProductCategory';
+import { useLazyQuery } from '@apollo/client';
+import {
+  findManyProductCategory,
+  findManyProductCategoryVariables,
+} from '../../graphql/generated/findManyProductCategory';
 
 export function ProductCategory() {
+  const [isEdit, setIsEdit] = useState(false);
+  const [parentId, setParentId] = useState('');
+  const [categoryMoreVisible, setCategoryMoreVisible] = useState(false);
+  const [ableCategoryVariables, setAbleCategoryVariables] = useState<
+    findManyProductCategory['findManyProductCategory']['productCategories'][0]
+  >({
+    isVisible: false,
+    createdAt: new Date(),
+    id: '',
+    name: '',
+    children: [],
+  });
   const [firstCategoryArr, setFirstCategoryArr] = useState<
-    { id: number; name: string; visible: boolean }[]
+    findManyProductCategory['findManyProductCategory']['productCategories']
   >([]);
   const [secondCategoryArr, setSecondCategoryArr] = useState<
-    { id: number; name: string; visible: boolean }[]
+    findManyProductCategory['findManyProductCategory']['productCategories']
   >([]);
-  const [visible, setVisible] = useState(false);
-  const [variables, setVariables] = useState([]);
-  const [id, setId] = useState<number>(0);
 
-  const onClickRow = (id: number) => {
-    //TODO: 1차 카테고리 클릭시 해당 아이디로 2차 카테고리 받아서 세팅 해주기
-    setId(id);
+  const onClickRow = (id: string) => {
+    setCategoryMoreVisible(false);
+    setParentId(id);
+    findManyProductCategory({
+      variables: {
+        take: 10,
+        parentId: id,
+      },
+      onCompleted(data) {
+        setSecondCategoryArr(data.findManyProductCategory.productCategories);
+      },
+    });
   };
 
-  const onClickEdit = (id: number) => {
+  const onClickRowEdit = (
+    arr: findManyProductCategory['findManyProductCategory']['productCategories'][0],
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     //TODO: 로우 수정 버튼 클릭시 해당 아이디로 수정 할 상품 아이디 세팅하기
-    // 수정 페이지로 이동
-    setVisible(true);
+    setAbleCategoryVariables(arr);
+    setCategoryMoreVisible(true);
+    setIsEdit(true);
+    e.stopPropagation();
   };
+
+  console.log(categoryMoreVisible);
+  const onClickAddCategory = () => {
+    setCategoryMoreVisible(true);
+    setParentId('');
+    setAbleCategoryVariables({
+      isVisible: false,
+      createdAt: new Date(),
+      id: '',
+      name: '',
+      children: [],
+    });
+    setIsEdit(false);
+  };
+
+  const changeHandleCategoryVariables = (
+    key: string,
+    value: string | boolean,
+  ) => {
+    setAbleCategoryVariables((prev: any) => {
+      let newVariables = { ...prev };
+      newVariables[key] = value;
+      return newVariables;
+    });
+  };
+
+  const [findManyProductCategory] = useLazyQuery<
+    findManyProductCategory,
+    findManyProductCategoryVariables
+  >(FIND_MANY_PRODUCT_CATEGORY, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+  });
 
   useEffect(() => {
-    //TODO: 1차 카테고리 받아서 세팅해주기
-    setFirstCategoryArr([
-      { id: 1, name: 'dadwa', visible: true },
-      { id: 2, name: 'dadwa', visible: true },
-      { id: 3, name: 'dadwa', visible: true },
-      { id: 4, name: 'dadwa', visible: false },
-      { id: 5, name: 'dadwa', visible: true },
-      { id: 6, name: 'dadwa', visible: true },
-      { id: 7, name: 'dadwa', visible: true },
-      { id: 8, name: 'dadwa', visible: true },
-    ]);
-  }, [secondCategoryArr]);
+    findManyProductCategory({
+      variables: {
+        take: 10,
+      },
+      onCompleted(data) {
+        setFirstCategoryArr(data.findManyProductCategory.productCategories);
+      },
+    });
+  }, [isEdit]);
 
   return (
     <>
@@ -45,23 +103,34 @@ export function ProductCategory() {
       <S.Line />
       <S.Flex>
         <S.CategoryContainer>
-          <S.CategoryTitle>1차 메뉴</S.CategoryTitle>
+          <S.CategoryTitle>
+            <span>1차 메뉴</span>
+            <Button onClick={() => onClickAddCategory()}>추가</Button>
+          </S.CategoryTitle>
           <S.CategoryWrap>
             {firstCategoryArr &&
               firstCategoryArr.map((arr) => (
                 <S.CategoryArrContainer
                   key={arr.id}
                   onClick={() => onClickRow(arr.id)}
+                  style={{
+                    backgroundColor: parentId === arr.id ? '#53dad129' : '',
+                  }}
                 >
                   <S.Flex>
-                    {arr.visible ? (
+                    {arr.isVisible ? (
                       <S.VisibleDiv>노출</S.VisibleDiv>
                     ) : (
                       <S.EnVisibleDiv>비노출</S.EnVisibleDiv>
                     )}
                     <span>{arr.name}</span>
                   </S.Flex>
-                  <S.EditBtn onClick={() => onClickEdit(arr.id)}>
+                  <S.EditBtn
+                    onClick={(e) => {
+                      onClickRowEdit(arr, e);
+                      setParentId(arr.id);
+                    }}
+                  >
                     수정
                   </S.EditBtn>
                 </S.CategoryArrContainer>
@@ -69,20 +138,34 @@ export function ProductCategory() {
           </S.CategoryWrap>
         </S.CategoryContainer>
         <S.CategoryContainer>
-          <S.CategoryTitle>2차 메뉴</S.CategoryTitle>
+          <S.CategoryTitle>
+            <span>2차 메뉴</span>
+            <Button onClick={() => onClickAddCategory()}>추가</Button>
+          </S.CategoryTitle>
           <S.CategoryWrap>
             {secondCategoryArr &&
               secondCategoryArr.map((arr) => (
-                <S.CategoryArrContainer key={arr.id}>
+                <S.CategoryArrContainer
+                  style={{
+                    backgroundColor:
+                      ableCategoryVariables.id === arr.id ? '#53dad129' : '',
+                  }}
+                  onClick={() => setAbleCategoryVariables(arr)}
+                  key={arr.id}
+                >
                   <S.Flex>
-                    {arr.visible ? (
+                    {arr.isVisible ? (
                       <S.VisibleDiv>노출</S.VisibleDiv>
                     ) : (
                       <S.EnVisibleDiv>비노출</S.EnVisibleDiv>
                     )}
                     <span>{arr.name}</span>
                   </S.Flex>
-                  <S.EditBtn onClick={() => onClickEdit(arr.id)}>
+                  <S.EditBtn
+                    onClick={(e) => {
+                      onClickRowEdit(arr, e);
+                    }}
+                  >
                     수정
                   </S.EditBtn>
                 </S.CategoryArrContainer>
@@ -90,7 +173,15 @@ export function ProductCategory() {
           </S.CategoryWrap>
         </S.CategoryContainer>
       </S.Flex>
-      {visible && <CategoryDetail id={id !== 0 ? id : undefined} />}
+      {categoryMoreVisible && (
+        <CategoryDetail
+          id={parentId !== '' ? +parentId : undefined}
+          isEdit={isEdit}
+          onChangeHandleCategoryVariables={changeHandleCategoryVariables}
+          name={ableCategoryVariables?.name}
+          visible={ableCategoryVariables?.isVisible}
+        />
+      )}
     </>
   );
 }
