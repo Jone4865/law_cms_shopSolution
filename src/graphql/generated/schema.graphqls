@@ -205,6 +205,10 @@ type OrderModel {
   orderStatus: OrderStatus!
 }
 
+"""관리자"""
+type AdminModel {
+  """이메일"""
+  email: String
 """주문 종류"""
 enum OrderKind {
   """주문"""
@@ -310,6 +314,26 @@ enum RefundReason {
   ETC
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""택배사"""
+type DeliveryCompanyModel {
+  """ID"""
+  id: String!
+
+  """코드"""
+  code: String!
+
+  """택배사명"""
+  name: String!
+
+  """국제택배 여부"""
+  isInternational: Boolean!
+}
+
 """교환"""
 type ExchangeModel {
   """생성일"""
@@ -387,6 +411,8 @@ type ProductCategoryModel {
   """ID"""
   id: ID!
 
+  """상품 카테고리 목록"""
+  productCategories: [ProductInFindManyProductCategoryOutput!]!
   """카테고리명"""
   name: String!
 
@@ -524,6 +550,40 @@ type FindManyProductOutput {
   products: [ProductsByFindManyProductOutput!]!
 }
 
+"""회원 목록 조회 output"""
+type FindManyUserOutput {
+  """총 개수"""
+  totalCount: Int!
+
+  """회원 목록"""
+  users: [UserModel!]!
+}
+
+"""송장"""
+type InvoiceModel {
+  """상태"""
+  kind: String!
+
+  """위치"""
+  where: String!
+
+  """시간"""
+  time: String!
+
+  """생성일"""
+  timeString: DateTime!
+}
+
+"""로그인 종류"""
+enum LoginKind {
+  """이메일"""
+  EMAIL
+
+  """카카오"""
+  KAKAO
+
+  """네이버"""
+  NAVER
 type ProductOptionsByFindManyProductOptionOutput {
   """ID"""
   id: ID!
@@ -1185,6 +1245,206 @@ input OptionsByCreateProductArgs {
   children: [ProductOptionByCreateProductArgs!] = []
 }
 
+"""주문 종류"""
+enum OrderKind {
+  """주문"""
+  ORDER
+
+  """교환"""
+  EXCHANGE
+}
+
+"""주문"""
+type OrderModel {
+  """ID"""
+  id: ID!
+
+  """주문번호"""
+  orderNumber: String!
+
+  """주문자명"""
+  name: String!
+
+  """우편번호"""
+  zip: String!
+
+  """주소"""
+  address: String!
+
+  """상세주소"""
+  addressDetail: String!
+
+  """휴대폰"""
+  phone: String!
+
+  """이메일"""
+  email: String!
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """주문 종류"""
+  orderKind: OrderKind!
+
+  """주문 상태"""
+  orderStatus: OrderStatus!
+}
+
+"""주문 상태"""
+enum OrderStatus {
+  """기본값"""
+  NONE
+
+  """입금대기"""
+  WAIT
+
+  """입금전취소"""
+  CANCEL
+
+  """입금확인"""
+  CONFIRM
+}
+
+"""상품 카테고리"""
+type ProductCategoryModel {
+  """ID"""
+  id: ID!
+
+  """카테고리명"""
+  name: String!
+
+  """노출 여부"""
+  isVisible: Boolean!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+"""상품 파일"""
+type ProductFileModel {
+  """ID"""
+  id: ID!
+
+  """파일 종류"""
+  kind: FileKind!
+
+  """파일명"""
+  name: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+type ProductFilesByFindManyProductOutput {
+  """ID"""
+  id: ID!
+
+  """파일 종류"""
+  kind: FileKind!
+
+  """파일명"""
+  name: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+"""상품 카테고리 목록 조회 output - 상품"""
+type ProductInFindManyProductCategoryOutput {
+  """ID"""
+  id: ID!
+
+  """카테고리명"""
+  name: String!
+
+  """노출 여부"""
+  isVisible: Boolean!
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """상품 카테고리 목록"""
+  children: [ProductCategoryModel!]!
+}
+
+"""상품문의 목록 조회 output - 상품문의"""
+type ProductInquiriesByFindManyProductInquiryOutput {
+  """ID"""
+  id: ID!
+
+  """제목"""
+  title: String!
+
+  """내용"""
+  content: String!
+
+  """답변"""
+  reply: String
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """비밀글 여부"""
+  isSecret: Boolean!
+
+  """작성자"""
+  userName: String!
+}
+
+"""상품문의"""
+type ProductInquiryModel {
+  """ID"""
+  id: ID!
+
+  """제목"""
+  title: String!
+
+  """내용"""
+  content: String!
+
+  """답변"""
+  reply: String
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """비밀글 여부"""
+  isSecret: Boolean!
+}
+
+"""상품"""
+type ProductModel {
+  """ID"""
+  id: ID!
+
+  """상품 코드"""
+  code: Int!
+
+  """노출 순위"""
+  position: Int!
+
+  """노출 여부"""
+  isVisible: Boolean!
+
+  """상품명"""
+  name: String!
+
+  """재고량"""
+  stock: Int
+
+  """적립률"""
+  pointRate: Float!
+
+  """판매가"""
+  sellingPrice: Int!
+
+  """할인가"""
+  salePrice: Int!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
 """[상품 생성] 상품 옵션 input"""
 input ProductOptionByCreateProductArgs {
   """옵션명"""
@@ -1197,6 +1457,296 @@ input ProductOptionByCreateProductArgs {
   children: [ProductOptionByCreateProductArgs!] = []
 }
 
+type ProductOptionsByFindManyProductOptionOutput {
+  """ID"""
+  id: ID!
+
+  """상품명"""
+  name: String!
+
+  """재고량"""
+  stock: Int
+
+  """적립률"""
+  pointRate: Float!
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """하위 상품 옵션"""
+  children: [ProductOptionsByFindManyProductOptionOutput!]
+}
+
+type ProductOptionsByFindManyProductOutput {
+  """ID"""
+  id: ID!
+
+  """상품명"""
+  name: String!
+
+  """재고량"""
+  stock: Int
+
+  """적립률"""
+  pointRate: Float!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+"""상품 목록"""
+type ProductsByFindManyProductOutput {
+  """ID"""
+  id: ID!
+
+  """상품 코드"""
+  code: Int!
+
+  """노출 순위"""
+  position: Int!
+
+  """노출 여부"""
+  isVisible: Boolean!
+
+  """상품명"""
+  name: String!
+
+  """재고량"""
+  stock: Int
+
+  """적립률"""
+  pointRate: Float!
+
+  """판매가"""
+  sellingPrice: Int!
+
+  """할인가"""
+  salePrice: Int!
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """상품 옵션"""
+  productOptions: [ProductOptionsByFindManyProductOutput!]!
+
+  """상품 파일"""
+  productFiles: [ProductFilesByFindManyProductOutput!]!
+}
+
+type Query {
+  """내정보 조회 (회원)"""
+  findMyInfoByUser: UserModel!
+
+  """회원 목록 조회 (관리자)"""
+  findManyUser(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+
+    """회원상태"""
+    userStatus: UserStatus = null
+  ): FindManyUserOutput!
+
+  """휴대폰 인증번호 발송 (180초)"""
+  sendPhoneAuthNumber(
+    """휴대전화"""
+    phone: String!
+  ): Boolean!
+
+  """휴대폰 인증번호 잔여시간 확인"""
+  checkRemainTimePhoneAuthNumber(
+    """휴대전화"""
+    phone: String!
+  ): Int!
+
+  """휴대폰 인증번호 확인"""
+  confirmPhoneAuthNumber(
+    """휴대전화"""
+    phone: String!
+
+    """인증번호"""
+    authNumber: String!
+  ): String!
+
+  """로그인 (회원)"""
+  signInByUser(
+    """이메일"""
+    email: String!
+
+    """비밀번호"""
+    password: String!
+  ): TokenOutput!
+
+  """로그인 (관리자)"""
+  signInByAdmin(
+    """이메일"""
+    email: String!
+
+    """비밀번호"""
+    password: String!
+
+    """OTP 인증번호"""
+    code: String!
+  ): TokenOutput!
+
+  """로그인 (비회원)"""
+  signInByNonUser(
+    """주문자명"""
+    name: String!
+
+    """주문번호"""
+    orderNumber: String!
+  ): TokenOutput!
+
+  """주문 조회 (비회원)"""
+  findMyOrderByNonUser: OrderModel!
+
+  """내정보 조회 (관리자)"""
+  findMyInfoByAdmin: AdminModel!
+
+  """상품 목록 조회"""
+  findManyProduct(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+  ): FindManyProductOutput!
+
+  """장바구니 목록 조회 (회원)"""
+  findOneCartByUser: CartModel!
+
+  """환불 조회 (회원)"""
+  findOneRefundByUser(
+    """환불 ID"""
+    id: String!
+  ): RefundModel!
+
+  """교환 조회 (회원)"""
+  findOnExchangeByUser(
+    """교환 ID"""
+    id: String!
+  ): ExchangeModel!
+
+  """배송지 목록 조회 (회원)"""
+  findManyAddressByUser(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+  ): FindManyAddressOutput!
+
+  """상품 항목 목록 조회"""
+  findManyProductOption(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+
+    """상품 ID"""
+    productId: String!
+  ): FindManyProductOptionOutput!
+
+  """환불계좌 조회 (회원)"""
+  findOneRefundAccountByUser: RefundAccountModel!
+
+  """상품 카테고리 목록 조회"""
+  findManyProductCategory(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+
+    """상위 카테고리 ID"""
+    parentId: String
+  ): FindManyProductCategoryOutput!
+
+  """상품문의 목록 조회"""
+  findManyProductInquiry(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+
+    """상품 ID"""
+    productId: ID!
+  ): FindManyProductInquiryOutput!
+
+  """송장번호 조회 (회원)"""
+  findDeliveryInfo(
+    """택배사 코드"""
+    deliveryCompanyCode: String!
+
+    """송장번호"""
+    trackingNumber: String!
+  ): [InvoiceModel!]!
+
+  """택배사 목록 조회"""
+  findManyDeliveryCompany: [DeliveryCompanyModel!]!
+}
+
+"""환불계좌"""
+type RefundAccountModel {
+  """ID"""
+  id: String!
+
+  """예금주"""
+  accountHolder: String!
+
+  """계좌번호"""
+  accountNumber: String!
+
+  """은행명"""
+  bankName: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+"""환불"""
+type RefundModel {
+  """생성일"""
+  createdAt: DateTime!
+
+  """상세사유"""
+  content: String!
+
+  """환불사유"""
+  refundReason: RefundReason!
+}
+
+"""환불사유"""
+enum RefundReason {
+  """고객변심"""
+  CUSTOMER_CHANGE
+
+  """서비스 불만족"""
+  SERVICE_DISSATISFACTION
+
+  """배송지연"""
+  DELIVERY_DELAY
+
+  """기타"""
+  ETC
+}
+
+"""권한명"""
+enum Role {
+  """비회원"""
+  NON_USER
+
+  """회원"""
+  USER
+
+  """관리자"""
+  ADMIN
+}
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
 
@@ -1212,4 +1762,73 @@ type Subscription {
 
   """상품문의 개수 구독 (관리자)"""
   subscribeCountOfProductInquiry: Int!
+}
+
+"""인증 토큰 output"""
+type TokenOutput {
+  """Access Token"""
+  accessToken: String!
+
+  """Refresh Token"""
+  refreshToken: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+"""1:1문의"""
+type UserInquiryModel {
+  """ID"""
+  id: ID!
+
+  """제목"""
+  title: String!
+
+  """내용"""
+  content: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+"""회원"""
+type UserModel {
+  """ID"""
+  id: ID!
+
+  """회원상태"""
+  userStatus: [UserStatus!]!
+
+  """로그인 종류"""
+  loginKind: LoginKind!
+
+  """이름"""
+  name: String!
+
+  """이메일"""
+  email: String
+
+  """휴대전화"""
+  phone: String
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """권한명"""
+  role: Role!
+
+  """접속일"""
+  connectionDate: DateTime
+}
+
+"""회원상태"""
+enum UserStatus {
+  """휴면"""
+  REST
+
+  """탈퇴"""
+  WITHDRAWAL
+
+  """블랙리스트"""
+  BLACKLIST
 }

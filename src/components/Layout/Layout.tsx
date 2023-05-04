@@ -7,6 +7,11 @@ import { Badge, Button } from 'antd';
 import TransformBox from '../TransformBox';
 import useResponsive from '../../hooks/useResponsive';
 import { useNavigate } from 'react-router-dom';
+import { useSubscription } from '@apollo/client';
+import { SUBSCRIPTION_COUNT_OF_PRODUCT_INQUIRY } from '../../graphql/subscription/subscribeCountOfProductInquiry';
+import { subscribeCountOfProductInquiry } from '../../graphql/generated/subscribeCountOfProductInquiry';
+import { subscribeCountOfUserInquiry } from '../../graphql/generated/subscribeCountOfUserInquiry';
+import { SUBSCRIBE_COUNT_OF_USER_INQUIRY } from '../../graphql/subscription/subscribeCountOfUserInquiry';
 
 export type BadgeType = {
   [index: string]: number;
@@ -55,6 +60,34 @@ function Layout() {
   const navigator = useNavigate();
 
   const handleClick = (path: string) => () => navigator(path);
+
+  useSubscription<subscribeCountOfProductInquiry>(
+    SUBSCRIPTION_COUNT_OF_PRODUCT_INQUIRY,
+    {
+      onData: (data) => {
+        if (data.data.data?.subscribeCountOfProductInquiry) {
+          setBadgeData({
+            ...badgeData,
+            productInquiryCount: data.data.data.subscribeCountOfProductInquiry,
+          });
+        }
+      },
+    },
+  );
+
+  useSubscription<subscribeCountOfUserInquiry>(
+    SUBSCRIBE_COUNT_OF_USER_INQUIRY,
+    {
+      onData: (data) => {
+        if (data.data.data?.subscribeCountOfUserInquiry) {
+          setBadgeData({
+            ...badgeData,
+            inquiryCount: data.data.data.subscribeCountOfUserInquiry,
+          });
+        }
+      },
+    },
+  );
 
   return (
     <S.Layout>

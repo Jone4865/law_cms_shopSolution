@@ -6,6 +6,8 @@ import * as S from './style';
 import { menuItems } from '../../utils/menuItems';
 import { logoB, logoW } from '../../assets/images';
 import useResponsive from '../../hooks/useResponsive';
+import { useRecoilState } from 'recoil';
+import { userTokenState } from '../../recoil/atoms/userToken';
 
 type MenuInfo = {
   key: string;
@@ -27,10 +29,12 @@ export function AsideMenu() {
   const navigator = useNavigate();
   const { pathname } = useLocation();
   const { isLessThanEitherMobile } = useResponsive();
+  const [, setTokenInfo] = useRecoilState(userTokenState);
 
   const handleLogout = () => {
-    localStorage.setItem('accessToken', '');
-    window.location.reload();
+    setTokenInfo({
+      hasToken: false,
+    });
   };
 
   const handleMoveHome = () => {
@@ -115,7 +119,6 @@ export function AsideMenu() {
           </S.ImageWrap>
 
           <Menu
-            // theme={isLessThanEitherMobile ? 'dark' : 'dark'}
             theme={isLessThanEitherMobile ? 'light' : 'dark'}
             mode="inline"
             onClick={handleClickMenu}
