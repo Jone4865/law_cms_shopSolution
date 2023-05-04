@@ -140,7 +140,11 @@ export const productListColumns = ({
     dataIndex: 'productOptions',
     align: 'center',
     render(val) {
-      return val?.stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return val?.map((option: any, idx: number) => (
+        <div key={idx} style={{ display: 'flex' }}>
+          <div>{option.name} </div>-<div> {option.stock}개</div>
+        </div>
+      ));
     },
   },
   {
