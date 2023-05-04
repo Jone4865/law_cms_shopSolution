@@ -1,6 +1,7 @@
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import { phoneFormat } from '../phoneFormat';
+import { findManyUser_findManyUser_users } from '../../graphql/generated/findManyUser';
 
 export type UserType = {
   nickname: string;
@@ -16,7 +17,7 @@ export type UserType = {
   }[];
 };
 
-export const userListColumns: ColumnsType<UserType> = [
+export const userListColumns: ColumnsType<findManyUser_findManyUser_users> = [
   {
     title: '이메일',
     key: 'email',
@@ -35,15 +36,15 @@ export const userListColumns: ColumnsType<UserType> = [
     key: 'phone',
     dataIndex: 'phone',
     align: 'center',
-    render: (val) => phoneFormat(val),
+    render: (val) => (val ? phoneFormat(val) : '-'),
   },
   {
     title: '최근 접속일',
-    key: 'latestLoginedAt',
-    dataIndex: 'latestLoginedAt',
+    key: 'connectionDate',
+    dataIndex: 'connectionDate',
     align: 'center',
     render: (val: string) => {
-      return moment(val).format('YYYY-MM-DD HH:mm:ss');
+      return val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '-';
     },
   },
   {

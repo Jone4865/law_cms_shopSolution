@@ -1,21 +1,20 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  HttpLink,
-  InMemoryCache,
-  split,
-} from '@apollo/client';
+import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { message } from 'antd';
 import { createUploadLink } from 'apollo-upload-client';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
+import { userTokenTypes } from '../recoil/atoms/userToken';
+import { SetterOrUpdater } from 'recoil';
 
 export const SERVER = process.env.REACT_APP_BASE_URL!;
 export const SOCKET = process.env.REACT_APP_SOCKET_URL!;
 
-function apolloClient() {
+function apolloClient(
+  state: userTokenTypes,
+  setState: SetterOrUpdater<userTokenTypes>,
+) {
   const enhancedFetch = async (url: RequestInfo, init: RequestInit) => {
     return await fetch(url, {
       ...init,
@@ -35,7 +34,6 @@ function apolloClient() {
   const wsLink = new GraphQLWsLink(
     createClient({
       url: SOCKET,
-
       connectionParams: {
         credential: 'include',
       },
@@ -72,6 +70,9 @@ function apolloClient() {
 
       if (unauthorizedError) {
         message.error('장기간 사용하지 않아 자동 로그아웃되었습니다.');
+        setState({
+          hasToken: false,
+        });
       }
 
       if (networkError) {
@@ -85,11 +86,6 @@ function apolloClient() {
     cache: new InMemoryCache({
       addTypename: false,
     }),
-    headers: {
-      //   'keep-alive': 'true',
-      //   'Access-Control-Allow-Origin': '*',
-      //   'Access-Control-Allow-Headers': '*',
-    },
     credentials: 'include',
   });
 

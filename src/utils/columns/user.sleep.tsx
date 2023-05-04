@@ -21,24 +21,24 @@ export const userSleepColumns: ColumnsType<any> = [
     key: 'phone',
     dataIndex: 'phone',
     align: 'center',
-    render: (val) => phoneFormat(val),
+    render: (val) => (val ? phoneFormat(val) : '-'),
   },
-  {
-    title: '휴면 전환일',
-    key: 'sleepedAt',
-    dataIndex: 'sleepedAt',
-    align: 'center',
-    render: (val: string) => {
-      return moment(val).format('YYYY-MM-DD');
-    },
-  },
+  // {
+  //   title: '휴면 전환일',
+  //   key: 'sleepedAt',
+  //   dataIndex: 'sleepedAt',
+  //   align: 'center',
+  //   render: (val: string) => {
+  //     return moment(val).format('YYYY-MM-DD');
+  //   },
+  // },
   {
     title: '최근 접속일',
-    key: 'latestLoginedAt',
-    dataIndex: 'latestLoginedAt',
+    key: 'connectionDate',
+    dataIndex: 'connectionDate',
     align: 'center',
     render: (val: string) => {
-      return moment(val).format('YYYY-MM-DD HH:mm:ss');
+      return val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '-';
     },
   },
   {

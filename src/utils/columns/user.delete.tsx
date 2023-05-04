@@ -21,23 +21,23 @@ export const userDeleteColumns: ColumnsType<any> = [
     key: 'phone',
     dataIndex: 'phone',
     align: 'center',
-    render: (val) => phoneFormat(val),
+    render: (val) => (val ? phoneFormat(val) : '-'),
   },
-  {
-    title: '탈퇴일',
-    key: 'sleepedAt',
-    dataIndex: 'sleepedAt',
-    align: 'center',
-    render: (val: string) => {
-      return moment(val).format('YYYY-MM-DD');
-    },
-  },
-  {
-    title: '탈퇴 사유',
-    key: 'kind',
-    dataIndex: 'kind',
-    align: 'center',
-  },
+  // {
+  //   title: '탈퇴일',
+  //   key: 'sleepedAt',
+  //   dataIndex: 'sleepedAt',
+  //   align: 'center',
+  //   render: (val: string) => {
+  //     return moment(val).format('YYYY-MM-DD');
+  //   },
+  // },
+  // {
+  //   title: '탈퇴 사유',
+  //   key: 'kind',
+  //   dataIndex: 'kind',
+  //   align: 'center',
+  // },
   {
     title: '생성일',
     key: 'createdAt',
