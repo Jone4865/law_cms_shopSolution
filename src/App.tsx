@@ -1,5 +1,4 @@
 import { ThemeProvider } from 'styled-components';
-import { CookiesProvider } from 'react-cookie';
 
 import Root from './router';
 import theme from './styles/theme';
@@ -11,9 +10,7 @@ function App() {
   return (
     <ApolloProvider client={apolloClient()}>
       <ThemeProvider theme={theme}>
-        <CookiesProvider>
-          <Root />
-        </CookiesProvider>
+        <Root />
       </ThemeProvider>
     </ApolloProvider>
   );

@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Table } from 'antd';
+import { Button, Form, Input, Table, message } from 'antd';
 import * as S from './style';
 import { DropdownComponent } from '../../components/Dropdown';
-import { SearchDetailRow } from '../../components/Product';
 import { ProductListType, productListColumns } from '../../utils/columns';
 import { SearchMore } from '../../components/Product/SearchMore/SearchMore';
+import { useLazyQuery } from '@apollo/client';
+import { FIND_MANY_PRODUCT } from '../../graphql/query/findManyProduct';
+import {
+  findManyProduct,
+  findManyProductVariables,
+} from '../../graphql/generated/findManyProduct';
+import { table } from 'console';
 
 export function ProductList() {
   const [take, setTake] = useState(10);
@@ -15,11 +21,13 @@ export function ProductList() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [moreVisible, setMoreVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [checkedProduct, setCheckedProduct] = useState<number[]>([]);
+  const [checkedProduct, setCheckedProduct] = useState<string[]>([]);
   const [checkAllState, setCheckAllState] = useState(false);
 
   const [variables, setVariables] = useState<ProductListType[]>([]);
-  const [tableData, setTableData] = useState<ProductListType[]>([]);
+  const [tableData, setTableData] = useState<
+    findManyProduct['findManyProduct']['products']
+  >([]);
 
   const dropdownArrs = [
     ['1차분류선택', '1', '2', '3'],
@@ -42,7 +50,7 @@ export function ProductList() {
     setSkip((e - 1) * take);
   };
 
-  const onCheckRow = (id: number) => {
+  const onCheckRow = (id: string) => {
     if (checkedProduct.includes(id)) {
       setCheckedProduct((prev) => prev.filter((v) => v !== id));
     } else {
@@ -54,7 +62,7 @@ export function ProductList() {
   const checkAll = (state: boolean) => {
     setCheckAllState(state);
     if (state) {
-      variables.map((data) => setCheckedProduct((prev) => [...prev, data.id]));
+      setCheckedProduct(tableData.map((v) => v.id));
     } else {
       setCheckedProduct([]);
     }
@@ -67,7 +75,7 @@ export function ProductList() {
     setSearchText('');
   };
 
-  const onDeleteHandle = (id: number | undefined) => {
+  const onDeleteHandle = (id: string | undefined) => {
     if (id === undefined) {
       //TODO: 선택 삭제요청 연결 id는 chececkedProduct에 있음 map으로 요청
     } else {
@@ -77,18 +85,18 @@ export function ProductList() {
     setCheckAllState(false);
   };
 
-  const onEditHandle = (id: number, number: number) => {
+  const onEditHandle = (id: string, number: number) => {
     //TODO: 수정요청 연결
     console.log(id, number);
     setCheckedProduct([]);
     setCheckAllState(false);
   };
 
-  const onToggleClick = (id: number) => {
+  const onToggleClick = (id: string) => {
     console.log(id);
   };
 
-  const onChangeNumberHandle = (id: number, number: number) => {
+  const onChangeNumberHandle = (id: string, position: number) => {
     const updatedTableData = [...tableData];
     const targetIndex = updatedTableData.findIndex(
       (product) => product.id === id,
@@ -96,39 +104,44 @@ export function ProductList() {
     if (targetIndex !== -1) {
       updatedTableData[targetIndex] = {
         ...updatedTableData[targetIndex],
-        number: number,
+        position: position,
       };
       setTableData(updatedTableData);
     }
   };
 
+  const [findManyProduct] = useLazyQuery<
+    findManyProduct,
+    findManyProductVariables
+  >(FIND_MANY_PRODUCT, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted(data) {
+      console.log(data.findManyProduct.products);
+      setTableData(data.findManyProduct.products);
+      setTotalCount(data.findManyProduct.totalCount);
+    },
+  });
+
   useEffect(() => {
+    findManyProduct({
+      variables: {
+        take: 10,
+      },
+    });
+
+    setCheckAllState(
+      checkedProduct?.length === tableData?.length ? true : false,
+    );
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
     window.addEventListener('resize', handleResize);
 
-    setTableData([
-      {
-        id: 1,
-        count: 1000,
-        createdAt: new Date(),
-        price: 1000,
-        name: '이름',
-        imgUrl: 'https://danonline.kr/snoopym/images/redpop.png?crc=92367325',
-        state: 1,
-        visible: true,
-        originPrice: 1000,
-        code: 'dwadwad-dwadaw-ddds',
-        number: 100,
-      },
-    ]);
-
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [checkedProduct, tableData]);
 
   return (
     <div>
@@ -178,7 +191,6 @@ export function ProductList() {
         }}
       >
         <S.FilterWrap>
-          <Button onClick={() => checkAll(!checkAllState)}>전체선택</Button>
           <Button onClick={() => onDeleteHandle(undefined)}>선택삭제</Button>
         </S.FilterWrap>
         <S.Flex>
