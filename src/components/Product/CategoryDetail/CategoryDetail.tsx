@@ -4,13 +4,31 @@ import * as S from './style';
 import * as A from '../../../pages/Product/style';
 import { Button, Table, message } from 'antd';
 import { productCategoryColumns } from '../../../utils/columns';
-import { useLazyQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+import { CREATE_PRODUCT_CATEGORY } from '../../../graphql/mutation/createProductCategory';
+import {
+  createProductCategory,
+  createProductCategoryVariables,
+} from '../../../graphql/generated/createProductCategory';
+import {
+  updateProductCategory,
+  updateProductCategoryVariables,
+} from '../../../graphql/generated/updateProductCategory';
+import { UPDATE_PRODUCT_CATEGORY } from '../../../graphql/mutation/updateProductCategory';
+import {
+  deleteProductCategory,
+  deleteProductCategoryVariables,
+} from '../../../graphql/generated/deleteProductCategory';
+import { DELETE_PRODUCT_CATEGORY } from '../../../graphql/mutation/deleteProductCategory';
+import { findManyProductCategory_findManyProductCategory_productCategories } from '../../../graphql/generated/findManyProductCategory';
 
 type Props = {
-  id: number | undefined;
+  data: findManyProductCategory_findManyProductCategory_productCategories;
   isEdit: boolean;
   name: string;
   visible: boolean;
+  parentId: string;
+  handleRefetch: () => void;
   onChangeHandleCategoryVariables: (
     key: string,
     value: string | boolean,
@@ -18,10 +36,12 @@ type Props = {
 };
 
 export function CategoryDetail({
-  id,
+  data,
   name,
   visible,
   isEdit,
+  parentId,
+  handleRefetch,
   onChangeHandleCategoryVariables,
 }: Props) {
   const [take, setTake] = useState(10);
@@ -41,21 +61,9 @@ export function CategoryDetail({
       count: 1000,
     },
   ]);
-  const [variables, setVariables] = useState({
-    id: 1,
-    categoryName: 'dwadwa',
-    categoryVisible: true,
-  });
+
   const [checkAllState, setCheckAllState] = useState(false);
   const [checkedProduct, setCheckedProduct] = useState<number[]>([]);
-
-  const onChangeHandle = (key: string, value: string) => {
-    setVariables((prev: any) => {
-      let newVariables = { ...prev };
-      newVariables[key] = value;
-      return newVariables;
-    });
-  };
 
   const handlePagination = () => {};
 
@@ -68,12 +76,10 @@ export function CategoryDetail({
     }
   };
 
-  const onDeleteHandle = (id: number | undefined) => {
-    if (id === undefined) {
-      //TODO: 선택 삭제요청 연결 id는 chececkedProduct에 있음 map으로 요청
-    } else {
-      //한개 삭제요청 연결
-    }
+  const onDeleteHandle = () => {
+    deleteProductCategory({
+      variables: { deleteProductCategoryId: data.id },
+    });
     setCheckedProduct([]);
     setCheckAllState(false);
   };
@@ -106,13 +112,71 @@ export function CategoryDetail({
   };
 
   const onEditHandle = (id: number, number: number) => {
-    //TODO: 수정요청 연결
+    //TODO: 로우 순서 수정요청 연결
     setCheckedProduct([]);
     setCheckAllState(false);
   };
 
-  const onEditCategory = () => {};
-  const onDeleteCategory = () => {};
+  const onClickAddCategory = () => {
+    createProductCategory({
+      variables: {
+        isVisible: data.isVisible,
+        name: data.name,
+        parentId: parentId ? parentId : '',
+      },
+    });
+  };
+
+  const onClickUpdateCategory = () => {
+    updateProductCategory({
+      variables: {
+        isVisible: data.isVisible,
+        name: data.name,
+        updateProductCategoryId: data.id,
+      },
+    });
+  };
+
+  const onEditOrCreateCategory = () => {
+    if (isEdit) {
+      onClickUpdateCategory();
+    } else {
+      onClickAddCategory();
+    }
+  };
+
+  const [createProductCategory] = useMutation<
+    createProductCategory,
+    createProductCategoryVariables
+  >(CREATE_PRODUCT_CATEGORY, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted() {
+      message.success('카테고리를 생성했습니다.');
+      handleRefetch();
+    },
+  });
+
+  const [updateProductCategory] = useMutation<
+    updateProductCategory,
+    updateProductCategoryVariables
+  >(UPDATE_PRODUCT_CATEGORY, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted() {
+      message.success('카테고리를 수정했습니다.');
+      handleRefetch();
+    },
+  });
+
+  const [deleteProductCategory] = useMutation<
+    deleteProductCategory,
+    deleteProductCategoryVariables
+  >(DELETE_PRODUCT_CATEGORY, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted() {
+      message.success('카테고리를 삭제했습니다.');
+      handleRefetch();
+    },
+  });
 
   useEffect(() => {
     setCheckAllState(
@@ -151,12 +215,10 @@ export function CategoryDetail({
             visible={visible}
           />
           <S.BtnWrap>
-            <Button onClick={onEditCategory} type="primary">
+            <Button onClick={onEditOrCreateCategory} type="primary">
               {isEdit ? '카테고리 수정' : '카테고리 생성'}
             </Button>
-            {isEdit && (
-              <Button onClick={onDeleteCategory}>카테고리 삭제</Button>
-            )}
+            {isEdit && <Button onClick={onDeleteHandle}>카테고리 삭제</Button>}
           </S.BtnWrap>
         </S.Wrap>
         {isEdit && (
@@ -167,9 +229,7 @@ export function CategoryDetail({
               }}
             >
               <A.FilterWrap>
-                <Button onClick={() => onDeleteHandle(undefined)}>
-                  선택삭제
-                </Button>
+                <Button onClick={() => ''}>선택삭제</Button>
               </A.FilterWrap>
               <Button type="primary">상품추가</Button>
             </A.FilterContainer>

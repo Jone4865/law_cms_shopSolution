@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Button, Form, Input, Table, message } from 'antd';
 import * as S from './style';
 import { DropdownComponent } from '../../components/Dropdown';
@@ -11,9 +12,9 @@ import {
   findManyProduct,
   findManyProductVariables,
 } from '../../graphql/generated/findManyProduct';
-import { table } from 'console';
 
 export function ProductList() {
+  const navigate = useNavigate();
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
   const [current, setCurrent] = useState(1);
@@ -175,7 +176,7 @@ export function ProductList() {
             <PlusOutlined />
             <p>상세검색</p>
           </S.MoreBtn>
-          <S.AddBtn onClick={() => ''}>
+          <S.AddBtn onClick={() => navigate('/product/add')}>
             <EditOutlined />
             <p>상품등록</p>
           </S.AddBtn>

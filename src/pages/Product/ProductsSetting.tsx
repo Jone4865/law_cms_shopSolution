@@ -3,7 +3,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Table } from 'antd';
 import * as S from './style';
 import { DropdownComponent } from '../../components/Dropdown';
-import { SearchDetailRow } from '../../components/Product';
 import { ProductSettingType, productSettingColumns } from '../../utils/columns';
 import { SearchMore } from '../../components/Product/SearchMore/SearchMore';
 
@@ -19,7 +18,23 @@ export function ProductsSetting() {
   const [checkAllState, setCheckAllState] = useState(false);
 
   const [variables, setVariables] = useState<ProductSettingType[]>([]);
-  const [data, setData] = useState<ProductSettingType[]>([]);
+  const [data, setData] = useState<ProductSettingType[]>([
+    {
+      accumulationRate: 1000,
+      code: 'ㅇㅁㅈㅇㅈㅁ-ㅇㅁㅈㅇㅈㅁ',
+      count: 100,
+      createdAt: new Date(),
+      firstCategory: 'dawdwa',
+      id: 1,
+      imgUrl: 'dawdwa',
+      name: 'dawdaw',
+      originPrice: 1000,
+      price: 1000,
+      secondCategory: 'dwadwa',
+      supplyPlice: 100,
+      visible: true,
+    },
+  ]);
 
   const dropdownArrs = [
     ['1차분류선택', '1', '2', '3'],

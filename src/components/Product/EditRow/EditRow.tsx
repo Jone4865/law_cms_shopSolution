@@ -1,8 +1,6 @@
 import { CheckOutlined } from '@ant-design/icons';
 import * as S from './style';
-import { DropdownComponent } from '../../Dropdown';
-import { Checkbox, Input, Switch } from 'antd';
-import { useEffect, useState } from 'react';
+import { Input, Switch } from 'antd';
 
 type Props = {
   title: string;

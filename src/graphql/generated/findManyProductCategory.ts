@@ -51,10 +51,6 @@ export interface findManyProductCategory_findManyProductCategory_productCategori
 
 export interface findManyProductCategory_findManyProductCategory {
   /**
-   * 총 개수
-   */
-  totalCount: number;
-  /**
    * 상품 카테고리 목록
    */
   productCategories: findManyProductCategory_findManyProductCategory_productCategories[];
@@ -68,7 +64,5 @@ export interface findManyProductCategory {
 }
 
 export interface findManyProductCategoryVariables {
-  take: number;
-  cursorId?: string | null;
   parentId?: string | null;
 }
