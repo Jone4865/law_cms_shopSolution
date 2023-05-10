@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { FileKind } from "./graphql-global-types";
+import { ProductTag, FileKind } from "./graphql-global-types";
 
 // ====================================================
 // GraphQL query operation: findManyProduct
@@ -19,13 +19,17 @@ export interface findManyProduct_findManyProduct_products_productOptions {
    */
   name: string;
   /**
+   * 추가금
+   */
+  extraPrice: number | null;
+  /**
+   * 가격
+   */
+  finalPrice: number | null;
+  /**
    * 재고량
    */
   stock: number | null;
-  /**
-   * 적립률
-   */
-  pointRate: number;
   /**
    * 생성일
    */
@@ -65,6 +69,10 @@ export interface findManyProduct_findManyProduct_products {
    */
   position: number;
   /**
+   * 상품 태그
+   */
+  productTags: ProductTag[];
+  /**
    * 노출 여부
    */
   isVisible: boolean;
@@ -72,10 +80,6 @@ export interface findManyProduct_findManyProduct_products {
    * 상품명
    */
   name: string;
-  /**
-   * 재고량
-   */
-  stock: number | null;
   /**
    * 적립률
    */
@@ -122,5 +126,6 @@ export interface findManyProduct {
 
 export interface findManyProductVariables {
   take: number;
+  productCategoryId?: string | null;
   cursorId?: string | null;
 }

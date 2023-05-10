@@ -1,42 +1,30 @@
 import * as S from './style';
 import { Button, Checkbox, Image, Input } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-
-export type ProductCategoryType = {
-  id: number;
-  number: number;
-  visible: boolean;
-  name: string;
-  code: string;
-  imgUrl: string;
-  price: number;
-  count: number;
-};
+import { findManyProduct } from '../../graphql/generated/findManyProduct';
 
 type Props = {
-  checkAllState: boolean;
-  checkedProduct: number[];
-  checkAll: (state: boolean) => void;
-  onCheckRow: (id: number) => void;
+  checkedProduct: string[];
+  allChecked: boolean;
   changeHandle: (key: string, value: string) => void;
   onChangeNumberHandle: (id: number, number: number) => void;
   onEditHandle: (id: number, number: number) => void;
+  onChecked: (deleteProductId: string, all?: boolean) => void;
 };
 
 export const productCategoryColumns = ({
-  checkAllState,
   checkedProduct,
-  checkAll,
-  onCheckRow,
+  allChecked,
   changeHandle,
   onChangeNumberHandle,
   onEditHandle,
-}: Props): ColumnsType<ProductCategoryType> => [
+  onChecked,
+}: Props): ColumnsType<findManyProduct['findManyProduct']['products'][0]> => [
   {
     title: (
       <Checkbox
-        checked={checkAllState}
-        onChange={(e) => checkAll(e.target.checked)}
+        checked={allChecked}
+        onChange={(e) => onChecked('', e.target.checked)}
       />
     ),
     key: 'id',
@@ -46,7 +34,7 @@ export const productCategoryColumns = ({
       return (
         <Checkbox
           checked={checkedProduct.includes(val) ? true : false}
-          onChange={() => onCheckRow(val)}
+          onChange={() => onChecked(val)}
         />
       );
     },
@@ -56,6 +44,9 @@ export const productCategoryColumns = ({
     key: 'id',
     dataIndex: 'id',
     align: 'center',
+    render(value, record, index) {
+      return index + 1;
+    },
   },
   {
     title: '순서',
@@ -75,12 +66,12 @@ export const productCategoryColumns = ({
             style={{ width: '100px', marginRight: '5px' }}
             onChange={(e) =>
               onChangeNumberHandle(
-                record.id,
+                +record.id,
                 parseInt(e.target?.value?.replace(/,/g, '')),
               )
             }
           />
-          <Button onClick={() => onEditHandle(record.id, val)}>수정</Button>
+          <Button onClick={() => onEditHandle(+record.id, val)}>수정</Button>
         </div>
       );
     },

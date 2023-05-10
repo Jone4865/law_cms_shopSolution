@@ -8,11 +8,25 @@ import {
   findManyProductCategory,
   findManyProductCategoryVariables,
 } from '../../graphql/generated/findManyProductCategory';
+import { CheckOutlined } from '@ant-design/icons';
 
-export function ProductCategory() {
+type Props = {
+  isAdd?: boolean;
+  saveName?: string;
+  essential?: boolean;
+  handleChange?: (key: string, value: string) => void;
+};
+
+export function ProductCategory({
+  isAdd,
+  saveName,
+  essential,
+  handleChange,
+}: Props) {
   const [isEdit, setIsEdit] = useState(false);
   const [parentId, setParentId] = useState('');
   const [categoryMoreVisible, setCategoryMoreVisible] = useState(false);
+  const [ableCategoryId, setAbleCategoryId] = useState<string>();
   const [ableCategoryVariables, setAbleCategoryVariables] = useState<
     findManyProductCategory['findManyProductCategory']['productCategories'][0]
   >({
@@ -29,35 +43,62 @@ export function ProductCategory() {
     findManyProductCategory['findManyProductCategory']['productCategories']
   >([]);
 
-  const onClickRow = (id: string) => {
-    setCategoryMoreVisible(false);
-    setParentId(id);
-    findManyProductCategory({
-      variables: {
-        take: 10,
-        parentId: id,
-      },
-      onCompleted(data) {
-        setSecondCategoryArr(data.findManyProductCategory.productCategories);
-      },
+  const changeHandleCategoryVariables = (
+    key: string,
+    value: string | boolean | number,
+  ) => {
+    setAbleCategoryVariables((prev: any) => {
+      let newVariables = { ...prev };
+      newVariables[key] = value;
+      return newVariables;
     });
   };
 
-  const onClickRowEdit = (
-    arr: findManyProductCategory['findManyProductCategory']['productCategories'][0],
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    //TODO: 로우 수정 버튼 클릭시 해당 아이디로 수정 할 상품 아이디 세팅하기
-    setAbleCategoryVariables(arr);
-    setCategoryMoreVisible(true);
-    setIsEdit(true);
-    e.stopPropagation();
+  const handleRefetch = () => {
+    findManyProductCategory({
+      variables: {},
+      onCompleted(data) {
+        setFirstCategoryArr(data.findManyProductCategory.productCategories);
+      },
+      fetchPolicy: 'no-cache',
+    });
+    setParentId('');
+    setSecondCategoryArr([]);
+    setCategoryMoreVisible(false);
   };
 
-  console.log(categoryMoreVisible);
-  const onClickAddCategory = () => {
-    setCategoryMoreVisible(true);
-    setParentId('');
+  const onClickRow = (
+    id: string,
+    arr: findManyProductCategory['findManyProductCategory']['productCategories'][0],
+    parent?: boolean,
+  ) => {
+    setAbleCategoryId(id);
+    if (handleChange) {
+      handleChange(saveName ? saveName : '', id);
+    }
+    if (!isAdd) {
+      setCategoryMoreVisible(true);
+      setIsEdit(true);
+    } else {
+      setCategoryMoreVisible(false);
+    }
+    if (parent) {
+      setParentId(id);
+      findManyProductCategory({
+        variables: {
+          parentId: id,
+        },
+        onCompleted(data) {
+          setSecondCategoryArr(data.findManyProductCategory.productCategories);
+        },
+        fetchPolicy: 'no-cache',
+      });
+    }
+    setAbleCategoryVariables(arr);
+  };
+
+  const onClickAddBtn = (children?: boolean) => {
+    setCategoryMoreVisible(!categoryMoreVisible);
     setAbleCategoryVariables({
       isVisible: false,
       createdAt: new Date(),
@@ -66,17 +107,10 @@ export function ProductCategory() {
       children: [],
     });
     setIsEdit(false);
-  };
-
-  const changeHandleCategoryVariables = (
-    key: string,
-    value: string | boolean,
-  ) => {
-    setAbleCategoryVariables((prev: any) => {
-      let newVariables = { ...prev };
-      newVariables[key] = value;
-      return newVariables;
-    });
+    if (!children) {
+      setParentId('');
+      setSecondCategoryArr([]);
+    }
   };
 
   const [findManyProductCategory] = useLazyQuery<
@@ -88,31 +122,41 @@ export function ProductCategory() {
 
   useEffect(() => {
     findManyProductCategory({
-      variables: {
-        take: 10,
-      },
+      variables: {},
       onCompleted(data) {
         setFirstCategoryArr(data.findManyProductCategory.productCategories);
       },
+      fetchPolicy: 'no-cache',
     });
-  }, [isEdit]);
+  }, []);
 
   return (
     <>
-      <S.Title>상품 카테고리</S.Title>
-      <S.Line />
+      {!isAdd ? (
+        <>
+          <S.Title>상품 카테고리</S.Title>
+          <S.Line />
+        </>
+      ) : (
+        <S.AddTitleLine>
+          {essential && (
+            <CheckOutlined style={{ color: 'red', marginRight: '5px' }} />
+          )}
+          카테고리 선택
+        </S.AddTitleLine>
+      )}
       <S.Flex>
         <S.CategoryContainer>
           <S.CategoryTitle>
             <span>1차 메뉴</span>
-            <Button onClick={() => onClickAddCategory()}>추가</Button>
+            <Button onClick={() => onClickAddBtn()}>추가</Button>
           </S.CategoryTitle>
           <S.CategoryWrap>
             {firstCategoryArr &&
               firstCategoryArr.map((arr) => (
                 <S.CategoryArrContainer
                   key={arr.id}
-                  onClick={() => onClickRow(arr.id)}
+                  onClick={() => onClickRow(arr.id, arr, true)}
                   style={{
                     backgroundColor: parentId === arr.id ? '#53dad129' : '',
                   }}
@@ -125,14 +169,6 @@ export function ProductCategory() {
                     )}
                     <span>{arr.name}</span>
                   </S.Flex>
-                  <S.EditBtn
-                    onClick={(e) => {
-                      onClickRowEdit(arr, e);
-                      setParentId(arr.id);
-                    }}
-                  >
-                    수정
-                  </S.EditBtn>
                 </S.CategoryArrContainer>
               ))}
           </S.CategoryWrap>
@@ -140,7 +176,15 @@ export function ProductCategory() {
         <S.CategoryContainer>
           <S.CategoryTitle>
             <span>2차 메뉴</span>
-            <Button onClick={() => onClickAddCategory()}>추가</Button>
+            <Button
+              onClick={() =>
+                parentId
+                  ? onClickAddBtn(true)
+                  : message.warn('1차 카테고리를 선택해주세요.')
+              }
+            >
+              추가
+            </Button>
           </S.CategoryTitle>
           <S.CategoryWrap>
             {secondCategoryArr &&
@@ -150,7 +194,7 @@ export function ProductCategory() {
                     backgroundColor:
                       ableCategoryVariables.id === arr.id ? '#53dad129' : '',
                   }}
-                  onClick={() => setAbleCategoryVariables(arr)}
+                  onClick={() => onClickRow(arr.id, arr)}
                   key={arr.id}
                 >
                   <S.Flex>
@@ -161,13 +205,6 @@ export function ProductCategory() {
                     )}
                     <span>{arr.name}</span>
                   </S.Flex>
-                  <S.EditBtn
-                    onClick={(e) => {
-                      onClickRowEdit(arr, e);
-                    }}
-                  >
-                    수정
-                  </S.EditBtn>
                 </S.CategoryArrContainer>
               ))}
           </S.CategoryWrap>
@@ -175,11 +212,15 @@ export function ProductCategory() {
       </S.Flex>
       {categoryMoreVisible && (
         <CategoryDetail
-          id={parentId !== '' ? +parentId : undefined}
+          ableCategoryId={ableCategoryId}
+          isAdd={isAdd ? true : false}
+          data={ableCategoryVariables}
           isEdit={isEdit}
           onChangeHandleCategoryVariables={changeHandleCategoryVariables}
           name={ableCategoryVariables?.name}
           visible={ableCategoryVariables?.isVisible}
+          handleRefetch={handleRefetch}
+          parentId={parentId}
         />
       )}
     </>

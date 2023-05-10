@@ -21,7 +21,9 @@ export function SearchDetailRow({
   checkBoxArr,
   essential,
 }: Props) {
-  const [checkBoxAble, setCheckBoxAble] = useState('');
+  const [checkBoxAble, setCheckBoxAble] = useState(
+    checkBoxArr ? checkBoxArr[0] : '',
+  );
   const onChangeHandle = (checkBoxValue: string, idx: number) => {
     setCheckBoxAble(checkBoxValue);
     changeHandle(saveNames[idx], checkBoxValue);

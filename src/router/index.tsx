@@ -16,6 +16,7 @@ import {
   ProductsSetting,
   ProductCategory,
 } from '../pages/Product';
+import { ProductAdd } from '../pages/Product/ProductAdd';
 
 function Root() {
   const tokenInfo = useRecoilValue(userTokenState);
@@ -31,6 +32,7 @@ function Root() {
               <Route path="list" element={<ProductList />} />
               <Route path="setting" element={<ProductsSetting />} />
               <Route path="category" element={<ProductCategory />} />
+              <Route path="add" element={<ProductAdd />} />
             </Route>
 
             <Route path="/user">
