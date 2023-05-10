@@ -4,7 +4,7 @@ import * as S from './style';
 import * as A from '../../../pages/Product/style';
 import { Button, Table, message } from 'antd';
 import { productCategoryColumns } from '../../../utils/columns';
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { CREATE_PRODUCT_CATEGORY } from '../../../graphql/mutation/createProductCategory';
 import {
   createProductCategory,
@@ -21,6 +21,11 @@ import {
 } from '../../../graphql/generated/deleteProductCategory';
 import { DELETE_PRODUCT_CATEGORY } from '../../../graphql/mutation/deleteProductCategory';
 import { findManyProductCategory_findManyProductCategory_productCategories } from '../../../graphql/generated/findManyProductCategory';
+import {
+  findManyProduct,
+  findManyProductVariables,
+} from '../../../graphql/generated/findManyProduct';
+import { FIND_MANY_PRODUCT } from '../../../graphql/query/findManyProduct';
 
 type Props = {
   data: findManyProductCategory_findManyProductCategory_productCategories;
@@ -28,6 +33,7 @@ type Props = {
   name: string;
   visible: boolean;
   parentId: string;
+  ableCategoryId: string | undefined;
   handleRefetch: () => void;
   onChangeHandleCategoryVariables: (
     key: string,
@@ -42,6 +48,7 @@ export function CategoryDetail({
   visible,
   isEdit,
   parentId,
+  ableCategoryId,
   handleRefetch,
   onChangeHandleCategoryVariables,
   isAdd,
@@ -51,30 +58,26 @@ export function CategoryDetail({
   const [current, setCurrent] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [detailData, setDetailData] = useState([
-    {
-      id: 1,
-      number: 1000,
-      visible: true,
-      name: 'dawda',
-      code: 'dawdaw-dwad-dawd',
-      imgUrl: 'https://danonline.kr/snoopym/images/redpop.png?crc=92367325',
-      price: 1000,
-      count: 1000,
-    },
-  ]);
+  const [detailData, setDetailData] = useState<
+    findManyProduct['findManyProduct']['products']
+  >([]);
 
-  const [checkAllState, setCheckAllState] = useState(false);
-  const [checkedProduct, setCheckedProduct] = useState<number[]>([]);
+  const [allChecked, setAllChecked] = useState(false);
+  const [checkedProduct, setCheckedProduct] = useState<string[]>([]);
 
   const handlePagination = () => {};
 
-  const checkAll = (state: boolean) => {
-    setCheckAllState(state);
-    if (state) {
-      setCheckedProduct(detailData.map((v) => v.id));
+  const onChecked = (productId?: string, all?: boolean) => {
+    if (!all && productId) {
+      setCheckedProduct((prev) =>
+        prev.includes(productId)
+          ? prev.filter((id) => id !== productId)
+          : [...prev, productId],
+      );
     } else {
-      setCheckedProduct([]);
+      detailData.map((data) =>
+        setCheckedProduct((prev) => (all ? [...prev, data.id] : [])),
+      );
     }
   };
 
@@ -83,31 +86,21 @@ export function CategoryDetail({
       variables: { deleteProductCategoryId: data.id },
     });
     setCheckedProduct([]);
-    setCheckAllState(false);
   };
 
   const changeHandle = (key: string, serchCategory: string) => {
     //TODO: 검색 variables에 세팅
   };
 
-  const onCheckRow = (id: number) => {
-    if (checkedProduct.includes(id)) {
-      setCheckedProduct((prev) => prev.filter((v) => v !== id));
-    } else {
-      setCheckedProduct((prev) => [...prev, id]);
-    }
-    setCheckAllState(false);
-  };
-
   const onChangeNumberHandle = (id: number, number: number) => {
     const updatedTableData = [...detailData];
     const targetIndex = updatedTableData.findIndex(
-      (product) => product.id === id,
+      (product) => +product.id === id,
     );
     if (targetIndex !== -1) {
       updatedTableData[targetIndex] = {
         ...updatedTableData[targetIndex],
-        number: number,
+        position: number,
       };
       setDetailData(updatedTableData);
     }
@@ -116,7 +109,6 @@ export function CategoryDetail({
   const onEditHandle = (id: number, number: number) => {
     //TODO: 로우 순서 수정요청 연결
     setCheckedProduct([]);
-    setCheckAllState(false);
   };
 
   const onClickAddCategory = () => {
@@ -180,10 +172,29 @@ export function CategoryDetail({
     },
   });
 
+  const [findManyProduct] = useLazyQuery<
+    findManyProduct,
+    findManyProductVariables
+  >(FIND_MANY_PRODUCT, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted(data) {
+      setDetailData(data.findManyProduct.products);
+    },
+  });
+
   useEffect(() => {
-    setCheckAllState(
-      checkedProduct?.length === detailData?.length ? true : false,
+    setAllChecked(
+      checkedProduct?.length !== 0 &&
+        detailData?.length === checkedProduct?.length,
     );
+
+    findManyProduct({
+      variables: {
+        take,
+        productCategoryId: ableCategoryId,
+      },
+      fetchPolicy: 'no-cache',
+    });
 
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -194,7 +205,7 @@ export function CategoryDetail({
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [checkedProduct, detailData]);
+  }, [checkedProduct, allChecked, data]);
 
   return (
     <>
@@ -237,10 +248,9 @@ export function CategoryDetail({
             </A.FilterContainer>
             <Table
               columns={productCategoryColumns({
-                checkAllState,
+                allChecked,
+                onChecked,
                 checkedProduct,
-                checkAll,
-                onCheckRow,
                 changeHandle,
                 onChangeNumberHandle,
                 onEditHandle,

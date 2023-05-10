@@ -4,14 +4,15 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Button, Form, Input, Table, message } from 'antd';
 import * as S from './style';
 import { DropdownComponent } from '../../components/Dropdown';
-import { ProductListType, productListColumns } from '../../utils/columns';
+import { productListColumns } from '../../utils/columns';
 import { SearchMore } from '../../components/Product/SearchMore/SearchMore';
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { FIND_MANY_PRODUCT } from '../../graphql/query/findManyProduct';
 import {
   findManyProduct,
   findManyProductVariables,
 } from '../../graphql/generated/findManyProduct';
+import { DELETE_PRODUCT } from '../../graphql/mutation/deleteProduct';
 
 export function ProductList() {
   const navigate = useNavigate();
@@ -23,17 +24,25 @@ export function ProductList() {
   const [moreVisible, setMoreVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [checkedProduct, setCheckedProduct] = useState<string[]>([]);
-  const [checkAllState, setCheckAllState] = useState(false);
-
-  const [variables, setVariables] = useState<ProductListType[]>([]);
+  const [allChecked, setAllChecked] = useState(false);
+  const [variables, setVariables] = useState<[]>([]);
   const [tableData, setTableData] = useState<
     findManyProduct['findManyProduct']['products']
   >([]);
 
-  const dropdownArrs = [
-    ['1차분류선택', '1', '2', '3'],
-    ['2차분류선택', '5', '6'],
-  ];
+  const onChecked = (productId?: string, all?: boolean) => {
+    if (!all && productId) {
+      setCheckedProduct((prev) =>
+        prev.includes(productId)
+          ? prev.filter((id) => id !== productId)
+          : [...prev, productId],
+      );
+    } else {
+      tableData.map((data) =>
+        setCheckedProduct((prev) => (all ? [...prev, data.id] : [])),
+      );
+    }
+  };
 
   const onSubmitHandle = (values: { searchText?: string }) => {
     //TODO: 검색요청
@@ -51,24 +60,6 @@ export function ProductList() {
     setSkip((e - 1) * take);
   };
 
-  const onCheckRow = (id: string) => {
-    if (checkedProduct.includes(id)) {
-      setCheckedProduct((prev) => prev.filter((v) => v !== id));
-    } else {
-      setCheckedProduct((prev) => [...prev, id]);
-    }
-    setCheckAllState(false);
-  };
-
-  const checkAll = (state: boolean) => {
-    setCheckAllState(state);
-    if (state) {
-      setCheckedProduct(tableData.map((v) => v.id));
-    } else {
-      setCheckedProduct([]);
-    }
-  };
-
   const onChangeFilter = (key: string, serchCategory: string) => {
     //TODO: 필터링 기능 적용
     setCurrent(1);
@@ -78,18 +69,26 @@ export function ProductList() {
 
   const onDeleteHandle = (id: string | undefined) => {
     if (id === undefined) {
-      //TODO: 선택 삭제요청 연결 id는 chececkedProduct에 있음 map으로 요청
+      checkedProduct.map((data) =>
+        deleteProduct({
+          variables: {
+            deleteProductId: data,
+          },
+        }),
+      );
     } else {
-      //한개 삭제요청 연결
+      deleteProduct({
+        variables: {
+          deleteProductId: id,
+        },
+      });
     }
     setCheckedProduct([]);
-    setCheckAllState(false);
   };
 
   const onEditHandle = (id: string, number: number) => {
     //TODO: 수정요청 연결
     setCheckedProduct([]);
-    setCheckAllState(false);
   };
 
   const onToggleClick = (id: string) => {
@@ -121,16 +120,31 @@ export function ProductList() {
     },
   });
 
+  const [deleteProduct] = useMutation(DELETE_PRODUCT, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted(_data) {
+      message.success('상품을 삭제했습니다.');
+      findManyProduct({
+        variables: {
+          take: 10,
+        },
+        fetchPolicy: 'no-cache',
+      });
+    },
+  });
+
   useEffect(() => {
+    setAllChecked(
+      checkedProduct?.length !== 0 &&
+        tableData?.length === checkedProduct?.length,
+    );
     findManyProduct({
       variables: {
-        take: 10,
+        take,
       },
+      fetchPolicy: 'no-cache',
     });
 
-    setCheckAllState(
-      checkedProduct?.length === tableData?.length ? true : false,
-    );
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
@@ -140,23 +154,18 @@ export function ProductList() {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [checkedProduct, tableData]);
+  }, [checkedProduct, allChecked]);
 
   return (
     <div>
       <S.Title style={{ fontSize: '20px', fontWeight: 'bold' }}>
-        상품관리
+        상품목록
       </S.Title>
       <S.Line />
       <S.Container
         style={{ flexDirection: windowWidth < 850 ? 'column' : 'row' }}
       >
         <S.Wrap>
-          <DropdownComponent
-            saveName={'serchFilter'}
-            menus={['전체', '상품명', '상품코드']}
-            changeHandle={changeHandle}
-          />
           <Form layout="inline">
             <Form.Item name="searchText">
               <Input.Search
@@ -220,10 +229,9 @@ export function ProductList() {
       </S.FilterContainer>
       <Table
         columns={productListColumns({
-          checkAllState,
           checkedProduct,
-          checkAll,
-          onCheckRow,
+          allChecked,
+          onChecked,
           onToggleClick,
           onEditHandle,
           onDeleteHandle,

@@ -116,3 +116,9 @@ export const ProductFlexWrap = styled.div`
 export const WhiteSpaceNoWrap = styled.div`
   white-space: nowrap;
 `;
+
+export const ProductListStockContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  min-width: 100px;
+`;

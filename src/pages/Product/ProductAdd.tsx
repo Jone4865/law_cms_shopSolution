@@ -8,12 +8,14 @@ import { Option } from '../../components/Product/Option/Option';
 import { Button, message } from 'antd';
 import { useMutation } from '@apollo/client';
 import { CREATE_PRODUCT } from '../../graphql/mutation/createProduct';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   isEdit?: boolean;
 };
 
 export function ProductAdd({ isEdit }: Props) {
+  const navigate = useNavigate();
   const [firstOptionArr, setFirstOptionArr] = useState<
     {
       name: string;
@@ -104,8 +106,6 @@ export function ProductAdd({ isEdit }: Props) {
       return message.warn('옵션명을 입력해주세요.');
     } else if (!newOption.finalPrice) {
       return message.warn('가격을 입력해주세요.');
-    } else if (!newOption.extraPrice) {
-      return message.warn('추가금을 입력해주세요.');
     } else if (!newOption.stock) {
       return message.warn('재고량을 입력해주세요.');
     } else {
@@ -185,6 +185,7 @@ export function ProductAdd({ isEdit }: Props) {
     onError: (e) => message.error(e.message ?? `${e}`),
     onCompleted(_data) {
       message.success('상품을 추가했습니다.');
+      navigate('/product/list');
     },
   });
 

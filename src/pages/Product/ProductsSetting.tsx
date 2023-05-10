@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Table } from 'antd';
+import { Button, Form, Input, Table, message } from 'antd';
 import * as S from './style';
 import { DropdownComponent } from '../../components/Dropdown';
 import { ProductSettingType, productSettingColumns } from '../../utils/columns';
@@ -35,11 +35,6 @@ export function ProductsSetting() {
       visible: true,
     },
   ]);
-
-  const dropdownArrs = [
-    ['1차분류선택', '1', '2', '3'],
-    ['2차분류선택', '5', '6'],
-  ];
 
   const onSubmitHandle = (values: { searchText?: string }) => {
     //TODO: 검색요청

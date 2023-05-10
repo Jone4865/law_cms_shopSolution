@@ -26,6 +26,7 @@ export function ProductCategory({
   const [isEdit, setIsEdit] = useState(false);
   const [parentId, setParentId] = useState('');
   const [categoryMoreVisible, setCategoryMoreVisible] = useState(false);
+  const [ableCategoryId, setAbleCategoryId] = useState<string>();
   const [ableCategoryVariables, setAbleCategoryVariables] = useState<
     findManyProductCategory['findManyProductCategory']['productCategories'][0]
   >({
@@ -71,6 +72,7 @@ export function ProductCategory({
     arr: findManyProductCategory['findManyProductCategory']['productCategories'][0],
     parent?: boolean,
   ) => {
+    setAbleCategoryId(id);
     if (handleChange) {
       handleChange(saveName ? saveName : '', id);
     }
@@ -107,6 +109,7 @@ export function ProductCategory({
     setIsEdit(false);
     if (!children) {
       setParentId('');
+      setSecondCategoryArr([]);
     }
   };
 
@@ -209,6 +212,7 @@ export function ProductCategory({
       </S.Flex>
       {categoryMoreVisible && (
         <CategoryDetail
+          ableCategoryId={ableCategoryId}
           isAdd={isAdd ? true : false}
           data={ableCategoryVariables}
           isEdit={isEdit}

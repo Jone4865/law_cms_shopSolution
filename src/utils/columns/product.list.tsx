@@ -4,56 +4,41 @@ import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import { findManyProduct } from '../../graphql/generated/findManyProduct';
 
-export type ProductListType = {
-  id: number;
-  visible: boolean;
-  state: number;
-  name: string;
-  imgUrl: string;
-  price: number;
-  count: number;
-  originPrice: number;
-  createdAt: Date;
-  code: string;
-  number: number;
-};
-
 type Props = {
-  checkAllState: boolean;
   checkedProduct: string[];
-  checkAll: (state: boolean) => void;
-  onCheckRow: (id: string) => void;
+  allChecked: boolean;
   onToggleClick: (id: string) => void;
   onEditHandle: (id: string, number: number) => void;
   onDeleteHandle: (id: string) => void;
   onChangeNumberHandle: (id: string, position: number) => void;
+  onChecked: (deleteProductId: string, all?: boolean) => void;
 };
 
 export const productListColumns = ({
-  checkAllState,
   checkedProduct,
-  checkAll,
-  onCheckRow,
+  allChecked,
   onToggleClick,
   onEditHandle,
   onDeleteHandle,
   onChangeNumberHandle,
+  onChecked,
 }: Props): ColumnsType<findManyProduct['findManyProduct']['products'][0]> => [
   {
     title: (
       <Checkbox
-        checked={checkAllState}
-        onChange={(e) => checkAll(e.target.checked)}
+        checked={allChecked}
+        onChange={(e) => onChecked('', e.target.checked)}
       />
     ),
-    key: 'code',
-    dataIndex: 'code',
+    key: 'id',
+    dataIndex: 'id',
     align: 'center',
-    render(val) {
+    render(val, record) {
+      console.log(record);
       return (
         <Checkbox
           checked={checkedProduct.includes(val) ? true : false}
-          onChange={() => onCheckRow(val)}
+          onChange={() => onChecked(val)}
         />
       );
     },
@@ -92,8 +77,8 @@ export const productListColumns = ({
   },
   {
     title: '상품정보',
-    key: 'imgUrl',
-    dataIndex: 'imgUrl',
+    key: 'id',
+    dataIndex: 'id',
     align: 'center',
     render(val, record) {
       return (
@@ -101,7 +86,7 @@ export const productListColumns = ({
           <Image alt="상품 이미지" src={val} width={'60px'} height={'60px'} />
           <div>
             <span>{record?.name}</span>
-            <span>{record?.code}</span>
+            <span>{val}</span>
           </div>
         </S.ProductListProductContainer>
       );
@@ -141,9 +126,9 @@ export const productListColumns = ({
     align: 'center',
     render(val) {
       return val?.map((option: any, idx: number) => (
-        <div key={idx} style={{ display: 'flex' }}>
+        <S.ProductListStockContainer key={idx}>
           <div>{option.name} </div>-<div> {option.stock}개</div>
-        </div>
+        </S.ProductListStockContainer>
       ));
     },
   },
