@@ -88,7 +88,6 @@ export function ProductList() {
 
   const onEditHandle = (id: string, number: number) => {
     //TODO: 수정요청 연결
-    console.log(id, number);
     setCheckedProduct([]);
     setCheckAllState(false);
   };
@@ -117,7 +116,6 @@ export function ProductList() {
   >(FIND_MANY_PRODUCT, {
     onError: (e) => message.error(e.message ?? `${e}`),
     onCompleted(data) {
-      console.log(data.findManyProduct.products);
       setTableData(data.findManyProduct.products);
       setTotalCount(data.findManyProduct.totalCount);
     },

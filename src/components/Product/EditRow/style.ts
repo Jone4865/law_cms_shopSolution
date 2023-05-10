@@ -25,7 +25,6 @@ export const TitleWrap = styled.div`
 export const BottomWrap = styled.div`
   display: flex;
   overflow: scroll;
-  width: 100vw;
   div {
     white-space: nowrap;
     overflow: scroll;

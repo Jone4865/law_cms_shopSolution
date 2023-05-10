@@ -135,9 +135,6 @@ type ProductModel {
   """상품명"""
   name: String!
 
-  """재고량"""
-  stock: Int
-
   """적립률"""
   pointRate: Float!
 
@@ -210,6 +207,30 @@ type OrderModel {
   """생성일"""
   createdAt: DateTime!
 
+  """가상계좌 은행코드"""
+  vbankCode: String
+
+  """가상계좌 은행명"""
+  vbankName: String
+
+  """가상계좌번호"""
+  vbankNumber: String
+
+  """가상계좌 예금주"""
+  vbankHolder: String
+
+  """가상계좌 마감기한 UNIX timestamp"""
+  vbankDate: Int
+
+  """사용포인트"""
+  point: Int!
+
+  """주문금액"""
+  amount: Int!
+
+  """무통장입금 계좌"""
+  refundAccount: String
+
   """주문 종류"""
   orderKind: OrderKind!
 
@@ -228,17 +249,17 @@ enum OrderKind {
 
 """주문 상태"""
 enum OrderStatus {
-  """기본값"""
-  NONE
-
   """입금대기"""
   WAIT
+
+  """입금확인"""
+  CONFIRM
 
   """입금전취소"""
   CANCEL
 
-  """입금확인"""
-  CONFIRM
+  """가상계좌 마감"""
+  VBANK_CLOSE
 }
 
 """1:1문의"""
@@ -497,11 +518,14 @@ type ProductOptionsByFindManyProductOutput {
   """상품명"""
   name: String!
 
+  """추가금"""
+  extraPrice: Int
+
+  """가격"""
+  finalPrice: Int
+
   """재고량"""
   stock: Int
-
-  """적립률"""
-  pointRate: Float!
 
   """생성일"""
   createdAt: DateTime!
@@ -541,9 +565,6 @@ type ProductsByFindManyProductOutput {
   """상품명"""
   name: String!
 
-  """재고량"""
-  stock: Int
-
   """적립률"""
   pointRate: Float!
 
@@ -579,11 +600,14 @@ type ProductOptionsByFindManyProductOptionOutput {
   """상품명"""
   name: String!
 
+  """추가금"""
+  extraPrice: Int
+
+  """가격"""
+  finalPrice: Int
+
   """재고량"""
   stock: Int
-
-  """적립률"""
-  pointRate: Float!
 
   """생성일"""
   createdAt: DateTime!
@@ -725,6 +749,24 @@ type FindManyUserOutput {
   users: [UserModel!]!
 }
 
+"""마이페이지 통계 조회 output"""
+type FindMyPageStatsOutput {
+  """주문 개수"""
+  orderCount: Int!
+
+  """교환/환불 개수"""
+  takeBackCount: Int!
+
+  """적립금"""
+  point: Int!
+
+  """상품평 개수"""
+  productReviewCount: Int!
+
+  """1:1 문의 개수"""
+  userInquiryCount: Int!
+}
+
 """적립금 내역 조회 output"""
 type FindManyPointOutput {
   """총 개수"""
@@ -749,6 +791,9 @@ type Query {
     """회원상태"""
     userStatus: UserStatus = null
   ): FindManyUserOutput!
+
+  """마이페이지 통계 조회 (회원)"""
+  findMyPageStats: FindMyPageStatsOutput!
 
   """휴대폰 인증번호 발송 (180초)"""
   sendPhoneAuthNumber(
@@ -803,6 +848,15 @@ type Query {
 
   """주문 조회 (비회원)"""
   findMyOrderByNonUser: OrderModel!
+
+  """적립금 내역 조회 (회원)"""
+  findManyPoint(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+  ): FindManyPointOutput!
 
   """내정보 조회 (관리자)"""
   findMyInfoByAdmin: AdminModel!
@@ -899,15 +953,6 @@ type Query {
 
   """택배사 목록 조회"""
   findManyDeliveryCompany: [DeliveryCompanyModel!]!
-
-  """적립금 내역 조회 (회원)"""
-  findManyPoint(
-    """가져올 개수"""
-    take: Int!
-
-    """커서 ID"""
-    cursorId: String
-  ): FindManyPointOutput!
 }
 
 """상품평 정렬 기준"""
@@ -932,7 +977,7 @@ type Mutation {
     id: ID!
 
     """회원상태"""
-    userStatus: [UserStatus!]!
+    userStatus: [UserStatus!]! = []
   ): UserModel!
 
   """회원가입 (회원)"""
@@ -1010,7 +1055,10 @@ type Mutation {
     refundAccount: String = null
 
     """IMP UID"""
-    impUid: String = null
+    impUid: String!
+
+    """사용할 적립금"""
+    point: Int!
 
     """상품 구매 input"""
     datas: [DatasByCreateOrderArgs!]!
@@ -1023,6 +1071,15 @@ type Mutation {
 
     """주문 항목 IDs"""
     orderItemIds: [String!]!
+  ): Boolean!
+
+  """적립금 지급 (관리자)"""
+  createPoint(
+    """회원 ID"""
+    id: String!
+
+    """금액"""
+    point: Int!
   ): Boolean!
 
   """상품 생성 (관리자)"""
@@ -1046,13 +1103,10 @@ type Mutation {
     productCategoryId: String!
 
     """브랜드 ID"""
-    brandId: String
+    brandId: String = null
 
-    """해시 태그 ID 배열"""
-    hashTagIds: [String!]!
-
-    """재고량"""
-    stock: Int
+    """해시 태그명 배열"""
+    hashTagNames: [String!]!
 
     """적립률 (%)"""
     pointRate: Float!
@@ -1075,9 +1129,6 @@ type Mutation {
     """상품명"""
     name: String!
 
-    """재고량"""
-    stock: Int
-
     """적립률 (%)"""
     pointRate: Float!
 
@@ -1088,7 +1139,7 @@ type Mutation {
     salePrice: Int!
 
     """브랜드 ID"""
-    brandId: String
+    brandId: String = null
 
     """해시 태그 ID 배열"""
     hashTagIds: [String!]!
@@ -1145,8 +1196,8 @@ type Mutation {
     productId: String!
   ): Boolean!
 
-  """교환신청 (회원)"""
-  requestExchangeByUser(
+  """환불신청 (회원)"""
+  requestRefundByUser(
     """상세사유"""
     content: String!
 
@@ -1163,8 +1214,41 @@ type Mutation {
     orderItemIds: [String!]!
   ): TakeBackModel!
 
-  """환불신청 (회원)"""
-  requestRefundByUser(
+  """환불신청 취소 (회원)"""
+  cancelRefundByUser(
+    """반품 ID"""
+    id: String!
+  ): TakeBackModel!
+
+  """환불신청 승인 (관리자)"""
+  approveRefundByAdmin(
+    """반품 ID"""
+    id: String!
+
+    """주문 항목 IDs"""
+    orderItemIds: [String!]!
+  ): Boolean!
+
+  """환불신청 거절 (관리자)"""
+  rejectRefundByAdmin(
+    """반품 ID"""
+    id: String!
+
+    """주문 항목 IDs"""
+    orderItemIds: [String!]!
+  ): Boolean!
+
+  """환불신청 확정 (관리자)"""
+  confirmRefundByAdmin(
+    """반품 ID"""
+    id: String!
+
+    """주문 항목 IDs"""
+    orderItemIds: [String!]!
+  ): Boolean!
+
+  """교환신청 (회원)"""
+  requestExchangeByUser(
     """상세사유"""
     content: String!
 
@@ -1187,23 +1271,8 @@ type Mutation {
     id: String!
   ): TakeBackModel!
 
-  """환불신청 취소 (회원)"""
-  cancelRefundByUser(
-    """반품 ID"""
-    id: String!
-  ): TakeBackModel!
-
   """교환신청 승인 (관리자)"""
   approveExchangeByAdmin(
-    """반품 ID"""
-    id: String!
-
-    """주문 항목 IDs"""
-    orderItemIds: [String!]!
-  ): Boolean!
-
-  """환불신청 승인 (관리자)"""
-  approveRefundByAdmin(
     """반품 ID"""
     id: String!
 
@@ -1220,8 +1289,8 @@ type Mutation {
     orderItemIds: [String!]!
   ): Boolean!
 
-  """환불신청 거절 (관리자)"""
-  rejectRefundByAdmin(
+  """교환신청 확정 (관리자)"""
+  confirmExchangeByAdmin(
     """반품 ID"""
     id: String!
 
@@ -1279,6 +1348,51 @@ type Mutation {
     """배송지 ID"""
     id: String!
   ): AddressModel!
+
+  """상품 옵션 생성 (관리자)"""
+  createProductOption(
+    """상품 ID"""
+    productId: String!
+
+    """상위 상품 옵션 ID"""
+    parentId: String = null
+
+    """상품 옵션명"""
+    name: String!
+
+    """추가금"""
+    extraPrice: Int = null
+
+    """가격"""
+    finalPrice: Int = null
+
+    """재고량"""
+    stock: Int = null
+  ): Boolean!
+
+  """상품 옵션 수정 (관리자)"""
+  updateProductOption(
+    """상품 옵션 ID"""
+    id: String!
+
+    """상품 옵션명"""
+    name: String!
+
+    """추가금"""
+    extraPrice: Int = null
+
+    """가격"""
+    finalPrice: Int = null
+
+    """재고량"""
+    stock: Int = null
+  ): Boolean!
+
+  """상품 옵션 삭제 (관리자)"""
+  deleteProductOption(
+    """상품 옵션 ID"""
+    id: String!
+  ): Boolean!
 
   """환불계좌 등록 (회원)"""
   createRefundAccountByUser(
@@ -1436,8 +1550,14 @@ input OptionsByCreateProductArgs {
   """옵션명"""
   name: String!
 
+  """추가금"""
+  extraPrice: Int = null
+
+  """가격"""
+  finalPrice: Int = null
+
   """재고량"""
-  stock: Int
+  stock: Int = null
 
   """하위 옵션"""
   children: [ProductOptionByCreateProductArgs!] = []
@@ -1448,8 +1568,14 @@ input ProductOptionByCreateProductArgs {
   """옵션명"""
   name: String!
 
+  """추가금"""
+  extraPrice: Int = null
+
+  """가격"""
+  finalPrice: Int = null
+
   """재고량"""
-  stock: Int
+  stock: Int = null
 
   """하위 옵션"""
   children: [ProductOptionByCreateProductArgs!] = []

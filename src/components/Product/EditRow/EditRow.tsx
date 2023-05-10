@@ -4,13 +4,13 @@ import { Input, Switch } from 'antd';
 
 type Props = {
   title: string;
-  type: 'input' | 'toggle';
+  type: 'input' | 'toggle' | 'number';
   saveName: string;
   visible?: boolean;
   essential?: boolean;
-  inputValue?: string;
+  inputValue?: string | number;
   chececkBoxValues?: string[];
-  changeHandle: (key: string, value: string | boolean) => void;
+  changeHandle: (key: string, value: string | boolean | number) => void;
 };
 
 export function EditRow({
@@ -30,9 +30,17 @@ export function EditRow({
         {essential && <CheckOutlined style={{ color: 'red' }} />}
       </S.TitleWrap>
       <S.BottomWrap>
-        {type === 'input' && (
+        {type !== 'toggle' && (
           <Input
-            onChange={(e) => changeHandle(saveName, e.target.value)}
+            type={type === 'number' ? 'number' : ''}
+            onChange={(e) =>
+              changeHandle(
+                saveName,
+                type === 'number'
+                  ? +e.target.value.replaceAll('-', '').replace(/(^0+)/, '')
+                  : e.target.value,
+              )
+            }
             value={inputValue}
           />
         )}

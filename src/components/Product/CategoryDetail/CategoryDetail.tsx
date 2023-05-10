@@ -31,8 +31,9 @@ type Props = {
   handleRefetch: () => void;
   onChangeHandleCategoryVariables: (
     key: string,
-    value: string | boolean,
+    value: string | boolean | number,
   ) => void;
+  isAdd?: boolean;
 };
 
 export function CategoryDetail({
@@ -43,6 +44,7 @@ export function CategoryDetail({
   parentId,
   handleRefetch,
   onChangeHandleCategoryVariables,
+  isAdd,
 }: Props) {
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);

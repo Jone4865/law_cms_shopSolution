@@ -1,44 +1,19 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
-  display: flex;
-  overflow: scroll;
-
-  span {
-    display: flex;
-  }
-`;
+export const Container = styled.div``;
 
 export const Wrap = styled.div`
-  display: flex;
   margin-top: 10px;
+  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(4, 25%);
 `;
 
 export const BtnWrap = styled.div`
   display: flex;
-  margin-left: 35px;
   margin-top: 10px;
-  div {
-    width: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5px;
-    font-weight: bold;
-    align-content: center;
-    cursor: pointer;
-    height: 34px;
-    margin-right: 10px;
-    span {
-      margin: 0;
-    }
-    svg {
-      font-size: 16.5px;
-    }
-    p {
-      margin: auto 5px;
-    }
-  }
+  width: 100%;
+  justify-content: center;
 `;
 
 export const MoreBtn = styled.div`
@@ -95,6 +70,7 @@ export const Flex = styled.div`
 export const Title = styled.div`
   font-size: 20px;
   font-weight: bold;
+  margin: 10px 0;
 `;
 
 export const Line = styled.hr`
@@ -130,16 +106,13 @@ export const CategoryWrap = styled.div`
 
 export const CategoryArrContainer = styled.div`
   display: flex;
-  width: 100%;
+  width: 818px;
   justify-content: space-between;
   padding: 5px 10px;
   align-items: center;
   font-weight: bold;
   cursor: pointer;
   border: solid 0.2px #f3f3f3;
-  span {
-    margin-right: 10px;
-  }
 `;
 
 export const VisibleDiv = styled.div`
@@ -186,12 +159,13 @@ export const AddTitleLine = styled.div`
   font-weight: bold;
 `;
 
-export const AddBtnWrap = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  margin: 50px 0;
-  button {
-    width: 300px;
-  }
+export const AddContent = styled.span`
+  min-width: 130px;
+  width: 7vw;
+  overflow: scroll;
+`;
+
+export const Ex = styled.span`
+  font-size: 11px;
+  color: gray;
 `;

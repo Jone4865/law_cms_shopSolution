@@ -6,10 +6,10 @@
 import { OptionsByCreateProductArgs, ProductTag } from "./graphql-global-types";
 
 // ====================================================
-// GraphQL mutation operation: createProduct
+// GraphQL mutation operation: Mutation
 // ====================================================
 
-export interface createProduct_createProduct {
+export interface Mutation_createProduct {
   /**
    * ID
    */
@@ -35,10 +35,6 @@ export interface createProduct_createProduct {
    */
   name: string;
   /**
-   * 재고량
-   */
-  stock: number | null;
-  /**
    * 적립률
    */
   pointRate: number;
@@ -56,22 +52,20 @@ export interface createProduct_createProduct {
   createdAt: any;
 }
 
-export interface createProduct {
+export interface Mutation {
   /**
    * 상품 생성 (관리자)
    */
-  createProduct: createProduct_createProduct;
+  createProduct: Mutation_createProduct;
 }
 
-export interface createProductVariables {
+export interface MutationVariables {
   name: string;
   sellingPrice: number;
   salePrice: number;
   options: OptionsByCreateProductArgs[];
   productTags: ProductTag[];
   productCategoryId: string;
-  hashTagIds: string[];
+  hashTagNames: string[];
   pointRate: number;
-  stock?: number | null;
-  brandId?: string | null;
 }

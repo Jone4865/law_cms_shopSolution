@@ -8,14 +8,21 @@ import {
   findManyProductCategory,
   findManyProductCategoryVariables,
 } from '../../graphql/generated/findManyProductCategory';
+import { CheckOutlined } from '@ant-design/icons';
 
 type Props = {
   isAdd?: boolean;
   saveName?: string;
+  essential?: boolean;
   handleChange?: (key: string, value: string) => void;
 };
 
-export function ProductCategory({ isAdd, saveName, handleChange }: Props) {
+export function ProductCategory({
+  isAdd,
+  saveName,
+  essential,
+  handleChange,
+}: Props) {
   const [isEdit, setIsEdit] = useState(false);
   const [parentId, setParentId] = useState('');
   const [categoryMoreVisible, setCategoryMoreVisible] = useState(false);
@@ -37,7 +44,7 @@ export function ProductCategory({ isAdd, saveName, handleChange }: Props) {
 
   const changeHandleCategoryVariables = (
     key: string,
-    value: string | boolean,
+    value: string | boolean | number,
   ) => {
     setAbleCategoryVariables((prev: any) => {
       let newVariables = { ...prev };
@@ -67,8 +74,12 @@ export function ProductCategory({ isAdd, saveName, handleChange }: Props) {
     if (handleChange) {
       handleChange(saveName ? saveName : '', id);
     }
-    setCategoryMoreVisible(true);
-    setIsEdit(true);
+    if (!isAdd) {
+      setCategoryMoreVisible(true);
+      setIsEdit(true);
+    } else {
+      setCategoryMoreVisible(false);
+    }
     if (parent) {
       setParentId(id);
       findManyProductCategory({
@@ -85,7 +96,7 @@ export function ProductCategory({ isAdd, saveName, handleChange }: Props) {
   };
 
   const onClickAddBtn = (children?: boolean) => {
-    setCategoryMoreVisible(true);
+    setCategoryMoreVisible(!categoryMoreVisible);
     setAbleCategoryVariables({
       isVisible: false,
       createdAt: new Date(),
@@ -118,17 +129,24 @@ export function ProductCategory({ isAdd, saveName, handleChange }: Props) {
 
   return (
     <>
-      {!isAdd && (
+      {!isAdd ? (
         <>
           <S.Title>상품 카테고리</S.Title>
           <S.Line />
         </>
+      ) : (
+        <S.AddTitleLine>
+          {essential && (
+            <CheckOutlined style={{ color: 'red', marginRight: '5px' }} />
+          )}
+          카테고리 선택
+        </S.AddTitleLine>
       )}
       <S.Flex>
         <S.CategoryContainer>
           <S.CategoryTitle>
             <span>1차 메뉴</span>
-            {!isAdd && <Button onClick={() => onClickAddBtn()}>추가</Button>}
+            <Button onClick={() => onClickAddBtn()}>추가</Button>
           </S.CategoryTitle>
           <S.CategoryWrap>
             {firstCategoryArr &&
@@ -155,17 +173,15 @@ export function ProductCategory({ isAdd, saveName, handleChange }: Props) {
         <S.CategoryContainer>
           <S.CategoryTitle>
             <span>2차 메뉴</span>
-            {!isAdd && (
-              <Button
-                onClick={() =>
-                  parentId
-                    ? onClickAddBtn(true)
-                    : message.warn('1차 카테고리를 선택해주세요.')
-                }
-              >
-                추가
-              </Button>
-            )}
+            <Button
+              onClick={() =>
+                parentId
+                  ? onClickAddBtn(true)
+                  : message.warn('1차 카테고리를 선택해주세요.')
+              }
+            >
+              추가
+            </Button>
           </S.CategoryTitle>
           <S.CategoryWrap>
             {secondCategoryArr &&
@@ -191,8 +207,9 @@ export function ProductCategory({ isAdd, saveName, handleChange }: Props) {
           </S.CategoryWrap>
         </S.CategoryContainer>
       </S.Flex>
-      {categoryMoreVisible && !isAdd && (
+      {categoryMoreVisible && (
         <CategoryDetail
+          isAdd={isAdd ? true : false}
           data={ableCategoryVariables}
           isEdit={isEdit}
           onChangeHandleCategoryVariables={changeHandleCategoryVariables}

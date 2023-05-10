@@ -36,6 +36,8 @@ export enum UserStatus {
  */
 export interface OptionsByCreateProductArgs {
   name: string;
+  extraPrice?: number | null;
+  finalPrice?: number | null;
   stock?: number | null;
   children?: ProductOptionByCreateProductArgs[] | null;
 }
@@ -45,6 +47,8 @@ export interface OptionsByCreateProductArgs {
  */
 export interface ProductOptionByCreateProductArgs {
   name: string;
+  extraPrice?: number | null;
+  finalPrice?: number | null;
   stock?: number | null;
   children?: ProductOptionByCreateProductArgs[] | null;
 }

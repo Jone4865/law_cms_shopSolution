@@ -1,17 +1,15 @@
 import { gql } from '@apollo/client';
 
 export const CREATE_PRODUCT = gql`
-  mutation createProduct(
+  mutation Mutation(
     $name: String!
     $sellingPrice: Int!
     $salePrice: Int!
     $options: [OptionsByCreateProductArgs!]!
     $productTags: [ProductTag!]!
     $productCategoryId: String!
-    $hashTagIds: [String!]!
+    $hashTagNames: [String!]!
     $pointRate: Float!
-    $stock: Int
-    $brandId: String
   ) {
     createProduct(
       name: $name
@@ -20,10 +18,8 @@ export const CREATE_PRODUCT = gql`
       options: $options
       productTags: $productTags
       productCategoryId: $productCategoryId
-      hashTagIds: $hashTagIds
+      hashTagNames: $hashTagNames
       pointRate: $pointRate
-      stock: $stock
-      brandId: $brandId
     ) {
       id
       code
@@ -31,7 +27,6 @@ export const CREATE_PRODUCT = gql`
       productTags
       isVisible
       name
-      stock
       pointRate
       sellingPrice
       salePrice

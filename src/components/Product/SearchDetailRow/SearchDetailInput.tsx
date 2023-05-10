@@ -24,8 +24,10 @@ export function SearchDetailInput({
   return (
     <S.Container>
       <S.TitleWrap>
+        {essential && (
+          <CheckOutlined style={{ color: 'red', marginRight: '5px' }} />
+        )}
         <span>{title}</span>
-        {essential && <CheckOutlined style={{ color: 'red' }} />}
       </S.TitleWrap>
       <S.BottomWrap>
         <Input
@@ -33,7 +35,12 @@ export function SearchDetailInput({
           value={
             typeof value === 'string' || typeof value === 'number' ? value : ''
           }
-          onChange={(e) => onChangeHandle(saveNames[0], e.target.value)}
+          onChange={(e) =>
+            onChangeHandle(
+              saveNames[0],
+              e.target.value.replaceAll('-', '').replace(/(^0+)/, ''),
+            )
+          }
           placeholder={
             title === '해시태그'
               ? '사용하실 해시태그를 쉼표(,)로 구분하여 작성해주세요.'

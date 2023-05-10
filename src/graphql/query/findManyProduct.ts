@@ -1,16 +1,24 @@
 import { gql } from '@apollo/client';
 
 export const FIND_MANY_PRODUCT = gql`
-  query findManyProduct($take: Int!, $cursorId: String) {
-    findManyProduct(take: $take, cursorId: $cursorId) {
+  query findManyProduct(
+    $take: Int!
+    $productCategoryId: String
+    $cursorId: String
+  ) {
+    findManyProduct(
+      take: $take
+      productCategoryId: $productCategoryId
+      cursorId: $cursorId
+    ) {
       totalCount
       products {
         id
         code
         position
+        productTags
         isVisible
         name
-        stock
         pointRate
         sellingPrice
         salePrice
@@ -18,8 +26,9 @@ export const FIND_MANY_PRODUCT = gql`
         productOptions {
           id
           name
+          extraPrice
+          finalPrice
           stock
-          pointRate
           createdAt
         }
         productFiles {
