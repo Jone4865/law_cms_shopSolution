@@ -98,7 +98,7 @@ export function ProductCategory({
   };
 
   const onClickAddBtn = (children?: boolean) => {
-    setCategoryMoreVisible(!categoryMoreVisible);
+    setCategoryMoreVisible(true);
     setAbleCategoryVariables({
       isVisible: false,
       createdAt: new Date(),

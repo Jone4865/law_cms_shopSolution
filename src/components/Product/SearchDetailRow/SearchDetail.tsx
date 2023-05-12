@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import * as S from './style';
-import { DropdownComponent } from '../../Dropdown';
 import { Checkbox } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
+import { DropdownSearchDetail } from '../../Dropdown/DropdownSearchDetail';
 
 type Props = {
   title: string;
   saveNames: string[];
-  changeHandle: (key: string, serchCategory: string) => void;
-  dropdownArrs?: string[][];
+  changeHandle: (
+    key: string,
+    serchCategory: string | boolean | undefined,
+  ) => void;
+  dropdownArrs?: any[][];
   checkBoxArr?: string[];
   essential?: boolean;
 };
@@ -26,8 +29,16 @@ export function SearchDetailRow({
   );
   const onChangeHandle = (checkBoxValue: string, idx: number) => {
     setCheckBoxAble(checkBoxValue);
-    changeHandle(saveNames[idx], checkBoxValue);
+    changeHandle(
+      saveNames[idx],
+      checkBoxValue === '전체'
+        ? undefined
+        : checkBoxValue === '노출'
+        ? true
+        : false,
+    );
   };
+
   return (
     <S.Container>
       <S.TitleWrap>
@@ -37,7 +48,7 @@ export function SearchDetailRow({
       <S.BottomWrap>
         {dropdownArrs &&
           dropdownArrs.map((item, idx) => (
-            <DropdownComponent
+            <DropdownSearchDetail
               saveName={saveNames[idx]}
               key={idx}
               menus={item}

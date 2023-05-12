@@ -60,22 +60,25 @@ export const productSettingColumns = ({
     key: 'id',
     dataIndex: 'id',
     align: 'center',
-    render(val) {
-      return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    },
+    render: (_val, _record, index) => index + 1,
   },
   {
     title: '상품정보',
-    key: 'imgUrl',
-    dataIndex: 'imgUrl',
+    key: 'products',
+    dataIndex: 'products',
     align: 'center',
     render(val, record) {
       return (
         <S.ProductListProductContainer>
-          <Image alt="상품 이미지" src={val} width={'60px'} height={'60px'} />
+          <Image
+            alt="상품 이미지"
+            src={val?.id ? '' : '/img/defaultImg.png'}
+            width={60}
+            height={60}
+          />
           <div>
             <span>{record?.name}</span>
-            <span>{record?.code}</span>
+            <span>{record?.id}</span>
           </div>
         </S.ProductListProductContainer>
       );
@@ -209,21 +212,21 @@ export const productSettingColumns = ({
       );
     },
   },
-  {
-    title: '카테고리',
-    key: 'firstCategory',
-    dataIndex: 'firstCategory',
-    align: 'center',
-    render(val, record) {
-      return (
-        <S.CategoryContainer>
-          <span>{val}</span>
-          <div />
-          <span>{record.secondCategory}</span>
-        </S.CategoryContainer>
-      );
-    },
-  },
+  // {
+  //   title: '카테고리',
+  //   key: 'firstCategory',
+  //   dataIndex: 'firstCategory',
+  //   align: 'center',
+  //   render(val, record) {
+  //     return (
+  //       <S.CategoryContainer>
+  //         <span>{val}</span>
+  //         <div />
+  //         <span>{record.secondCategory}</span>
+  //       </S.CategoryContainer>
+  //     );
+  //   },
+  // },
   {
     title: '관리',
     key: 'id',

@@ -1,94 +1,46 @@
 import * as S from './style';
-import { Button, Checkbox, Image, Input } from 'antd';
+import { Image } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { findManyProduct } from '../../graphql/generated/findManyProduct';
 
-type Props = {
-  checkedProduct: string[];
-  allChecked: boolean;
-  changeHandle: (key: string, value: string) => void;
-  onChangeNumberHandle: (id: number, number: number) => void;
-  onEditHandle: (id: number, number: number) => void;
-  onChecked: (deleteProductId: string, all?: boolean) => void;
-};
-
-export const productCategoryColumns = ({
-  checkedProduct,
-  allChecked,
-  changeHandle,
-  onChangeNumberHandle,
-  onEditHandle,
-  onChecked,
-}: Props): ColumnsType<findManyProduct['findManyProduct']['products'][0]> => [
-  {
-    title: (
-      <Checkbox
-        checked={allChecked}
-        onChange={(e) => onChecked('', e.target.checked)}
-      />
-    ),
-    key: 'id',
-    dataIndex: 'id',
-    align: 'center',
-    render(val) {
-      return (
-        <Checkbox
-          checked={checkedProduct.includes(val) ? true : false}
-          onChange={() => onChecked(val)}
-        />
-      );
-    },
-  },
+export const productCategoryColumns = (): ColumnsType<
+  findManyProduct['findManyProduct']['products'][0]
+> => [
   {
     title: 'No',
     key: 'id',
     dataIndex: 'id',
     align: 'center',
-    render(value, record, index) {
+    render(_value, _record, index) {
       return index + 1;
     },
   },
   {
     title: '순서',
-    key: 'number',
-    dataIndex: 'number',
+    key: 'position',
+    dataIndex: 'position',
     align: 'center',
-    render(val, record) {
-      return (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
-          <Input
-            value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            style={{ width: '100px', marginRight: '5px' }}
-            onChange={(e) =>
-              onChangeNumberHandle(
-                +record.id,
-                parseInt(e.target?.value?.replace(/,/g, '')),
-              )
-            }
-          />
-          <Button onClick={() => onEditHandle(+record.id, val)}>수정</Button>
-        </div>
-      );
+    render(val) {
+      return <S.Flex>{val}</S.Flex>;
     },
   },
   {
-    title: '노출',
+    title: '노출여부',
     key: 'visible',
     dataIndex: 'visible',
     align: 'center',
     render(val) {
-      return val ? '노출' : '비노출';
+      return (
+        <S.ProductCategoryContainer>
+          {val ? '노출' : '비노출'}
+        </S.ProductCategoryContainer>
+      );
     },
   },
   {
     title: '상품정보',
-    key: 'imgUrl',
-    dataIndex: 'imgUrl',
+    key: 'id',
+    dataIndex: 'id',
     align: 'center',
     render(val, record) {
       return (
@@ -96,7 +48,7 @@ export const productCategoryColumns = ({
           <Image alt="상품 이미지" src={val} width={'60px'} height={'60px'} />
           <div>
             <span>{record?.name}</span>
-            <span>{record?.code}</span>
+            <span>{val}</span>
           </div>
         </S.ProductListProductContainer>
       );
@@ -104,22 +56,34 @@ export const productCategoryColumns = ({
   },
   {
     title: '상품가격',
-    key: 'price',
-    dataIndex: 'price',
+    key: 'sellingPrice',
+    dataIndex: 'sellingPrice',
     align: 'center',
     render(val) {
-      return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
+      return (
+        <S.ProductCategoryContainer>
+          {val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원'}
+        </S.ProductCategoryContainer>
+      );
     },
   },
   {
     title: '재고량',
-    key: 'count',
-    dataIndex: 'count',
+    key: 'productOptions',
+    dataIndex: 'productOptions',
     align: 'center',
     render(val) {
-      return val > 0
-        ? val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '개'
-        : '품절';
+      return val?.map((option: any, idx: number) => (
+        <S.ProductListStockContainer key={idx}>
+          <div>{option.name} </div>
+          {option.stock !== null && (
+            <>
+              <div>-</div>
+              <div> {+option.stock >= 0 ? option.stock + '개' : '품절'}</div>
+            </>
+          )}
+        </S.ProductListStockContainer>
+      ));
     },
   },
 ];

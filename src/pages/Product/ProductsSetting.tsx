@@ -8,7 +8,7 @@ import { SearchMore } from '../../components/Product/SearchMore/SearchMore';
 
 export function ProductsSetting() {
   const [take, setTake] = useState(10);
-  const [skip, setSkip] = useState(0);
+  const [cursorId, setCursorId] = useState('');
   const [current, setCurrent] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -39,17 +39,18 @@ export function ProductsSetting() {
   const onSubmitHandle = (values: { searchText?: string }) => {
     //TODO: 검색요청
     setCurrent(1);
-    setSkip(0);
     setSearchText(values.searchText ?? '');
   };
 
-  const changeHandle = (key: string, serchCategory: string) => {
+  const changeHandle = (
+    key: string,
+    value: string | number | boolean | undefined,
+  ) => {
     //TODO: 검색 variables에 세팅
   };
 
   const handlePagination = (e: number) => {
     setCurrent(e);
-    setSkip((e - 1) * take);
   };
 
   const onCheckRow = (id: number) => {
@@ -73,18 +74,11 @@ export function ProductsSetting() {
   const onChangeFilter = (key: string, serchCategory: string) => {
     //TODO: 필터링 기능 적용
     setCurrent(1);
-    setSkip(0);
     setSearchText('');
   };
 
   const onDeleteHandle = () => {
     //TODO: 삭제요청 연결 id는 chececkedProduct에 있음
-    setCheckedProduct([]);
-    setCheckAllState(false);
-  };
-
-  const onEditHandle = () => {
-    //TODO: 수정요청 연결 id는 chececkedProduct에 있음
     setCheckedProduct([]);
     setCheckAllState(false);
   };
@@ -166,13 +160,6 @@ export function ProductsSetting() {
         <S.FilterWrap>
           <Button onClick={onDeleteHandle}>선택삭제</Button>
         </S.FilterWrap>
-        <S.Flex>
-          <DropdownComponent
-            menus={['20개', '50개', '100개']}
-            saveName={'solt'}
-            changeHandle={onChangeFilter}
-          />
-        </S.Flex>
       </S.FilterContainer>
       <Table
         columns={productSettingColumns({

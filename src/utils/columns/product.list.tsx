@@ -7,9 +7,19 @@ import { findManyProduct } from '../../graphql/generated/findManyProduct';
 type Props = {
   checkedProduct: string[];
   allChecked: boolean;
-  onToggleClick: (id: string) => void;
-  onEditHandle: (id: string, number: number) => void;
-  onDeleteHandle: (id: string) => void;
+  onToggleClick: (
+    id: string,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => void;
+  onEditHandle: (
+    id: string,
+    number: number,
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
+  ) => void;
+  onDeleteHandle: (
+    id: string,
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
+  ) => void;
   onChangeNumberHandle: (id: string, position: number) => void;
   onChecked: (deleteProductId: string, all?: boolean) => void;
 };
@@ -33,10 +43,10 @@ export const productListColumns = ({
     key: 'id',
     dataIndex: 'id',
     align: 'center',
-    render(val, record) {
-      console.log(record);
+    render(val) {
       return (
         <Checkbox
+          onClick={(e) => e.stopPropagation()}
           checked={checkedProduct.includes(val) ? true : false}
           onChange={() => onChecked(val)}
         />
@@ -45,12 +55,10 @@ export const productListColumns = ({
   },
   {
     title: 'No',
-    key: 'code',
-    dataIndex: 'code',
+    key: 'id',
+    dataIndex: 'id',
     align: 'center',
-    render(val) {
-      return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    },
+    render: (_val, _record, index) => index + 1,
   },
   {
     title: '순위',
@@ -69,24 +77,30 @@ export const productListColumns = ({
                 parseInt(e.target?.value?.replace(/,/g, '')),
               )
             }
+            onClick={(e) => e.stopPropagation()}
           />
-          <Button onClick={() => onEditHandle(record.id, val)}>수정</Button>
+          <Button onClick={(e) => onEditHandle(record.id, val, e)}>수정</Button>
         </div>
       );
     },
   },
   {
     title: '상품정보',
-    key: 'id',
-    dataIndex: 'id',
+    key: 'products',
+    dataIndex: 'products',
     align: 'center',
     render(val, record) {
       return (
         <S.ProductListProductContainer>
-          <Image alt="상품 이미지" src={val} width={'60px'} height={'60px'} />
+          <Image
+            alt="상품 이미지"
+            src={val?.id ? '' : '/img/defaultImg.png'}
+            width={60}
+            height={60}
+          />
           <div>
             <span>{record?.name}</span>
-            <span>{val}</span>
+            <span>{record?.id}</span>
           </div>
         </S.ProductListProductContainer>
       );
@@ -94,14 +108,14 @@ export const productListColumns = ({
   },
   {
     title: '노출',
-    key: 'visible',
-    dataIndex: 'visible',
+    key: 'isVisible',
+    dataIndex: 'isVisible',
     align: 'center',
     render(val, record) {
       return (
         <Switch
           defaultChecked={val ? true : false}
-          onChange={() => onToggleClick(record?.id)}
+          onChange={(_checked, e) => onToggleClick(record?.id, e)}
         />
       );
     },
@@ -127,7 +141,13 @@ export const productListColumns = ({
     render(val) {
       return val?.map((option: any, idx: number) => (
         <S.ProductListStockContainer key={idx}>
-          <div>{option.name} </div>-<div> {option.stock}개</div>
+          <div>{option.name} </div>
+          {option.stock !== null && (
+            <>
+              <div>-</div>
+              <div> {+option.stock >= 0 ? option.stock + '개' : '품절'}</div>
+            </>
+          )}
         </S.ProductListStockContainer>
       ));
     },
@@ -151,7 +171,7 @@ export const productListColumns = ({
     dataIndex: 'id',
     align: 'center',
     render(val) {
-      return <Button onClick={() => onDeleteHandle(val)}>삭제</Button>;
+      return <Button onClick={(e) => onDeleteHandle(val, e)}>삭제</Button>;
     },
   },
 ];

@@ -61,7 +61,6 @@ export function CategoryDetail({
   const [detailData, setDetailData] = useState<
     findManyProduct['findManyProduct']['products']
   >([]);
-
   const [allChecked, setAllChecked] = useState(false);
   const [checkedProduct, setCheckedProduct] = useState<string[]>([]);
 
@@ -90,25 +89,6 @@ export function CategoryDetail({
 
   const changeHandle = (key: string, serchCategory: string) => {
     //TODO: 검색 variables에 세팅
-  };
-
-  const onChangeNumberHandle = (id: number, number: number) => {
-    const updatedTableData = [...detailData];
-    const targetIndex = updatedTableData.findIndex(
-      (product) => +product.id === id,
-    );
-    if (targetIndex !== -1) {
-      updatedTableData[targetIndex] = {
-        ...updatedTableData[targetIndex],
-        position: number,
-      };
-      setDetailData(updatedTableData);
-    }
-  };
-
-  const onEditHandle = (id: number, number: number) => {
-    //TODO: 로우 순서 수정요청 연결
-    setCheckedProduct([]);
   };
 
   const onClickAddCategory = () => {
@@ -235,42 +215,23 @@ export function CategoryDetail({
           </S.BtnWrap>
         </S.Wrap>
         {isEdit && (
-          <>
-            <A.FilterContainer
-              style={{
-                flexDirection: windowWidth > 600 ? 'row' : 'column',
-              }}
-            >
-              <A.FilterWrap>
-                <Button onClick={() => ''}>선택삭제</Button>
-              </A.FilterWrap>
-              <Button type="primary">상품추가</Button>
-            </A.FilterContainer>
-            <Table
-              columns={productCategoryColumns({
-                allChecked,
-                onChecked,
-                checkedProduct,
-                changeHandle,
-                onChangeNumberHandle,
-                onEditHandle,
-              })}
-              dataSource={detailData}
-              pagination={{
-                position: ['bottomCenter'],
-                showSizeChanger: true,
-                onChange: handlePagination,
-                onShowSizeChange: (_current, size) => setTake(size),
-                total: totalCount,
-                current: current,
-              }}
-              style={{
-                marginTop: 30,
-              }}
-              rowKey={(rec) => rec.id}
-              scroll={{ x: 800 }}
-            />
-          </>
+          <Table
+            columns={productCategoryColumns()}
+            dataSource={detailData}
+            pagination={{
+              position: ['bottomCenter'],
+              showSizeChanger: true,
+              onChange: handlePagination,
+              onShowSizeChange: (_current, size) => setTake(size),
+              total: totalCount,
+              current: current,
+            }}
+            style={{
+              marginTop: 30,
+            }}
+            rowKey={(rec) => rec.id}
+            scroll={{ x: 800 }}
+          />
         )}
       </S.Container>
     </>
