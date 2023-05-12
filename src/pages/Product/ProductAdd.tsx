@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import * as S from './style';
 import { SearchDetailInput } from '../../components/Product/SearchDetailRow/SearchDetailInput';
-
 import { ProductCategory } from './ProductCategory';
 import { SearchDetailRow } from '../../components/Product';
 import { Option } from '../../components/Product/Option/Option';
-import { Button, message } from 'antd';
+import { Button, Modal, Upload, UploadFile, message } from 'antd';
 import { useMutation } from '@apollo/client';
 import { CREATE_PRODUCT } from '../../graphql/mutation/createProduct';
 import { useNavigate } from 'react-router-dom';
+import { RcFile, UploadProps } from 'antd/lib/upload';
+import { PlusOutlined } from '@ant-design/icons';
+import { CREATE_PRODUCT_FILE_BY_ADMIN } from '../../graphql/mutation/createProductFileByAdmin';
 
 type Props = {
   isEdit?: boolean;
 };
+
+const getBase64 = (file: RcFile): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
 
 export function ProductAdd({ isEdit }: Props) {
   const navigate = useNavigate();
@@ -52,6 +62,12 @@ export function ProductAdd({ isEdit }: Props) {
     stock: number;
     parent?: string;
   }>();
+  const [projectImageFileList, setProjectImageFileList] = useState<
+    UploadFile[]
+  >([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [previewTitle, setPreviewTitle] = useState('');
 
   const handleChangeOption = (
     key: string,
@@ -64,7 +80,10 @@ export function ProductAdd({ isEdit }: Props) {
     });
   };
 
-  const handleChange = (key: string, value: string | number) => {
+  const handleChange = (
+    key: string,
+    value: string | number | UploadFile<any>[] | boolean | undefined,
+  ) => {
     if (key !== 'hashTagIds') {
       if (key === 'productTags') {
         if (value === '선택안함') {
@@ -181,6 +200,30 @@ export function ProductAdd({ isEdit }: Props) {
     }
   };
 
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as RcFile);
+    }
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url!.substring(file.url!.lastIndexOf('/') + 1),
+    );
+  };
+
+  const projectimageChange: UploadProps['onChange'] = ({
+    fileList: newFileList,
+  }) => {
+    setProjectImageFileList(newFileList);
+    handleChange('images', newFileList);
+  };
+
+  const handleProjectimageChange = (e: any) => {
+    const newImage: UploadFile = e?.file?.originFileObj;
+    projectimageChange(e);
+  };
+  const handleCancel = () => setPreviewOpen(false);
+
   const [createProduct] = useMutation(CREATE_PRODUCT, {
     onError: (e) => message.error(e.message ?? `${e}`),
     onCompleted(_data) {
@@ -188,6 +231,18 @@ export function ProductAdd({ isEdit }: Props) {
       navigate('/product/list');
     },
   });
+
+  const [createProductFileByAdmin] = useMutation(CREATE_PRODUCT_FILE_BY_ADMIN, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted(data) {},
+  });
+
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </div>
+  );
 
   useEffect(() => {
     setFirstOptionArr((prevArr) =>
@@ -220,7 +275,7 @@ export function ProductAdd({ isEdit }: Props) {
         saveNames={['name']}
         title="이름"
         onChangeHandle={handleChange}
-        essential
+        essential={isEdit ? false : true}
       />
       <div
         style={{
@@ -235,7 +290,7 @@ export function ProductAdd({ isEdit }: Props) {
           onChangeHandle={handleChange}
           type={'number'}
           unitName={'원'}
-          essential
+          essential={isEdit ? false : true}
         />
         <SearchDetailInput
           value={variables && variables.salePrice}
@@ -244,7 +299,7 @@ export function ProductAdd({ isEdit }: Props) {
           onChangeHandle={handleChange}
           type={'number'}
           unitName={'원'}
-          essential
+          essential={isEdit ? false : true}
         />
         <SearchDetailInput
           value={variables && variables.pointRate}
@@ -253,7 +308,7 @@ export function ProductAdd({ isEdit }: Props) {
           onChangeHandle={handleChange}
           type={'number'}
           unitName={'%'}
-          essential
+          essential={isEdit ? false : true}
         />
       </div>
       <SearchDetailInput
@@ -268,14 +323,42 @@ export function ProductAdd({ isEdit }: Props) {
         title="상품태그"
         changeHandle={handleChange}
       />
+      <>
+        {isEdit && (
+          <>
+            <S.AddTitleLine>상품 이미지</S.AddTitleLine>
+
+            <Upload
+              listType="picture-card"
+              fileList={projectImageFileList}
+              onPreview={handlePreview}
+              onChange={handleProjectimageChange}
+            >
+              {projectImageFileList?.length >= 10 ? null : uploadButton}
+            </Upload>
+          </>
+        )}
+        <Modal
+          open={previewOpen}
+          title={previewTitle}
+          footer={null}
+          onCancel={handleCancel}
+        >
+          <img
+            alt="프로젝트 이미지"
+            style={{ width: '100%' }}
+            src={previewImage}
+          />
+        </Modal>
+      </>
       <ProductCategory
-        essential
+        essential={isEdit ? false : true}
         isAdd
         handleChange={handleChange}
         saveName="productCategoryId"
       />
       <Option
-        essential
+        essential={isEdit ? false : true}
         windowWidth={windowWidth}
         handleDeleteOption={handleDeleteOption}
         parentOption={parentOption}

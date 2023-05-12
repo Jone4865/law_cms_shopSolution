@@ -13,11 +13,21 @@ import {
   findManyProductVariables,
 } from '../../graphql/generated/findManyProduct';
 import { DELETE_PRODUCT } from '../../graphql/mutation/deleteProduct';
+import { UPDATE_PRODUCT_POSITION } from '../../graphql/mutation/updateProductPosition';
+import { PRODUCT_IS_VISIBLE_TOGGLE } from '../../graphql/mutation/productIsVisibleToggle';
+import {
+  productIsVisibleToggle,
+  productIsVisibleToggleVariables,
+} from '../../graphql/generated/productIsVisibleToggle';
+import {
+  updateProductPosition,
+  updateProductPositionVariables,
+} from '../../graphql/generated/updateProductPosition';
 
 export function ProductList() {
   const navigate = useNavigate();
-  const [take, setTake] = useState(10);
-  const [skip, setSkip] = useState(0);
+  const [take, setTake] = useState<number>(10);
+  const [cursorId, setCursorId] = useState('');
   const [current, setCurrent] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -25,7 +35,7 @@ export function ProductList() {
   const [searchText, setSearchText] = useState('');
   const [checkedProduct, setCheckedProduct] = useState<string[]>([]);
   const [allChecked, setAllChecked] = useState(false);
-  const [variables, setVariables] = useState<[]>([]);
+  const [variables, setVariables] = useState<findManyProductVariables>();
   const [tableData, setTableData] = useState<
     findManyProduct['findManyProduct']['products']
   >([]);
@@ -47,27 +57,50 @@ export function ProductList() {
   const onSubmitHandle = (values: { searchText?: string }) => {
     //TODO: 검색요청
     setCurrent(1);
-    setSkip(0);
     setSearchText(values.searchText ?? '');
+    console.log(searchText);
   };
 
-  const changeHandle = (key: string, serchCategory: string) => {
-    //TODO: 검색 variables에 세팅
+  const changeHandle = (
+    key: string,
+    value: string | number | boolean | undefined,
+  ) => {
+    if (key === 'take') {
+      setTake(value ? +value : 10);
+    } else {
+      if (value === '선택안함') {
+        setVariables((prev: any) => {
+          let newVariables: any = { ...prev };
+          newVariables[key] = undefined;
+          return newVariables;
+        });
+      } else {
+        setVariables((prev: any) => {
+          let newVariables: any = { ...prev };
+          newVariables[key] = value;
+          return newVariables;
+        });
+      }
+    }
   };
 
   const handlePagination = (e: number) => {
     setCurrent(e);
-    setSkip((e - 1) * take);
+    findManyProduct({
+      variables: { ...variables, take: 10 },
+      fetchPolicy: 'no-cache',
+    });
   };
 
   const onChangeFilter = (key: string, serchCategory: string) => {
     //TODO: 필터링 기능 적용
-    setCurrent(1);
-    setSkip(0);
-    setSearchText('');
   };
 
-  const onDeleteHandle = (id: string | undefined) => {
+  const onDeleteHandle = (
+    id: string | undefined,
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
     if (id === undefined) {
       checkedProduct.map((data) =>
         deleteProduct({
@@ -86,13 +119,27 @@ export function ProductList() {
     setCheckedProduct([]);
   };
 
-  const onEditHandle = (id: string, number: number) => {
-    //TODO: 수정요청 연결
+  const onEditHandle = (
+    id: string,
+    number: number,
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    updateProductPosition({
+      variables: {
+        position: number,
+        updateProductPositionId: id,
+      },
+    });
     setCheckedProduct([]);
   };
 
-  const onToggleClick = (id: string) => {
-    console.log(id);
+  const onToggleClick = (
+    id: string,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    productIsVisibleToggle({ variables: { productIsVisibleToggleId: id } });
   };
 
   const onChangeNumberHandle = (id: string, position: number) => {
@@ -133,17 +180,37 @@ export function ProductList() {
     },
   });
 
+  const [productIsVisibleToggle] = useMutation<
+    productIsVisibleToggle,
+    productIsVisibleToggleVariables
+  >(PRODUCT_IS_VISIBLE_TOGGLE, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted(_data) {
+      message.success('상품의 노출여부를 수정했습니다.');
+    },
+  });
+
+  const [updateProductPosition] = useMutation<
+    updateProductPosition,
+    updateProductPositionVariables
+  >(UPDATE_PRODUCT_POSITION, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted(_data) {
+      message.success('상품의 노출순위를 수정했습니다.');
+    },
+  });
+
   useEffect(() => {
     setAllChecked(
       checkedProduct?.length !== 0 &&
         tableData?.length === checkedProduct?.length,
     );
     findManyProduct({
-      variables: {
-        take,
-      },
+      variables: { take: 10 },
       fetchPolicy: 'no-cache',
     });
+
+    setCursorId(tableData[tableData?.length - 1]?.id);
 
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -154,7 +221,7 @@ export function ProductList() {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [checkedProduct, allChecked]);
+  }, [checkedProduct, allChecked, take, tableData?.length, current]);
 
   return (
     <div>
@@ -190,7 +257,7 @@ export function ProductList() {
         </S.BtnWrap>
       </S.Container>
 
-      {moreVisible && <SearchMore changeHandle={changeHandle} />}
+      {moreVisible && <SearchMore stock={false} changeHandle={changeHandle} />}
 
       <S.Dashed />
       <S.FilterContainer
@@ -199,33 +266,10 @@ export function ProductList() {
         }}
       >
         <S.FilterWrap>
-          <Button onClick={() => onDeleteHandle(undefined)}>선택삭제</Button>
+          <Button onClick={(e) => onDeleteHandle(undefined, e)}>
+            선택삭제
+          </Button>
         </S.FilterWrap>
-        <S.Flex>
-          <DropdownComponent
-            menus={[
-              '등록일 ▼',
-              '등록일 ▲',
-              '순위순 ▼',
-              '순위순 ▲',
-              '상품명 ▼',
-              '상품명 ▲',
-              '판매가 ▼',
-              '판매가 ▲',
-              '재고량 ▼',
-              '재고량 ▲',
-              '판매량 ▼',
-              '판매량 ▲',
-            ]}
-            saveName={'solt'}
-            changeHandle={onChangeFilter}
-          />
-          <DropdownComponent
-            menus={['20개', '50개', '100개']}
-            saveName={'solt2'}
-            changeHandle={onChangeFilter}
-          />
-        </S.Flex>
       </S.FilterContainer>
       <Table
         columns={productListColumns({
@@ -248,6 +292,11 @@ export function ProductList() {
         }}
         style={{
           marginTop: 30,
+        }}
+        onRow={(rec) => {
+          return {
+            onClick: () => navigate(`/product/add/${rec.id}`),
+          };
         }}
         rowKey={(rec) => rec.id}
         scroll={{ x: 800 }}

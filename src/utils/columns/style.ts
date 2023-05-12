@@ -55,15 +55,16 @@ export const ProductListProductContainer = styled.div`
   white-space: nowrap;
   img {
     border-radius: 8px;
-    min-width: 60px;
-    min-height: 60px;
+    border: solid 1px black;
   }
   div {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    margin-right: 5px;
+  }
+  span {
+    margin-left: 7px;
   }
   span:first-child {
     font-weight: bold;
@@ -121,4 +122,20 @@ export const ProductListStockContainer = styled.div`
   display: flex;
   justify-content: center;
   min-width: 100px;
+  div {
+    margin: 3px;
+  }
+`;
+
+export const ProductCategoryContainer = styled.div`
+  justify-content: center;
+  min-width: 70px;
+  div {
+    margin: 3px;
+  }
+`;
+
+export const Flex = styled.div`
+  display: flex;
+  justify-content: center;
 `;

@@ -33,6 +33,10 @@ function Root() {
               <Route path="setting" element={<ProductsSetting />} />
               <Route path="category" element={<ProductCategory />} />
               <Route path="add" element={<ProductAdd />} />
+              <Route
+                path="add/:productId"
+                element={<ProductAdd isEdit={true} />}
+              />
             </Route>
 
             <Route path="/user">
