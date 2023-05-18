@@ -2,7 +2,8 @@ import * as S from './style';
 import { Button, Checkbox, Image, Input, Switch } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
-import { findManyProduct } from '../../graphql/generated/findManyProduct';
+import { findManyProductByAdmin } from '../../graphql/generated/findManyProductByAdmin';
+import { captureRejectionSymbol } from 'events';
 
 type Props = {
   checkedProduct: string[];
@@ -32,7 +33,9 @@ export const productListColumns = ({
   onDeleteHandle,
   onChangeNumberHandle,
   onChecked,
-}: Props): ColumnsType<findManyProduct['findManyProduct']['products'][0]> => [
+}: Props): ColumnsType<
+  findManyProductByAdmin['findManyProductByAdmin']['products'][0]
+> => [
   {
     title: (
       <Checkbox
@@ -86,15 +89,19 @@ export const productListColumns = ({
   },
   {
     title: '상품정보',
-    key: 'products',
-    dataIndex: 'products',
+    key: 'productFiles',
+    dataIndex: 'productFiles',
     align: 'center',
     render(val, record) {
       return (
         <S.ProductListProductContainer>
           <Image
             alt="상품 이미지"
-            src={val?.id ? '' : '/img/defaultImg.png'}
+            src={
+              val[0]?.name
+                ? `${process.env.REACT_APP_SERVER_BASIC}/project-file?fileKind=IMAGE&name=${val[0].name}`
+                : '/img/defaultImg.png'
+            }
             width={60}
             height={60}
           />
@@ -121,16 +128,21 @@ export const productListColumns = ({
     },
   },
   {
-    title: '판매가/정상가',
+    title: '할인가(원)',
     key: 'salePrice',
     dataIndex: 'salePrice',
     align: 'center',
-    render(val, record) {
-      return (
-        val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') +
-        '/' +
-        record?.sellingPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      );
+    render(val) {
+      return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    },
+  },
+  {
+    title: '판매가(원)',
+    key: 'sellingPrice',
+    dataIndex: 'sellingPrice',
+    align: 'center',
+    render(val) {
+      return val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
   },
   {

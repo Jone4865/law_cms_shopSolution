@@ -1,10 +1,10 @@
 import * as S from './style';
 import { Image } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { findManyProduct } from '../../graphql/generated/findManyProduct';
+import { findManyProductByAdmin } from '../../graphql/generated/findManyProductByAdmin';
 
 export const productCategoryColumns = (): ColumnsType<
-  findManyProduct['findManyProduct']['products'][0]
+  findManyProductByAdmin['findManyProductByAdmin']['products'][0]
 > => [
   {
     title: 'No',
@@ -39,30 +39,39 @@ export const productCategoryColumns = (): ColumnsType<
   },
   {
     title: '상품정보',
-    key: 'id',
-    dataIndex: 'id',
+    key: 'productFiles',
+    dataIndex: 'productFiles',
     align: 'center',
     render(val, record) {
       return (
         <S.ProductListProductContainer>
-          <Image alt="상품 이미지" src={val} width={'60px'} height={'60px'} />
+          <Image
+            alt="상품 이미지"
+            src={
+              val[0]?.name
+                ? `${process.env.REACT_APP_SERVER_BASIC}/project-file?fileKind=IMAGE&name=${val[0].name}`
+                : '/img/defaultImg.png'
+            }
+            width={60}
+            height={60}
+          />
           <div>
             <span>{record?.name}</span>
-            <span>{val}</span>
+            <span>{record?.id}</span>
           </div>
         </S.ProductListProductContainer>
       );
     },
   },
   {
-    title: '상품가격',
+    title: '상품가격(원)',
     key: 'sellingPrice',
     dataIndex: 'sellingPrice',
     align: 'center',
     render(val) {
       return (
         <S.ProductCategoryContainer>
-          {val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원'}
+          {val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
         </S.ProductCategoryContainer>
       );
     },

@@ -1,15 +1,19 @@
 import { gql } from '@apollo/client';
 
-export const FIND_MANY_PRODUCT = gql`
-  query findManyProduct(
+export const FIND_MANY_PRODUCT_BY_ADMIN = gql`
+  query findManyProductByAdmin(
     $take: Int!
+    $skip: Int!
+    $searchText: String
     $productCategoryId: String
-    $cursorId: String
+    $isVisible: Boolean
   ) {
-    findManyProduct(
+    findManyProductByAdmin(
       take: $take
+      skip: $skip
+      searchText: $searchText
       productCategoryId: $productCategoryId
-      cursorId: $cursorId
+      isVisible: $isVisible
     ) {
       totalCount
       products {

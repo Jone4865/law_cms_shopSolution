@@ -33,7 +33,9 @@ export function DropdownSearchDetail({
     onClick: handleMenuClick,
   };
 
-  useEffect(() => {}, [able]);
+  useEffect(() => {
+    setAble('선택안함');
+  }, [menus]);
 
   return (
     <S.Container>

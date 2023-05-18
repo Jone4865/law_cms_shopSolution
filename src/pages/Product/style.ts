@@ -195,3 +195,14 @@ export const AddBtnWrap = styled.div`
     width: 300px;
   }
 `;
+
+export const PartTitle = styled.div`
+  width: 100%;
+  height: 50px;
+  background-color: #f3f3f3;
+  border: solid 1px #1d171738;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;

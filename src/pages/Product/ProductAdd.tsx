@@ -5,12 +5,23 @@ import { ProductCategory } from './ProductCategory';
 import { SearchDetailRow } from '../../components/Product';
 import { Option } from '../../components/Product/Option/Option';
 import { Button, Modal, Upload, UploadFile, message } from 'antd';
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { CREATE_PRODUCT } from '../../graphql/mutation/createProduct';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { RcFile, UploadProps } from 'antd/lib/upload';
 import { PlusOutlined } from '@ant-design/icons';
 import { CREATE_PRODUCT_FILE_BY_ADMIN } from '../../graphql/mutation/createProductFileByAdmin';
+import {
+  createProductFileByAdmin,
+  createProductFileByAdminVariables,
+} from '../../graphql/generated/createProductFileByAdmin';
+import Loader from '../../components/Loader';
+import { FIND_PRODUCT_BY_ADMIN } from '../../graphql/query/findProductByAdmin';
+import {
+  findProductByAdmin,
+  findProductByAdminVariables,
+} from '../../graphql/generated/findProductByAdmin';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 
 type Props = {
   isEdit?: boolean;
@@ -25,7 +36,9 @@ const getBase64 = (file: RcFile): Promise<string> =>
   });
 
 export function ProductAdd({ isEdit }: Props) {
+  const params = useParams();
   const navigate = useNavigate();
+  const [productId, setProductId] = useState('');
   const [firstOptionArr, setFirstOptionArr] = useState<
     {
       name: string;
@@ -63,7 +76,7 @@ export function ProductAdd({ isEdit }: Props) {
     parent?: string;
   }>();
   const [projectImageFileList, setProjectImageFileList] = useState<
-    UploadFile[]
+    UploadFile[] | any[] //
   >([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -82,7 +95,13 @@ export function ProductAdd({ isEdit }: Props) {
 
   const handleChange = (
     key: string,
-    value: string | number | UploadFile<any>[] | boolean | undefined,
+    value:
+      | string
+      | number
+      | boolean
+      | UploadFile<any>[]
+      | CheckboxValueType[]
+      | undefined,
   ) => {
     if (key !== 'hashTagIds') {
       if (key === 'productTags') {
@@ -162,9 +181,13 @@ export function ProductAdd({ isEdit }: Props) {
       setFirstOptionArr((arr) => arr.filter((arr) => arr.name !== name));
       setSecondOptionArr((arr) => arr.filter((arr) => arr.parent !== name));
     } else {
-      setSecondOptionArr((arr) =>
-        arr.filter((arr) => arr.parent === parentName && arr.name === name),
+      const newSecondArr = secondOptionArr.filter(
+        (arr) => arr.parent !== parentName && arr.name !== name,
       );
+      setFirstOptionArr((prev) =>
+        prev.filter((data) => data.children?.map((data) => data.name !== name)),
+      );
+      setSecondOptionArr(newSecondArr);
     }
   };
 
@@ -220,9 +243,60 @@ export function ProductAdd({ isEdit }: Props) {
 
   const handleProjectimageChange = (e: any) => {
     const newImage: UploadFile = e?.file?.originFileObj;
-    projectimageChange(e);
+
+    if (projectImageFileList?.length < e.fileList?.length) {
+      createProductFileByAdmin({
+        variables: {
+          file: newImage,
+          productId,
+        },
+        onCompleted: (_data) => {
+          projectimageChange(e);
+        },
+      });
+    } else if (projectImageFileList.length > e.fileList.length) {
+      // deleteProjectFileByAdmin({
+      //   variables: {
+      //     id: +e.file.uid,
+      //   },
+      //   onCompleted: (_data) => {
+      //     projectimageChange(e);
+      //   },
+      // });
+    }
   };
+
   const handleCancel = () => setPreviewOpen(false);
+
+  const onClickEditProduct = () => {};
+
+  const [findProductByAdmin] = useLazyQuery<
+    findProductByAdmin,
+    findProductByAdminVariables
+  >(FIND_PRODUCT_BY_ADMIN, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted(data) {
+      setVariables(data.findProductByAdmin);
+      data.findProductByAdmin.productFiles.map((data) =>
+        setProjectImageFileList((prevImageFileList) => [
+          ...prevImageFileList,
+          {
+            uid: data.id.toString(),
+            name: '',
+            thumbUrl: `${process.env.REACT_APP_SERVER_BASIC}/project-file?fileKind=IMAGE&name=${data.name}`,
+            url: `${process.env.REACT_APP_SERVER_BASIC}/project-file?fileKind=IMAGE&name=${data.name}`,
+          },
+        ]),
+      );
+
+      const newHasTagsArr: string[] = [];
+      data.findProductByAdmin.hashTags.map((arr) =>
+        newHasTagsArr.push(arr.name),
+      );
+      const newHasTag = newHasTagsArr.join(',');
+      handleChange('hashTagIds', newHasTag);
+    },
+  });
 
   const [createProduct] = useMutation(CREATE_PRODUCT, {
     onError: (e) => message.error(e.message ?? `${e}`),
@@ -232,9 +306,14 @@ export function ProductAdd({ isEdit }: Props) {
     },
   });
 
-  const [createProductFileByAdmin] = useMutation(CREATE_PRODUCT_FILE_BY_ADMIN, {
+  const [createProductFileByAdmin, { loading }] = useMutation<
+    createProductFileByAdmin,
+    createProductFileByAdminVariables
+  >(CREATE_PRODUCT_FILE_BY_ADMIN, {
     onError: (e) => message.error(e.message ?? `${e}`),
-    onCompleted(data) {},
+    onCompleted(_data) {
+      message.success('이미지를 추가했습니다.');
+    },
   });
 
   const uploadButton = (
@@ -245,11 +324,20 @@ export function ProductAdd({ isEdit }: Props) {
   );
 
   useEffect(() => {
+    setProjectImageFileList([]);
+    if (isEdit && params.productId) {
+      setProductId(params.productId);
+      findProductByAdmin({
+        variables: { findProductByAdminId: params.productId },
+      });
+    }
+
     setFirstOptionArr((prevArr) =>
       prevArr.map((firstOption) => {
-        const children = secondOptionArr.filter(
-          (secondOption) => secondOption.parent === firstOption.name,
-        );
+        const children = secondOptionArr
+          .filter((secondOption) => secondOption.parent === firstOption.name)
+          .map((arr) => ({ ...arr, parent: undefined }));
+
         return {
           ...firstOption,
           children,
@@ -268,8 +356,13 @@ export function ProductAdd({ isEdit }: Props) {
     };
   }, [secondOptionArr]);
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div>
+      <S.Title>상품 상세</S.Title>
       <SearchDetailInput
         value={variables && variables.name}
         saveNames={['name']}
@@ -318,16 +411,16 @@ export function ProductAdd({ isEdit }: Props) {
         onChangeHandle={handleChange}
       />
       <SearchDetailRow
-        checkBoxArr={['선택안함', 'NEW', 'BEST']}
-        saveNames={['productTags', 'productTags', 'productTags']}
+        productTag
+        productTags={variables?.productTags}
+        saveNames={[]}
         title="상품태그"
         changeHandle={handleChange}
       />
       <>
         {isEdit && (
           <>
-            <S.AddTitleLine>상품 이미지</S.AddTitleLine>
-
+            <S.PartTitle>상품 이미지</S.PartTitle>
             <Upload
               listType="picture-card"
               fileList={projectImageFileList}
@@ -336,6 +429,18 @@ export function ProductAdd({ isEdit }: Props) {
             >
               {projectImageFileList?.length >= 10 ? null : uploadButton}
             </Upload>
+            <Modal
+              open={previewOpen}
+              title={previewTitle}
+              footer={null}
+              onCancel={handleCancel}
+            >
+              <img
+                alt="프로젝트 이미지"
+                style={{ width: '100%' }}
+                src={previewImage}
+              />
+            </Modal>
           </>
         )}
         <Modal
@@ -356,6 +461,7 @@ export function ProductAdd({ isEdit }: Props) {
         isAdd
         handleChange={handleChange}
         saveName="productCategoryId"
+        categorys={variables?.productCategories}
       />
       <Option
         essential={isEdit ? false : true}
@@ -370,8 +476,13 @@ export function ProductAdd({ isEdit }: Props) {
         secondOptionArr={secondOptionArr}
       />
       <S.AddBtnWrap>
-        <Button type="primary" onClick={onClickCreateProduct}>
-          상품등록
+        <Button
+          type="primary"
+          onClick={() =>
+            isEdit ? onClickEditProduct() : onClickCreateProduct()
+          }
+        >
+          {isEdit ? '상품수정' : '상품등록'}
         </Button>
       </S.AddBtnWrap>
     </div>

@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as S from './style';
-import { Checkbox } from 'antd';
+import { Checkbox, UploadFile } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import { DropdownSearchDetail } from '../../Dropdown/DropdownSearchDetail';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 type Props = {
   title: string;
   saveNames: string[];
   changeHandle: (
     key: string,
-    serchCategory: string | boolean | undefined,
+    serchCategory:
+      | string
+      | number
+      | boolean
+      | UploadFile<any>[]
+      | CheckboxValueType[]
+      | undefined,
+    first?: boolean,
   ) => void;
   dropdownArrs?: any[][];
   checkBoxArr?: string[];
   essential?: boolean;
+  productTag?: boolean;
+  productTags?: [];
 };
+
+const plainOptions = ['NEW', 'BEST'];
 
 export function SearchDetailRow({
   title,
@@ -23,10 +36,29 @@ export function SearchDetailRow({
   dropdownArrs,
   checkBoxArr,
   essential,
+  productTag,
+  productTags,
 }: Props) {
   const [checkBoxAble, setCheckBoxAble] = useState(
     checkBoxArr ? checkBoxArr[0] : '',
   );
+
+  const [checkedList, setCheckedList] = useState<CheckboxValueType[]>([]);
+  const [checkAll, setCheckAll] = useState<boolean>();
+
+  const onChange = (list: CheckboxValueType[]) => {
+    setCheckedList(list);
+    changeHandle('productTags', list);
+  };
+
+  const onCheckAllChange = (e: CheckboxChangeEvent) => {
+    setCheckedList([]);
+    if (e.target.checked) {
+      setCheckAll(true);
+    }
+    changeHandle('productTags', []);
+  };
+
   const onChangeHandle = (checkBoxValue: string, idx: number) => {
     setCheckBoxAble(checkBoxValue);
     changeHandle(
@@ -38,6 +70,25 @@ export function SearchDetailRow({
         : false,
     );
   };
+
+  const onChangeDropDownOne = (key: string, value: string) => {
+    changeHandle(key, value, true);
+  };
+
+  const onChangeDropDownTwo = (key: string, value: string) => {
+    changeHandle(key, value, false);
+  };
+
+  useEffect(() => {
+    if (productTags) {
+      setCheckedList(productTags);
+    }
+    if (checkedList.length > 0) {
+      setCheckAll(false);
+    } else {
+      setCheckAll(true);
+    }
+  }, [productTags, checkedList]);
 
   return (
     <S.Container>
@@ -52,7 +103,9 @@ export function SearchDetailRow({
               saveName={saveNames[idx]}
               key={idx}
               menus={item}
-              changeHandle={changeHandle}
+              changeHandle={
+                idx === 0 ? onChangeDropDownOne : onChangeDropDownTwo
+              }
             />
           ))}
         {checkBoxArr && (
@@ -67,6 +120,18 @@ export function SearchDetailRow({
               </Checkbox>
             ))}
           </Checkbox.Group>
+        )}
+        {productTag && (
+          <>
+            <Checkbox onChange={onCheckAllChange} checked={checkAll}>
+              선택안함
+            </Checkbox>
+            <Checkbox.Group
+              options={plainOptions}
+              value={checkedList}
+              onChange={onChange}
+            />
+          </>
         )}
       </S.BottomWrap>
     </S.Container>

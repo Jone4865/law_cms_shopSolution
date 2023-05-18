@@ -6,10 +6,10 @@
 import { ProductTag, FileKind } from "./graphql-global-types";
 
 // ====================================================
-// GraphQL query operation: findManyProduct
+// GraphQL query operation: findProductByAdmin
 // ====================================================
 
-export interface findManyProduct_findManyProduct_products_productOptions {
+export interface findProductByAdmin_findProductByAdmin_hashTags {
   /**
    * ID
    */
@@ -19,24 +19,31 @@ export interface findManyProduct_findManyProduct_products_productOptions {
    */
   name: string;
   /**
-   * 추가금
+   * 생성일
    */
-  extraPrice: number | null;
+  createdAt: any;
+}
+
+export interface findProductByAdmin_findProductByAdmin_productCategories {
   /**
-   * 가격
+   * ID
    */
-  finalPrice: number | null;
+  id: string;
   /**
-   * 재고량
+   * 카테고리명
    */
-  stock: number | null;
+  name: string;
+  /**
+   * 노출 여부
+   */
+  isVisible: boolean;
   /**
    * 생성일
    */
   createdAt: any;
 }
 
-export interface findManyProduct_findManyProduct_products_productFiles {
+export interface findProductByAdmin_findProductByAdmin_productFiles {
   /**
    * ID
    */
@@ -55,7 +62,7 @@ export interface findManyProduct_findManyProduct_products_productFiles {
   createdAt: any;
 }
 
-export interface findManyProduct_findManyProduct_products {
+export interface findProductByAdmin_findProductByAdmin {
   /**
    * ID
    */
@@ -97,35 +104,26 @@ export interface findManyProduct_findManyProduct_products {
    */
   createdAt: any;
   /**
-   * 상품 옵션
+   * 해시 태그
    */
-  productOptions: findManyProduct_findManyProduct_products_productOptions[];
+  hashTags: findProductByAdmin_findProductByAdmin_hashTags[];
+  /**
+   * 상품 카테고리
+   */
+  productCategories: findProductByAdmin_findProductByAdmin_productCategories[];
   /**
    * 상품 파일
    */
-  productFiles: findManyProduct_findManyProduct_products_productFiles[];
+  productFiles: findProductByAdmin_findProductByAdmin_productFiles[];
 }
 
-export interface findManyProduct_findManyProduct {
+export interface findProductByAdmin {
   /**
-   * 총 개수
+   * 상품 상세 조회 (관리자)
    */
-  totalCount: number;
-  /**
-   * 상품 목록
-   */
-  products: findManyProduct_findManyProduct_products[];
+  findProductByAdmin: findProductByAdmin_findProductByAdmin;
 }
 
-export interface findManyProduct {
-  /**
-   * 상품 목록 조회
-   */
-  findManyProduct: findManyProduct_findManyProduct;
-}
-
-export interface findManyProductVariables {
-  take: number;
-  productCategoryId?: string | null;
-  cursorId?: string | null;
+export interface findProductByAdminVariables {
+  findProductByAdminId: string;
 }

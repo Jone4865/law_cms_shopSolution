@@ -2,45 +2,32 @@ import * as S from './style';
 import { Button, Checkbox, Image, Input, Switch } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
-
-export type ProductSettingType = {
-  id: number;
-  visible: boolean;
-  name: string;
-  imgUrl: string;
-  supplyPlice: number;
-  originPrice: number;
-  price: number;
-  count: number;
-  code: string;
-  accumulationRate: number;
-  firstCategory: string;
-  secondCategory: string;
-  createdAt: Date;
-};
+import { findManyProductOptionByAdmin } from '../../graphql/generated/findManyProductOptionByAdmin';
 
 type Props = {
-  checkAllState: boolean;
-  checkedProduct: number[];
-  checkAll: (state: boolean) => void;
-  onCheckRow: (id: number) => void;
-  onToggleClick: (id: number) => void;
-  onChangeHandle: (id: number, key: string, value: number) => void;
+  checkedProduct: string[];
+  allChecked: boolean;
+  onChangeHandle: (id: string, key: string, value: number) => void;
+  onChecked: (deleteProductId: string, all?: boolean) => void;
+  onEditHandle: (id: string) => void;
+  onDeleteHandle: (id: string) => void;
 };
 
 export const productSettingColumns = ({
-  checkAllState,
+  allChecked,
   checkedProduct,
-  checkAll,
-  onCheckRow,
-  onToggleClick,
   onChangeHandle,
-}: Props): ColumnsType<ProductSettingType> => [
+  onChecked,
+  onEditHandle,
+  onDeleteHandle,
+}: Props): ColumnsType<
+  findManyProductOptionByAdmin['findManyProductOptionByAdmin']['productOptions'][0]
+> => [
   {
     title: (
       <Checkbox
-        checked={checkAllState}
-        onChange={(e) => checkAll(e.target.checked)}
+        checked={allChecked}
+        onChange={(e) => onChecked('', e.target.checked)}
       />
     ),
     key: 'id',
@@ -49,8 +36,9 @@ export const productSettingColumns = ({
     render(val) {
       return (
         <Checkbox
+          onClick={(e) => e.stopPropagation()}
           checked={checkedProduct.includes(val) ? true : false}
-          onChange={() => onCheckRow(val)}
+          onChange={() => onChecked(val)}
         />
       );
     },
@@ -63,21 +51,15 @@ export const productSettingColumns = ({
     render: (_val, _record, index) => index + 1,
   },
   {
-    title: '상품정보',
-    key: 'products',
-    dataIndex: 'products',
+    title: '상품이름',
+    key: 'product',
+    dataIndex: 'product',
     align: 'center',
     render(val, record) {
       return (
         <S.ProductListProductContainer>
-          <Image
-            alt="상품 이미지"
-            src={val?.id ? '' : '/img/defaultImg.png'}
-            width={60}
-            height={60}
-          />
           <div>
-            <span>{record?.name}</span>
+            <span>{val?.name}</span>
             <span>{record?.id}</span>
           </div>
         </S.ProductListProductContainer>
@@ -85,117 +67,80 @@ export const productSettingColumns = ({
     },
   },
   {
-    title: '노출',
-    key: 'visible',
-    dataIndex: 'visible',
+    title: '상품옵션',
+    key: 'name',
+    dataIndex: 'name',
+    align: 'center',
+    render(val) {
+      return (
+        <S.ProductListProductContainer>
+          <div>
+            <span>{val}</span>
+          </div>
+        </S.ProductListProductContainer>
+      );
+    },
+  },
+  {
+    title: '추가금(원)',
+    key: 'extraPrice',
+    dataIndex: 'extraPrice',
     align: 'center',
     render(val, record) {
       return (
-        <Switch
-          defaultChecked={val ? true : false}
-          onChange={() => onToggleClick(record.id)}
+        <Input
+          style={{ width: '150px' }}
+          value={val}
+          onChange={(e) =>
+            onChangeHandle(
+              record.id,
+              'extraPrice',
+              parseInt(e.target?.value.replace(/,/g, '')),
+            )
+          }
         />
       );
     },
   },
   {
-    title: '가격정보',
-    key: 'price',
-    dataIndex: 'price',
+    title: '판매금(원)',
+    key: 'finalPrice',
+    dataIndex: 'finalPrice',
     align: 'center',
     render(val, record) {
       return (
-        <S.ProductGrid>
-          <S.ProductGridWrap>
-            <span>공급가(원)</span>
-            <Input
-              onChange={(e) =>
-                onChangeHandle(
-                  record.id,
-                  'supplyPlice',
-                  parseInt(e.target?.value.replace(/,/g, '')),
-                )
-              }
-              value={record.supplyPlice
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            />
-          </S.ProductGridWrap>
-          <S.ProductGridWrap>
-            <span>정상가(원)</span>
-            <Input
-              onChange={(e) =>
-                onChangeHandle(
-                  record.id,
-                  'originPrice',
-                  parseInt(e.target?.value.replace(/,/g, '')),
-                )
-              }
-              value={record.originPrice
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            />
-          </S.ProductGridWrap>
-          <S.ProductGridWrap>
-            <span>판매가(원)</span>
-            <Input
-              onChange={(e) =>
-                onChangeHandle(
-                  record.id,
-                  'price',
-                  parseInt(e.target?.value.replace(/,/g, '')),
-                )
-              }
-              value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            />
-          </S.ProductGridWrap>
-        </S.ProductGrid>
+        <Input
+          style={{ width: '150px' }}
+          value={val}
+          onChange={(e) =>
+            onChangeHandle(
+              record.id,
+              'finalPrice',
+              parseInt(e.target?.value.replace(/,/g, '')),
+            )
+          }
+        />
       );
     },
   },
   {
-    title: '적립율',
-    key: 'accumulationRate',
-    dataIndex: 'accumulationRate',
+    title: '재고량(개)',
+    key: 'stock',
+    dataIndex: 'stock',
     align: 'center',
     render(val, record) {
       return (
-        <S.ProductFlexWrap>
-          <span>적립율(%)</span>
-          <Input
-            onChange={(e) =>
-              onChangeHandle(
-                record.id,
-                'accumulationRate',
-                parseInt(e.target?.value.replace(/,/g, '')),
-              )
-            }
-            value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          />
-        </S.ProductFlexWrap>
-      );
-    },
-  },
-  {
-    title: '재고량',
-    key: 'count',
-    dataIndex: 'count',
-    align: 'center',
-    render(val, record) {
-      return (
-        <S.ProductFlexWrap>
-          <span>재고량(개)</span>
-          <Input
-            onChange={(e) =>
-              onChangeHandle(
-                record.id,
-                'count',
-                parseInt(e.target?.value.replace(/,/g, '')),
-              )
-            }
-            value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          />
-        </S.ProductFlexWrap>
+        <Input
+          style={{ width: '150px' }}
+          onChange={(e) =>
+            onChangeHandle(
+              record.id,
+              'stock',
+              parseInt(e.target?.value.replace(/,/g, '')),
+            )
+          }
+          value={val?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+        />
       );
     },
   },
@@ -212,31 +157,18 @@ export const productSettingColumns = ({
       );
     },
   },
-  // {
-  //   title: '카테고리',
-  //   key: 'firstCategory',
-  //   dataIndex: 'firstCategory',
-  //   align: 'center',
-  //   render(val, record) {
-  //     return (
-  //       <S.CategoryContainer>
-  //         <span>{val}</span>
-  //         <div />
-  //         <span>{record.secondCategory}</span>
-  //       </S.CategoryContainer>
-  //     );
-  //   },
-  // },
   {
     title: '관리',
     key: 'id',
     dataIndex: 'id',
     align: 'center',
-    render(_val) {
+    render(val) {
       return (
         <S.ProductListMangementContainer>
-          <Button type="primary">수정</Button>
-          <Button>삭제</Button>
+          <Button type="primary" onClick={() => onEditHandle(val)}>
+            수정
+          </Button>
+          <Button onClick={() => onDeleteHandle(val)}>삭제</Button>
         </S.ProductListMangementContainer>
       );
     },

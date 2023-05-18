@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { Button, Form, Input, Table, message } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Button, Form, Input, Table, UploadFile, message } from 'antd';
 import * as S from './style';
-import { DropdownComponent } from '../../components/Dropdown';
 import { productListColumns } from '../../utils/columns';
 import { SearchMore } from '../../components/Product/SearchMore/SearchMore';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { FIND_MANY_PRODUCT } from '../../graphql/query/findManyProduct';
+import { FIND_MANY_PRODUCT_BY_ADMIN } from '../../graphql/query/findManyProductByAdmin';
 import {
-  findManyProduct,
-  findManyProductVariables,
-} from '../../graphql/generated/findManyProduct';
+  findManyProductByAdmin,
+  findManyProductByAdminVariables,
+} from '../../graphql/generated/findManyProductByAdmin';
 import { DELETE_PRODUCT } from '../../graphql/mutation/deleteProduct';
 import { UPDATE_PRODUCT_POSITION } from '../../graphql/mutation/updateProductPosition';
 import { PRODUCT_IS_VISIBLE_TOGGLE } from '../../graphql/mutation/productIsVisibleToggle';
@@ -23,11 +22,27 @@ import {
   updateProductPosition,
   updateProductPositionVariables,
 } from '../../graphql/generated/updateProductPosition';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
+
+let isMessageVisible = false;
+
+const showSuccessMessage = (msg: string) => {
+  if (isMessageVisible) {
+    return;
+  }
+
+  isMessageVisible = true;
+
+  const hide = message.success(msg);
+  hide.then(() => {
+    isMessageVisible = false;
+  });
+};
 
 export function ProductList() {
   const navigate = useNavigate();
-  const [take, setTake] = useState<number>(10);
-  const [cursorId, setCursorId] = useState('');
+  const [take, setTake] = useState(10);
+  const [skip, setSkip] = useState(0);
   const [current, setCurrent] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -35,9 +50,9 @@ export function ProductList() {
   const [searchText, setSearchText] = useState('');
   const [checkedProduct, setCheckedProduct] = useState<string[]>([]);
   const [allChecked, setAllChecked] = useState(false);
-  const [variables, setVariables] = useState<findManyProductVariables>();
+  const [variables, setVariables] = useState<findManyProductByAdminVariables>();
   const [tableData, setTableData] = useState<
-    findManyProduct['findManyProduct']['products']
+    findManyProductByAdmin['findManyProductByAdmin']['products']
   >([]);
 
   const onChecked = (productId?: string, all?: boolean) => {
@@ -48,52 +63,60 @@ export function ProductList() {
           : [...prev, productId],
       );
     } else {
-      tableData.map((data) =>
+      tableData.map((data: any) =>
         setCheckedProduct((prev) => (all ? [...prev, data.id] : [])),
       );
     }
   };
 
   const onSubmitHandle = (values: { searchText?: string }) => {
-    //TODO: 검색요청
-    setCurrent(1);
-    setSearchText(values.searchText ?? '');
-    console.log(searchText);
+    if (searchText === '') {
+      findManyProductByAdmin({ variables: { take, skip } });
+    } else {
+      setSearchText(values.searchText ?? '');
+      findManyProductByAdmin({ variables: { take, searchText, skip } });
+    }
   };
 
   const changeHandle = (
     key: string,
-    value: string | number | boolean | undefined,
+    value:
+      | string
+      | number
+      | boolean
+      | UploadFile<any>[]
+      | CheckboxValueType[]
+      | undefined,
   ) => {
-    if (key === 'take') {
-      setTake(value ? +value : 10);
+    if (value === '선택안함') {
+      setVariables((prev: any) => {
+        let newVariables: any = { ...prev };
+        newVariables[key] = undefined;
+        return newVariables;
+      });
     } else {
-      if (value === '선택안함') {
-        setVariables((prev: any) => {
-          let newVariables: any = { ...prev };
-          newVariables[key] = undefined;
-          return newVariables;
-        });
-      } else {
-        setVariables((prev: any) => {
-          let newVariables: any = { ...prev };
-          newVariables[key] = value;
-          return newVariables;
-        });
-      }
+      setVariables((prev: any) => {
+        let newVariables: any = { ...prev };
+        newVariables[key] = value;
+        return newVariables;
+      });
     }
   };
 
   const handlePagination = (e: number) => {
+    setSkip((e - 1) * take);
     setCurrent(e);
-    findManyProduct({
-      variables: { ...variables, take: 10 },
-      fetchPolicy: 'no-cache',
-    });
   };
 
-  const onChangeFilter = (key: string, serchCategory: string) => {
-    //TODO: 필터링 기능 적용
+  const onSearchHandle = () => {
+    findManyProductByAdmin({
+      variables: {
+        ...variables,
+        skip: 0,
+        take: 10,
+      },
+    });
+    setCurrent(1);
   };
 
   const onDeleteHandle = (
@@ -156,27 +179,28 @@ export function ProductList() {
     }
   };
 
-  const [findManyProduct] = useLazyQuery<
-    findManyProduct,
-    findManyProductVariables
-  >(FIND_MANY_PRODUCT, {
+  const [findManyProductByAdmin] = useLazyQuery<
+    findManyProductByAdmin,
+    findManyProductByAdminVariables
+  >(FIND_MANY_PRODUCT_BY_ADMIN, {
     onError: (e) => message.error(e.message ?? `${e}`),
     onCompleted(data) {
-      setTableData(data.findManyProduct.products);
-      setTotalCount(data.findManyProduct.totalCount);
+      setTableData(data.findManyProductByAdmin.products);
+      setTotalCount(data.findManyProductByAdmin.totalCount);
     },
   });
 
   const [deleteProduct] = useMutation(DELETE_PRODUCT, {
     onError: (e) => message.error(e.message ?? `${e}`),
     onCompleted(_data) {
-      message.success('상품을 삭제했습니다.');
-      findManyProduct({
+      findManyProductByAdmin({
         variables: {
-          take: 10,
+          take,
+          skip,
         },
         fetchPolicy: 'no-cache',
       });
+      showSuccessMessage('상품을 삭제했습니다.');
     },
   });
 
@@ -203,14 +227,12 @@ export function ProductList() {
   useEffect(() => {
     setAllChecked(
       checkedProduct?.length !== 0 &&
-        tableData?.length === checkedProduct?.length,
+        tableData?.length <= checkedProduct?.length,
     );
-    findManyProduct({
-      variables: { take: 10 },
+    findManyProductByAdmin({
+      variables: { take, skip },
       fetchPolicy: 'no-cache',
     });
-
-    setCursorId(tableData[tableData?.length - 1]?.id);
 
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -221,7 +243,7 @@ export function ProductList() {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [checkedProduct, allChecked, take, tableData?.length, current]);
+  }, [skip, take, checkedProduct]);
 
   return (
     <div>
@@ -257,7 +279,13 @@ export function ProductList() {
         </S.BtnWrap>
       </S.Container>
 
-      {moreVisible && <SearchMore stock={false} changeHandle={changeHandle} />}
+      {moreVisible && (
+        <SearchMore
+          stock={false}
+          changeHandle={changeHandle}
+          searchHandle={onSearchHandle}
+        />
+      )}
 
       <S.Dashed />
       <S.FilterContainer

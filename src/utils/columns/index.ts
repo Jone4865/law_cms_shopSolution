@@ -25,7 +25,6 @@ export { userDeleteColumns } from './user.delete';
 
 export { productListColumns } from './product.list';
 
-export type { ProductSettingType } from './product.setting';
 export { productSettingColumns } from './product.setting';
 
 export { productCategoryColumns } from './product.category';

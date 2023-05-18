@@ -21,11 +21,12 @@ import {
 } from '../../../graphql/generated/deleteProductCategory';
 import { DELETE_PRODUCT_CATEGORY } from '../../../graphql/mutation/deleteProductCategory';
 import { findManyProductCategory_findManyProductCategory_productCategories } from '../../../graphql/generated/findManyProductCategory';
+
 import {
-  findManyProduct,
-  findManyProductVariables,
-} from '../../../graphql/generated/findManyProduct';
-import { FIND_MANY_PRODUCT } from '../../../graphql/query/findManyProduct';
+  findManyProductByAdmin,
+  findManyProductByAdminVariables,
+} from '../../../graphql/generated/findManyProductByAdmin';
+import { FIND_MANY_PRODUCT_BY_ADMIN } from '../../../graphql/query/findManyProductByAdmin';
 
 type Props = {
   data: findManyProductCategory_findManyProductCategory_productCategories;
@@ -59,36 +60,18 @@ export function CategoryDetail({
   const [totalCount, setTotalCount] = useState(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [detailData, setDetailData] = useState<
-    findManyProduct['findManyProduct']['products']
+    findManyProductByAdmin['findManyProductByAdmin']['products']
   >([]);
-  const [allChecked, setAllChecked] = useState(false);
-  const [checkedProduct, setCheckedProduct] = useState<string[]>([]);
 
-  const handlePagination = () => {};
-
-  const onChecked = (productId?: string, all?: boolean) => {
-    if (!all && productId) {
-      setCheckedProduct((prev) =>
-        prev.includes(productId)
-          ? prev.filter((id) => id !== productId)
-          : [...prev, productId],
-      );
-    } else {
-      detailData.map((data) =>
-        setCheckedProduct((prev) => (all ? [...prev, data.id] : [])),
-      );
-    }
+  const handlePagination = (e: number) => {
+    setSkip((e - 1) * take);
+    setCurrent(e);
   };
 
   const onDeleteHandle = () => {
     deleteProductCategory({
       variables: { deleteProductCategoryId: data.id },
     });
-    setCheckedProduct([]);
-  };
-
-  const changeHandle = (key: string, serchCategory: string) => {
-    //TODO: 검색 variables에 세팅
   };
 
   const onClickAddCategory = () => {
@@ -152,25 +135,22 @@ export function CategoryDetail({
     },
   });
 
-  const [findManyProduct] = useLazyQuery<
-    findManyProduct,
-    findManyProductVariables
-  >(FIND_MANY_PRODUCT, {
+  const [findManyProductByAdmin] = useLazyQuery<
+    findManyProductByAdmin,
+    findManyProductByAdminVariables
+  >(FIND_MANY_PRODUCT_BY_ADMIN, {
     onError: (e) => message.error(e.message ?? `${e}`),
     onCompleted(data) {
-      setDetailData(data.findManyProduct.products);
+      setTotalCount(data.findManyProductByAdmin.totalCount);
+      setDetailData(data.findManyProductByAdmin.products);
     },
   });
 
   useEffect(() => {
-    setAllChecked(
-      checkedProduct?.length !== 0 &&
-        detailData?.length === checkedProduct?.length,
-    );
-
-    findManyProduct({
+    findManyProductByAdmin({
       variables: {
         take,
+        skip,
         productCategoryId: ableCategoryId,
       },
       fetchPolicy: 'no-cache',
@@ -185,7 +165,7 @@ export function CategoryDetail({
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [checkedProduct, allChecked, data]);
+  }, [data, take, skip]);
 
   return (
     <>

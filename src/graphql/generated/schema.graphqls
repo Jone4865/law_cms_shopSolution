@@ -52,6 +52,12 @@ type UserModel {
   """휴대전화"""
   phone: String
 
+  """성별"""
+  gender: Gender
+
+  """생일"""
+  birthday: String
+
   """생성일"""
   createdAt: DateTime!
 
@@ -84,6 +90,15 @@ enum LoginKind {
 
   """네이버"""
   NAVER
+}
+
+"""성별"""
+enum Gender {
+  """남성"""
+  male
+
+  """여성"""
+  female
 }
 
 """
@@ -204,6 +219,9 @@ type OrderModel {
   """이메일"""
   email: String!
 
+  """배송시 요청사항"""
+  deliveryRequest: String!
+
   """생성일"""
   createdAt: DateTime!
 
@@ -273,6 +291,12 @@ type UserInquiryModel {
   """내용"""
   content: String!
 
+  """답변"""
+  reply: String
+
+  """답변일"""
+  repliedAt: DateTime
+
   """생성일"""
   createdAt: DateTime!
 }
@@ -290,6 +314,9 @@ type ProductInquiryModel {
 
   """답변"""
   reply: String
+
+  """답변일"""
+  repliedAt: DateTime
 
   """생성일"""
   createdAt: DateTime!
@@ -423,6 +450,9 @@ type DeliveryItemModel {
 
 """적립금"""
 type PointModel {
+  """ID"""
+  id: ID!
+
   """내용"""
   content: String!
 
@@ -443,6 +473,9 @@ type PointModel {
 type AddressModel {
   """ID"""
   id: String!
+
+  """배송지명"""
+  title: String!
 
   """이름"""
   name: String!
@@ -477,8 +510,8 @@ type RefundAccountModel {
   """계좌번호"""
   accountNumber: String!
 
-  """은행명"""
-  bankName: String!
+  """은행코드"""
+  bankCode: String!
 
   """생성일"""
   createdAt: DateTime!
@@ -641,6 +674,87 @@ type FindManyProductOutput {
   products: [ProductsByFindManyProductOutput!]!
 }
 
+type HashTagsByFindProductByAdminOutput {
+  """ID"""
+  id: ID!
+
+  """상품명"""
+  name: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+type ProductCategoriesByFindProductByAdminOutput {
+  """ID"""
+  id: ID!
+
+  """카테고리명"""
+  name: String!
+
+  """노출 여부"""
+  isVisible: Boolean!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+type ProductFilesByFindProductByAdminOutput {
+  """ID"""
+  id: ID!
+
+  """파일 종류"""
+  kind: FileKind!
+
+  """파일명"""
+  name: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+"""상품 상세 조회 (관리자) output"""
+type FindProductByAdminOutput {
+  """ID"""
+  id: ID!
+
+  """상품 코드"""
+  code: Int!
+
+  """노출 순위"""
+  position: Int!
+
+  """상품 태그"""
+  productTags: [ProductTag!]!
+
+  """노출 여부"""
+  isVisible: Boolean!
+
+  """상품명"""
+  name: String!
+
+  """적립률"""
+  pointRate: Float!
+
+  """판매가"""
+  sellingPrice: Int!
+
+  """할인가"""
+  salePrice: Int!
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """해시 태그"""
+  hashTags: [HashTagsByFindProductByAdminOutput!]!
+
+  """상품 카테고리"""
+  productCategories: [ProductCategoriesByFindProductByAdminOutput!]!
+
+  """상품 파일"""
+  productFiles: [ProductFilesByFindProductByAdminOutput!]!
+}
+
 type ProductOptionsByFindManyProductOptionOutput {
   """ID"""
   id: ID!
@@ -729,6 +843,48 @@ type FindManyProductOptionByAdminOutput {
 
   """상품 옵션 목록"""
   productOptions: [ProductOptionsByFindManyProductOptionByAdminOutput!]!
+}
+
+"""1:1 문의 목록 조회 (회원) output"""
+type FindManyUserInquiryByUserOutput {
+  """총 개수"""
+  totalCount: Int!
+
+  """문의 목록"""
+  userInquiries: [UserInquiryModel!]!
+}
+
+"""1:1 문의 목록 조회 (관리자) output - 1:1 문의"""
+type UserInquiryInFindManyUserInquiryByAdminOutput {
+  """ID"""
+  id: ID!
+
+  """제목"""
+  title: String!
+
+  """내용"""
+  content: String!
+
+  """답변"""
+  reply: String
+
+  """답변일"""
+  repliedAt: DateTime
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """답변한 관리자"""
+  admin: AdminModel
+}
+
+"""1:1 문의 목록 조회 (관리자) output"""
+type FindManyUserInquiryByAdminOutput {
+  """총 개수"""
+  totalCount: Int!
+
+  """문의 목록"""
+  userInquiries: [UserInquiryInFindManyUserInquiryByAdminOutput!]!
 }
 
 """배송지 목록 조회 output"""
@@ -982,6 +1138,51 @@ type Query {
     productCategoryId: String
   ): FindManyProductOutput!
 
+  """상품 목록 조회 (관리자)"""
+  findManyProductByAdmin(
+    """가져올 개수"""
+    take: Int!
+
+    """넘길 개수"""
+    skip: Int!
+
+    """검색어(상품명, 상품코드)"""
+    searchText: String
+
+    """상품 카테고리 ID"""
+    productCategoryId: String
+
+    """노출 여부"""
+    isVisible: Boolean = null
+  ): FindManyProductOutput!
+
+  """상품 상세 조회 (관리자)"""
+  findProductByAdmin(
+    """상품 ID"""
+    id: String!
+  ): FindProductByAdminOutput!
+
+  """문의 목록 조회 (회원)"""
+  findManyUserInquiryByUser(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+  ): FindManyUserInquiryByUserOutput!
+
+  """문의 목록 조회 (관리자)"""
+  findManyUserInquiryByAdmin(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+
+    """검색어(회원명 또는 문의내용)"""
+    searchText: String!
+  ): FindManyUserInquiryByAdminOutput!
+
   """장바구니 조회 (회원)"""
   findOneCartByUser: CartModel!
 
@@ -1017,11 +1218,20 @@ type Query {
     """가져올 개수"""
     take: Int!
 
-    """커서 ID"""
-    cursorId: String
+    """넘길 개수"""
+    skip: Int!
 
     """검색어(상품명, 상품코드)"""
-    searchText: String
+    searchText: String = null
+
+    """상품 카테고리 ID"""
+    productCategoryId: String = null
+
+    """노출 여부"""
+    isVisible: Boolean = null
+
+    """재고량"""
+    stock: Int = null
   ): FindManyProductOptionByAdminOutput!
 
   """환불계좌 조회 (회원)"""
@@ -1181,12 +1391,24 @@ type Mutation {
     """사용할 적립금"""
     point: Int!
 
+    """배송시 요청사항"""
+    deliveryRequest: String!
+
     """상품 구매 input"""
     datas: [DatasByCreateOrderArgs!]!
   ): Boolean!
 
   """주문 취소 (비회원)"""
   cancelOrderByNonUser(
+    """주문 ID"""
+    orderId: String!
+
+    """주문 항목 IDs"""
+    orderItemIds: [String!]!
+  ): Boolean!
+
+  """주문 취소 (회원)"""
+  cancelOrderByUser(
     """주문 ID"""
     orderId: String!
 
@@ -1308,6 +1530,33 @@ type Mutation {
     content: String!
   ): UserInquiryModel!
 
+  """1:1 문의 답변 작성 (관리자)"""
+  replyUserInquiryByAdmin(
+    """1:1 문의 ID"""
+    id: ID!
+
+    """답변"""
+    reply: String!
+  ): UserInquiryModel!
+
+  """1:1 문의 수정 (회원)"""
+  updateUserInquiry(
+    """1:1 문의 ID"""
+    id: ID!
+
+    """제목"""
+    title: String!
+
+    """내용"""
+    content: String!
+  ): Boolean!
+
+  """1:1 문의 삭제 (회원)"""
+  deleteUserInquiry(
+    """1:1 문의 ID"""
+    id: ID!
+  ): Boolean!
+
   """장바구니 상품 등록 (회원)"""
   createCartItemByUser(
     """상품 ID"""
@@ -1384,6 +1633,15 @@ type Mutation {
 
     """주문 항목 IDs"""
     orderItemIds: [String!]!
+
+    """환불계좌 예금주"""
+    accountHolder: String
+
+    """환불계좌 계좌번호"""
+    accountNumber: String
+
+    """환불계좌 은행코드"""
+    bankCode: String
   ): Boolean!
 
   """교환신청 (회원)"""
@@ -1435,10 +1693,22 @@ type Mutation {
 
     """주문 항목 IDs"""
     orderItemIds: [String!]!
+
+    """환불계좌 예금주"""
+    accountHolder: String
+
+    """환불계좌 계좌번호"""
+    accountNumber: String
+
+    """환불계좌 은행코드"""
+    bankCode: String
   ): Boolean!
 
   """배송지 추가 (회원)"""
   createAddressByUser(
+    """배송지명"""
+    title: String!
+
     """이름"""
     name: String!
 
@@ -1462,6 +1732,9 @@ type Mutation {
   updateOneAddressByUser(
     """배송지 ID"""
     id: String!
+
+    """배송지명"""
+    title: String!
 
     """이름"""
     name: String!
@@ -1541,8 +1814,8 @@ type Mutation {
     """계좌번호"""
     accountNumber: String!
 
-    """은행명"""
-    bankName: String!
+    """은행코드"""
+    bankCode: String!
   ): RefundAccountModel!
 
   """환불계좌 수정 (회원)"""
@@ -1553,8 +1826,8 @@ type Mutation {
     """계좌번호"""
     accountNumber: String!
 
-    """은행명"""
-    bankName: String!
+    """은행코드"""
+    bankCode: String!
   ): RefundAccountModel!
 
   """상품 카테고리 생성 (관리자)"""

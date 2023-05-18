@@ -13,6 +13,7 @@ import { CheckOutlined } from '@ant-design/icons';
 type Props = {
   isAdd?: boolean;
   saveName?: string;
+  categorys?: any[];
   essential?: boolean;
   handleChange?: (key: string, value: string) => void;
 };
@@ -20,13 +21,14 @@ type Props = {
 export function ProductCategory({
   isAdd,
   saveName,
+  categorys,
   essential,
   handleChange,
 }: Props) {
   const [isEdit, setIsEdit] = useState(false);
   const [parentId, setParentId] = useState('');
   const [categoryMoreVisible, setCategoryMoreVisible] = useState(false);
-  const [ableCategoryId, setAbleCategoryId] = useState<string>();
+  const [ableCategoryId, setAbleCategoryId] = useState<string>('');
   const [ableCategoryVariables, setAbleCategoryVariables] = useState<
     findManyProductCategory['findManyProductCategory']['productCategories'][0]
   >({
@@ -113,6 +115,22 @@ export function ProductCategory({
     }
   };
 
+  const onChangeCategoryHandle = () => {
+    if (categorys) {
+      setParentId(categorys[0].id);
+      findManyProductCategory({
+        variables: { parentId: categorys[0].id },
+        onCompleted(data) {
+          setSecondCategoryArr(data.findManyProductCategory.productCategories);
+        },
+        fetchPolicy: 'no-cache',
+      });
+      if (categorys?.length >= 2) {
+        setAbleCategoryVariables(categorys[1]);
+      }
+    }
+  };
+
   const [findManyProductCategory] = useLazyQuery<
     findManyProductCategory,
     findManyProductCategoryVariables
@@ -128,7 +146,11 @@ export function ProductCategory({
       },
       fetchPolicy: 'no-cache',
     });
-  }, []);
+
+    if (categorys) {
+      onChangeCategoryHandle();
+    }
+  }, [categorys, ableCategoryVariables]);
 
   return (
     <>

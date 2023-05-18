@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, message } from 'antd';
+import { Button, UploadFile, message } from 'antd';
 import * as S from '../../../pages/Product/style';
 import { SearchDetailRow } from '../';
 import { SearchDetailInput } from '../SearchDetailRow/SearchDetailInput';
@@ -9,16 +9,28 @@ import {
 } from '../../../graphql/generated/findManyProductCategory';
 import { useLazyQuery } from '@apollo/client';
 import { FIND_MANY_PRODUCT_CATEGORY } from '../../../graphql/query/findManyProductCategory';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 
 type Props = {
+  searchHandle: () => void;
   changeHandle: (
     key: string,
-    value: string | number | boolean | undefined,
+    value:
+      | string
+      | number
+      | boolean
+      | UploadFile<any>[]
+      | CheckboxValueType[]
+      | undefined,
   ) => void;
   stock?: boolean;
 };
 
-export function SearchMore({ changeHandle, stock = true }: Props) {
+export function SearchMore({
+  searchHandle,
+  changeHandle,
+  stock = true,
+}: Props) {
   const defaltArr: any[] = [{ name: '선택안함' }];
   const [firstCategoryArr, setFirstCategoryArr] = useState<
     findManyProductCategory['findManyProductCategory']['productCategories']
@@ -32,18 +44,31 @@ export function SearchMore({ changeHandle, stock = true }: Props) {
 
   const onChangeHandle = (
     key: string,
-    value: string | number | boolean | undefined,
+    value:
+      | string
+      | number
+      | boolean
+      | UploadFile<any>[]
+      | CheckboxValueType[]
+      | undefined,
+    first?: boolean,
   ) => {
-    if (secondCategoryArr && secondCategoryArr?.length >= 1) {
-      const newSecondArrName = secondCategoryArr.find(
-        (arr) => arr.name === value,
-      );
-      changeHandle(key, newSecondArrName ? newSecondArrName?.id : '');
-    } else {
+    if (first) {
       const newFirstArrName = firstCategoryArr.find(
         (arr) => arr.name === value,
       );
       changeHandle(key, newFirstArrName ? newFirstArrName?.id : '');
+      findManyProductCategory({
+        variables: { parentId: newFirstArrName ? newFirstArrName.id : '' },
+        onCompleted(data) {
+          setSecondCategoryArr(data.findManyProductCategory.productCategories);
+        },
+      });
+    } else if (secondCategoryArr) {
+      const newSecondArrName = secondCategoryArr.find(
+        (arr) => arr.name === value,
+      );
+      changeHandle(key, newSecondArrName ? newSecondArrName?.id : '');
     }
   };
 
@@ -102,7 +127,7 @@ export function SearchMore({ changeHandle, stock = true }: Props) {
           />
         )}
         <S.BottomBtnWrap>
-          <Button type="primary">검색</Button>
+          <Button onClick={searchHandle}>검색</Button>
         </S.BottomBtnWrap>
       </>
     </div>
