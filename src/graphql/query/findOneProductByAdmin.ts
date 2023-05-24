@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const FIND_PRODUCT_BY_ADMIN = gql`
-  query findProductByAdmin($findProductByAdminId: String!) {
-    findProductByAdmin(id: $findProductByAdminId) {
+export const FIND_ONE_PRODUCT_BY_ADMIN = gql`
+  query findOneProductByAdmin($findOneProductByAdminId: String!) {
+    findOneProductByAdmin(id: $findOneProductByAdminId) {
       id
       code
       position

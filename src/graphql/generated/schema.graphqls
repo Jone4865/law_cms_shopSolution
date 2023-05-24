@@ -364,15 +364,6 @@ type CartItemModel {
   productOptions: [ProductOptionByCartItemModel!]!
 }
 
-"""장바구니"""
-type CartModel {
-  """회원 ID"""
-  userId: String!
-
-  """장바구니 상품"""
-  cartItems: [CartItemModel!]!
-}
-
 """반품"""
 type TakeBackModel {
   """반품 종류"""
@@ -544,6 +535,33 @@ type ProductReviewFileModel {
   createdAt: DateTime!
 }
 
+"""FAQ"""
+type FaqModel {
+  """ID"""
+  id: String!
+
+  """질문"""
+  question: String!
+
+  """답"""
+  answer: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+"""FAQ 카테고리"""
+type FaqCategoryModel {
+  """ID"""
+  id: String!
+
+  """카테고리명"""
+  name: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
 """택배 상세"""
 type TrackingDetailModel {
   """상태"""
@@ -572,6 +590,36 @@ type DeliveryCompanyModel {
 
   """국제택배 여부"""
   isInternational: Boolean!
+}
+
+"""약관"""
+type PolicyModel {
+  """ID"""
+  id: String!
+
+  """약관 종류"""
+  policyKind: PolicyKind!
+
+  """제목"""
+  title: String!
+
+  """내용"""
+  content: String!
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """수정일"""
+  updatedAt: DateTime!
+}
+
+"""약관 종류"""
+enum PolicyKind {
+  """이용약관"""
+  TERMS_AND_CONDITIONS
+
+  """개인정보처리방침"""
+  PERSONAL_INFORMATION_PROCESSING_POLICY
 }
 
 """인증 토큰 output"""
@@ -610,6 +658,9 @@ type ProductOptionsByFindManyProductOutput {
 
   """생성일"""
   createdAt: DateTime!
+
+  """하위 상품 옵션"""
+  children: [ProductOptionsByFindManyProductOutput!]
 }
 
 type ProductFilesByFindManyProductOutput {
@@ -674,7 +725,7 @@ type FindManyProductOutput {
   products: [ProductsByFindManyProductOutput!]!
 }
 
-type HashTagsByFindProductByAdminOutput {
+type HashTagsByFindOneProductByAdminOutput {
   """ID"""
   id: ID!
 
@@ -685,7 +736,7 @@ type HashTagsByFindProductByAdminOutput {
   createdAt: DateTime!
 }
 
-type ProductCategoriesByFindProductByAdminOutput {
+type ProductCategoriesByFindOneProductByAdminOutput {
   """ID"""
   id: ID!
 
@@ -699,7 +750,7 @@ type ProductCategoriesByFindProductByAdminOutput {
   createdAt: DateTime!
 }
 
-type ProductFilesByFindProductByAdminOutput {
+type ProductFilesByFindOneProductByAdminOutput {
   """ID"""
   id: ID!
 
@@ -714,7 +765,7 @@ type ProductFilesByFindProductByAdminOutput {
 }
 
 """상품 상세 조회 (관리자) output"""
-type FindProductByAdminOutput {
+type FindOneProductByAdminOutput {
   """ID"""
   id: ID!
 
@@ -746,16 +797,16 @@ type FindProductByAdminOutput {
   createdAt: DateTime!
 
   """해시 태그"""
-  hashTags: [HashTagsByFindProductByAdminOutput!]!
+  hashTags: [HashTagsByFindOneProductByAdminOutput!]!
 
   """상품 카테고리"""
-  productCategories: [ProductCategoriesByFindProductByAdminOutput!]!
+  productCategories: [ProductCategoriesByFindOneProductByAdminOutput!]!
 
   """상품 파일"""
-  productFiles: [ProductFilesByFindProductByAdminOutput!]!
+  productFiles: [ProductFilesByFindOneProductByAdminOutput!]!
 }
 
-type HashTagsByFindProductByUserOutput {
+type HashTagsByFindOneProductByUserOutput {
   """ID"""
   id: ID!
 
@@ -766,7 +817,7 @@ type HashTagsByFindProductByUserOutput {
   createdAt: DateTime!
 }
 
-type ProductCategoriesByFindProductByUserOutput {
+type ProductCategoriesByFindOneProductByUserOutput {
   """ID"""
   id: ID!
 
@@ -777,7 +828,7 @@ type ProductCategoriesByFindProductByUserOutput {
   createdAt: DateTime!
 }
 
-type ProductFilesByFindProductByUserOutput {
+type ProductFilesByFindOneProductByUserOutput {
   """ID"""
   id: ID!
 
@@ -792,7 +843,7 @@ type ProductFilesByFindProductByUserOutput {
 }
 
 """상품 상세 조회 (회원) output"""
-type FindProductByUserOutput {
+type FindOneProductByUserOutput {
   """ID"""
   id: ID!
 
@@ -815,13 +866,13 @@ type FindProductByUserOutput {
   createdAt: DateTime!
 
   """해시 태그"""
-  hashTags: [HashTagsByFindProductByUserOutput!]!
+  hashTags: [HashTagsByFindOneProductByUserOutput!]!
 
   """상품 카테고리"""
-  productCategories: [ProductCategoriesByFindProductByUserOutput!]!
+  productCategories: [ProductCategoriesByFindOneProductByUserOutput!]!
 
   """상품 파일"""
-  productFiles: [ProductFilesByFindProductByUserOutput!]!
+  productFiles: [ProductFilesByFindOneProductByUserOutput!]!
 }
 
 type ProductOptionsByFindManyProductOptionOutput {
@@ -1094,6 +1145,36 @@ type FindManyProductReviewOutput {
   productReviews: [ProductReviewByFindManyProductReviewOutput!]!
 }
 
+"""상품평"""
+type ProductReviewByFindMyProductReviewOutput {
+  """ID"""
+  id: ID!
+
+  """상품평 상태"""
+  productReviewStatus: ProductReviewStatus!
+
+  """별점"""
+  starRate: Int!
+
+  """내용"""
+  content: String!
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """상품평 첨부파일"""
+  productReviewFiles: [ProductReviewFileModel!]!
+}
+
+"""내가 작성한 상품평 목록 조회 output"""
+type FindMyProductReviewOutput {
+  """총 개수"""
+  totalCount: Int!
+
+  """상품평 목록"""
+  productReviews: [ProductReviewByFindMyProductReviewOutput!]!
+}
+
 """회원 목록 조회 output"""
 type FindManyUserOutput {
   """총 개수"""
@@ -1128,6 +1209,33 @@ type FindManyPointOutput {
 
   """적립금 내역"""
   points: [PointModel!]!
+}
+
+"""약관 목록 조회 output"""
+type FindManyPolicyOutput {
+  """총 개수"""
+  totalCount: Int!
+
+  """약관 목록"""
+  policies: [PolicyModel!]!
+}
+
+"""FAQ 목록 조회 output"""
+type FindManyFaqOutput {
+  """총 개수"""
+  totalCount: Int!
+
+  """FAQ 목록"""
+  faqs: [FaqModel!]!
+}
+
+"""FAQ 카테고리 목록 조회 output"""
+type FindManyFaqCategoryOutput {
+  """총 개수"""
+  totalCount: Int!
+
+  """FAQ 카테고리 목록"""
+  faqCategories: [FaqCategoryModel!]!
 }
 
 type Query {
@@ -1215,6 +1323,9 @@ type Query {
     cursorId: String
   ): FindManyPointOutput!
 
+  """장바구니 상품 목록 조회 (회원, 비회원)"""
+  findManyCartItem: [CartItemModel!]!
+
   """내정보 조회 (관리자)"""
   findMyInfoByAdmin: AdminModel!
 
@@ -1252,16 +1363,22 @@ type Query {
   ): FindManyProductOutput!
 
   """상품 상세 조회 (관리자)"""
-  findProductByAdmin(
+  findOneProductByAdmin(
     """상품 ID"""
     id: String!
-  ): FindProductByAdminOutput!
+  ): FindOneProductByAdminOutput!
 
   """상품 상세 조회 (회원)"""
-  findProductByUser(
+  findOneProductByUser(
     """상품 ID"""
     id: String!
-  ): FindProductByUserOutput!
+  ): FindOneProductByUserOutput!
+
+  """문의 상세 조회 (회원)"""
+  findOneUserInquiryByUser(
+    """문의 ID"""
+    id: String!
+  ): UserInquiryModel!
 
   """문의 목록 조회 (회원)"""
   findManyUserInquiryByUser(
@@ -1284,9 +1401,6 @@ type Query {
     searchText: String!
   ): FindManyUserInquiryByAdminOutput!
 
-  """장바구니 조회 (회원)"""
-  findOneCartByUser: CartModel!
-
   """반품 조회 (회원)"""
   findOneTakeBackByUser(
     """교환 ID"""
@@ -1302,7 +1416,7 @@ type Query {
     cursorId: String
   ): FindManyAddressOutput!
 
-  """상품 항목 목록 조회"""
+  """상품 옵션 목록 조회"""
   findManyProductOption(
     """가져올 개수"""
     take: Int!
@@ -1362,7 +1476,7 @@ type Query {
     productId: ID!
   ): FindManyProductInquiryOutput!
 
-  """상품평 목록 조회"""
+  """상품평 목록 조회 (회원, 비회원)"""
   findManyProductReview(
     """가져올 개수"""
     take: Int!
@@ -1380,6 +1494,21 @@ type Query {
     isIncludedImage: Boolean!
   ): FindManyProductReviewOutput!
 
+  """내가 작성한 상품평 목록 조회 (회원)"""
+  findMyProductReview(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+
+    """상품평 정렬 기준"""
+    productReviewOrderBy: ProductReviewOrderBy!
+
+    """사진 포함 여부"""
+    isIncludedImage: Boolean!
+  ): FindMyProductReviewOutput!
+
   """송장번호 조회 (회원)"""
   findManyDeliveryItem(
     """택배사 코드"""
@@ -1391,6 +1520,24 @@ type Query {
 
   """택배사 목록 조회"""
   findManyDeliveryCompany: [DeliveryCompanyModel!]!
+
+  """약관 목록 조회"""
+  findManyPolicy(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+  ): FindManyPolicyOutput!
+
+  """약관 상세 조회"""
+  findOnePolicy(
+    """약관 ID"""
+    id: ID
+
+    """약관 종류"""
+    policyKind: PolicyKind
+  ): Boolean!
 }
 
 """상품평 정렬 기준"""
@@ -1550,6 +1697,27 @@ type Mutation {
     point: Int!
   ): Boolean!
 
+  """장바구니 상품 병합 (회원)"""
+  mergeCartItemByUser: [CartItemModel!]!
+
+  """장바구니 상품 생성, 수정 (회원, 비회원)"""
+  setCartItem(
+    """상품 ID"""
+    id: String!
+
+    """상품 옵션"""
+    options: [OptionsByCreateCartItemArgs!]!
+  ): CartItemModel!
+
+  """장바구니 상품 삭제 (회원, 비회원)"""
+  deleteCartItemByUser(
+    """상품 ID"""
+    productId: String!
+
+    """상품 옵션 IDs"""
+    productOptionIds: [String!]!
+  ): Boolean!
+
   """상품 생성 (관리자)"""
   createProduct(
     """상품명"""
@@ -1686,33 +1854,6 @@ type Mutation {
   deleteUserInquiry(
     """1:1 문의 ID"""
     id: ID!
-  ): Boolean!
-
-  """장바구니 상품 등록 (회원)"""
-  createCartItemByUser(
-    """상품 ID"""
-    id: String!
-
-    """상품 옵션"""
-    options: [OptionsByCreateCartItemArgs!]!
-  ): CartItemModel!
-
-  """장바구니 상품 개수 수정 (회원)"""
-  updateCartItemByUser(
-    """상품 ID"""
-    id: String!
-
-    """상품 옵션"""
-    options: [OptionsByUpdateCartItemArgs!]!
-  ): Boolean!
-
-  """장바구니 상품 삭제 (회원)"""
-  deleteCartItemByUser(
-    """상품 ID"""
-    productId: String!
-
-    """상품 옵션 IDs"""
-    productOptionIds: [String!]!
   ): Boolean!
 
   """환불신청 (회원)"""
@@ -2080,6 +2221,102 @@ type Mutation {
     """반품 항목 IDs (교환/환불시 반품하는건에는 반품항목 IDs만 넣을것)"""
     takeBackItemIds: [String!]!
   ): Boolean!
+
+  """약관 수정 (관리자)"""
+  updatePolicy(
+    """약관 ID"""
+    id: ID!
+
+    """약관 종류"""
+    policyKind: PolicyKind
+
+    """제목"""
+    title: String
+
+    """내용"""
+    content: String
+  ): Boolean!
+
+  """약관 첨부파일 업로드 (관리자)"""
+  uploadPolicyFile(
+    """약관 첨부파일"""
+    file: Upload!
+  ): String!
+
+  """FAQ 생성 (관리자)"""
+  createFaq(
+    """FAQ 카테고리 IDs"""
+    faqCategoryIds: [String!]! = []
+
+    """질문"""
+    question: String!
+
+    """답변"""
+    answer: String!
+  ): FaqModel!
+
+  """FAQ 목록 조회"""
+  findManyFaq(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+  ): FindManyFaqOutput!
+
+  """FAQ 수정 (관리자)"""
+  updateFaq(
+    """FAQ ID"""
+    id: ID!
+
+    """FAQ 카테고리 IDs"""
+    faqCategoryIds: [String!]! = []
+
+    """질문"""
+    question: String
+
+    """답변"""
+    answer: String
+  ): FaqModel!
+
+  """FAQ 삭제 (관리자)"""
+  deleteFaq(
+    """FAQ ID"""
+    id: ID!
+  ): FaqModel!
+
+  """FAQ 카테고리 생성 (관리자)"""
+  createFaqCategory(
+    """카테고리명"""
+    name: String!
+
+    """부모 ID"""
+    parentId: String!
+  ): FaqCategoryModel!
+
+  """FAQ 카테고리 목록 조회"""
+  findManyFaqCategory(
+    """가져올 개수"""
+    take: Int!
+
+    """커서 ID"""
+    cursorId: String
+  ): FindManyFaqCategoryOutput!
+
+  """FAQ 카테고리 수정 (관리자)"""
+  updateFaqCategory(
+    """카테고리명"""
+    name: String
+
+    """FAQ IDs"""
+    faqIds: [String!]! = []
+
+    """부모 ID"""
+    parentId: String = null
+  ): FaqCategoryModel!
+
+  """FAQ 카테고리 삭제 (관리자)"""
+  deleteFaqCategory: FaqCategoryModel!
 }
 
 """상품 옵션 input"""
@@ -2089,6 +2326,14 @@ input DatasByCreateOrderArgs {
 
   """개수"""
   count: Int!
+}
+
+input OptionsByCreateCartItemArgs {
+  """상품 옵션 ID"""
+  id: String!
+
+  """상품 옵션 개수"""
+  quantity: Int!
 }
 
 """[상품 생성] 상품 옵션 input"""
@@ -2129,22 +2374,6 @@ input ProductOptionByCreateProductArgs {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
-
-input OptionsByCreateCartItemArgs {
-  """상품 옵션 ID"""
-  id: String!
-
-  """상품 옵션 개수"""
-  quantity: Int!
-}
-
-input OptionsByUpdateCartItemArgs {
-  """상품 옵션 ID"""
-  id: String!
-
-  """상품 옵션 개수"""
-  quantity: Int!
-}
 
 type Subscription {
   """주문 개수 구독 (관리자)"""

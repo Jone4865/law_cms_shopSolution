@@ -6,10 +6,10 @@
 import { ProductTag, FileKind } from "./graphql-global-types";
 
 // ====================================================
-// GraphQL query operation: findProductByAdmin
+// GraphQL query operation: findOneProductByAdmin
 // ====================================================
 
-export interface findProductByAdmin_findProductByAdmin_hashTags {
+export interface findOneProductByAdmin_findOneProductByAdmin_hashTags {
   /**
    * ID
    */
@@ -24,7 +24,7 @@ export interface findProductByAdmin_findProductByAdmin_hashTags {
   createdAt: any;
 }
 
-export interface findProductByAdmin_findProductByAdmin_productCategories {
+export interface findOneProductByAdmin_findOneProductByAdmin_productCategories {
   /**
    * ID
    */
@@ -43,7 +43,7 @@ export interface findProductByAdmin_findProductByAdmin_productCategories {
   createdAt: any;
 }
 
-export interface findProductByAdmin_findProductByAdmin_productFiles {
+export interface findOneProductByAdmin_findOneProductByAdmin_productFiles {
   /**
    * ID
    */
@@ -62,7 +62,7 @@ export interface findProductByAdmin_findProductByAdmin_productFiles {
   createdAt: any;
 }
 
-export interface findProductByAdmin_findProductByAdmin {
+export interface findOneProductByAdmin_findOneProductByAdmin {
   /**
    * ID
    */
@@ -106,24 +106,24 @@ export interface findProductByAdmin_findProductByAdmin {
   /**
    * 해시 태그
    */
-  hashTags: findProductByAdmin_findProductByAdmin_hashTags[];
+  hashTags: findOneProductByAdmin_findOneProductByAdmin_hashTags[];
   /**
    * 상품 카테고리
    */
-  productCategories: findProductByAdmin_findProductByAdmin_productCategories[];
+  productCategories: findOneProductByAdmin_findOneProductByAdmin_productCategories[];
   /**
    * 상품 파일
    */
-  productFiles: findProductByAdmin_findProductByAdmin_productFiles[];
+  productFiles: findOneProductByAdmin_findOneProductByAdmin_productFiles[];
 }
 
-export interface findProductByAdmin {
+export interface findOneProductByAdmin {
   /**
    * 상품 상세 조회 (관리자)
    */
-  findProductByAdmin: findProductByAdmin_findProductByAdmin;
+  findOneProductByAdmin: findOneProductByAdmin_findOneProductByAdmin;
 }
 
-export interface findProductByAdminVariables {
-  findProductByAdminId: string;
+export interface findOneProductByAdminVariables {
+  findOneProductByAdminId: string;
 }

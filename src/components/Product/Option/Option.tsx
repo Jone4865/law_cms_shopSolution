@@ -7,6 +7,7 @@ type Props = {
   windowWidth: number;
   secondOptionArr:
     | {
+        id: string;
         name: string;
         extraPrice: number;
         finalPrice: number;
@@ -15,6 +16,7 @@ type Props = {
       }[]
     | undefined;
   firstOptionArr: {
+    id: string;
     name: string;
     extraPrice: number;
     finalPrice: number;
@@ -40,7 +42,8 @@ type Props = {
   onChangeHandle: (key: string, value: string | number | boolean) => void;
   handleClickAddOption: () => void;
   setParentOption: React.Dispatch<React.SetStateAction<string>>;
-  handleDeleteOption: (name: string, parentName?: string) => void;
+  setParentOptionId: React.Dispatch<React.SetStateAction<string>>;
+  handleDeleteOption: (name: string, id: string, parentName?: string) => void;
   essential?: boolean;
 };
 
@@ -53,6 +56,7 @@ export function Option({
   handleClickAddOption,
   onChangeHandle,
   setParentOption,
+  setParentOptionId,
   handleDeleteOption,
   essential,
 }: Props) {
@@ -66,9 +70,10 @@ export function Option({
     setAbleParentOption('');
   };
 
-  const onClickFirstRow = (name: string) => {
+  const onClickFirstRow = (name: string, id: string) => {
     setAbleParentOption(name);
     setParentOption(name);
+    setParentOptionId(id);
     setAbleSecondOption('');
   };
   const onClickSecondRow = (name: string) => {
@@ -103,7 +108,7 @@ export function Option({
               firstOptionArr.map((arr, idx) => (
                 <S.CategoryArrContainer
                   key={idx}
-                  onClick={() => onClickFirstRow(arr.name)}
+                  onClick={() => onClickFirstRow(arr.name, arr.id)}
                   style={{
                     backgroundColor:
                       ableParentOption === arr.name ? '#53dad129' : '',
@@ -139,7 +144,7 @@ export function Option({
                       개
                     </S.AddContent>
                   </S.Flex>
-                  <Button onClick={() => handleDeleteOption(arr.name)}>
+                  <Button onClick={() => handleDeleteOption(arr.name, arr.id)}>
                     삭제
                   </Button>
                 </S.CategoryArrContainer>
@@ -197,7 +202,9 @@ export function Option({
                         </S.AddContent>
                       </S.Flex>
                       <Button
-                        onClick={() => handleDeleteOption(arr.name, arr.parent)}
+                        onClick={() =>
+                          handleDeleteOption(arr.name, arr.id, arr.parent)
+                        }
                       >
                         삭제
                       </Button>
