@@ -755,6 +755,75 @@ type FindProductByAdminOutput {
   productFiles: [ProductFilesByFindProductByAdminOutput!]!
 }
 
+type HashTagsByFindProductByUserOutput {
+  """ID"""
+  id: ID!
+
+  """상품명"""
+  name: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+type ProductCategoriesByFindProductByUserOutput {
+  """ID"""
+  id: ID!
+
+  """카테고리명"""
+  name: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+type ProductFilesByFindProductByUserOutput {
+  """ID"""
+  id: ID!
+
+  """파일 종류"""
+  kind: FileKind!
+
+  """파일명"""
+  name: String!
+
+  """생성일"""
+  createdAt: DateTime!
+}
+
+"""상품 상세 조회 (회원) output"""
+type FindProductByUserOutput {
+  """ID"""
+  id: ID!
+
+  """상품 코드"""
+  code: Int!
+
+  """상품 태그"""
+  productTags: [ProductTag!]!
+
+  """상품명"""
+  name: String!
+
+  """판매가"""
+  sellingPrice: Int!
+
+  """할인가"""
+  salePrice: Int!
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """해시 태그"""
+  hashTags: [HashTagsByFindProductByUserOutput!]!
+
+  """상품 카테고리"""
+  productCategories: [ProductCategoriesByFindProductByUserOutput!]!
+
+  """상품 파일"""
+  productFiles: [ProductFilesByFindProductByUserOutput!]!
+}
+
 type ProductOptionsByFindManyProductOptionOutput {
   """ID"""
   id: ID!
@@ -843,6 +912,29 @@ type FindManyProductOptionByAdminOutput {
 
   """상품 옵션 목록"""
   productOptions: [ProductOptionsByFindManyProductOptionByAdminOutput!]!
+}
+
+type FindManyProductOptionByProductOutput {
+  """ID"""
+  id: ID!
+
+  """상품명"""
+  name: String!
+
+  """추가금"""
+  extraPrice: Int
+
+  """가격"""
+  finalPrice: Int
+
+  """재고량"""
+  stock: Int
+
+  """생성일"""
+  createdAt: DateTime!
+
+  """하위 상품 옵션"""
+  children: [FindManyProductOptionByProductOutput!]
 }
 
 """1:1 문의 목록 조회 (회원) output"""
@@ -1111,6 +1203,9 @@ type Query {
   """주문 조회 (비회원)"""
   findMyOrderByNonUser: OrderModel!
 
+  """보유 적립금 조회 (회원)"""
+  findLatestPoint: PointModel!
+
   """적립금 내역 조회 (회원)"""
   findManyPoint(
     """가져올 개수"""
@@ -1161,6 +1256,12 @@ type Query {
     """상품 ID"""
     id: String!
   ): FindProductByAdminOutput!
+
+  """상품 상세 조회 (회원)"""
+  findProductByUser(
+    """상품 ID"""
+    id: String!
+  ): FindProductByUserOutput!
 
   """문의 목록 조회 (회원)"""
   findManyUserInquiryByUser(
@@ -1234,6 +1335,12 @@ type Query {
     stock: Int = null
   ): FindManyProductOptionByAdminOutput!
 
+  """상품별 옵션 목록 조회 (관리자)"""
+  findManyProductOptionByProduct(
+    """상품 ID"""
+    productId: String!
+  ): [FindManyProductOptionByProductOutput!]!
+
   """환불계좌 조회 (회원)"""
   findOneRefundAccountByUser: RefundAccountModel!
 
@@ -1302,6 +1409,15 @@ enum ProductReviewOrderBy {
 }
 
 type Mutation {
+  """회원정보 수정 (회원)"""
+  updateUserInfoByUser(
+    """성별"""
+    gender: Gender = null
+
+    """생일"""
+    birthday: String = null
+  ): UserModel!
+
   """회원상태 수정 (관리자)"""
   updateUserStatusByAdmin(
     """회원 ID"""
@@ -1309,6 +1425,15 @@ type Mutation {
 
     """회원상태"""
     userStatus: [UserStatus!]! = []
+  ): UserModel!
+
+  """휴대폰 번호 변경"""
+  updatePhoneNumberByUser(
+    """해시값"""
+    hash: String!
+
+    """휴대전화"""
+    phone: String!
   ): UserModel!
 
   """회원가입 (회원)"""
@@ -1484,8 +1609,8 @@ type Mutation {
     """브랜드 ID"""
     brandId: String = null
 
-    """해시 태그 ID 배열"""
-    hashTagIds: [String!]!
+    """해시 태그명 배열"""
+    hashTagNames: [String!]!
 
     """상품 카테고리 ID"""
     productCategoryId: String!
@@ -1520,6 +1645,12 @@ type Mutation {
     """상품 파일"""
     file: Upload!
   ): ProductFileModel!
+
+  """상품 파일 삭제 (관리자)"""
+  deleteProductFileByAdmin(
+    """상품 파일 ID"""
+    id: String!
+  ): Boolean!
 
   """문의 생성 (회원)"""
   createUserInquiryByUser(

@@ -3,7 +3,6 @@ import * as S from './style';
 import { useEffect, useState } from 'react';
 import { AddOption } from './OptionDetail/AddOption';
 import { CheckOutlined } from '@ant-design/icons';
-
 type Props = {
   windowWidth: number;
   secondOptionArr:

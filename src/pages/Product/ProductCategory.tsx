@@ -115,22 +115,6 @@ export function ProductCategory({
     }
   };
 
-  const onChangeCategoryHandle = () => {
-    if (categorys) {
-      setParentId(categorys[0].id);
-      findManyProductCategory({
-        variables: { parentId: categorys[0].id },
-        onCompleted(data) {
-          setSecondCategoryArr(data.findManyProductCategory.productCategories);
-        },
-        fetchPolicy: 'no-cache',
-      });
-      if (categorys?.length >= 2) {
-        setAbleCategoryVariables(categorys[1]);
-      }
-    }
-  };
-
   const [findManyProductCategory] = useLazyQuery<
     findManyProductCategory,
     findManyProductCategoryVariables
@@ -143,14 +127,23 @@ export function ProductCategory({
       variables: {},
       onCompleted(data) {
         setFirstCategoryArr(data.findManyProductCategory.productCategories);
+        if (categorys) {
+          setParentId(categorys[0]?.id);
+          findManyProductCategory({
+            variables: { parentId: categorys[0]?.id },
+            onCompleted(data) {
+              setSecondCategoryArr(
+                data.findManyProductCategory.productCategories,
+              );
+            },
+            fetchPolicy: 'no-cache',
+          });
+          setAbleCategoryVariables(categorys[1]);
+        }
       },
       fetchPolicy: 'no-cache',
     });
-
-    if (categorys) {
-      onChangeCategoryHandle();
-    }
-  }, [categorys, ableCategoryVariables]);
+  }, [categorys]);
 
   return (
     <>
@@ -177,10 +170,10 @@ export function ProductCategory({
             {firstCategoryArr &&
               firstCategoryArr.map((arr) => (
                 <S.CategoryArrContainer
-                  key={arr.id}
-                  onClick={() => onClickRow(arr.id, arr, true)}
+                  key={arr?.id}
+                  onClick={() => onClickRow(arr?.id, arr, true)}
                   style={{
-                    backgroundColor: parentId === arr.id ? '#53dad129' : '',
+                    backgroundColor: parentId === arr?.id ? '#53dad129' : '',
                   }}
                 >
                   <S.Flex>
@@ -214,7 +207,7 @@ export function ProductCategory({
                 <S.CategoryArrContainer
                   style={{
                     backgroundColor:
-                      ableCategoryVariables.id === arr.id ? '#53dad129' : '',
+                      ableCategoryVariables?.id === arr?.id ? '#53dad129' : '',
                   }}
                   onClick={() => onClickRow(arr.id, arr)}
                   key={arr.id}

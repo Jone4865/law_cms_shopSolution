@@ -22,6 +22,15 @@ import {
   findProductByAdminVariables,
 } from '../../graphql/generated/findProductByAdmin';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
+import { UPDATE_PRODUCT } from '../../graphql/mutation/updateProduct';
+import {
+  findManyProductOptionByProduct,
+  findManyProductOptionByProductVariables,
+} from '../../graphql/generated/findManyProductOptionByProduct';
+import { FIND_MANY_PRODUCT_OPTION_BY_PRODUCT } from '../../graphql/query/findManyProductOptionByProduct';
+import { DELETE_PRODUCT_FILE_BY_ADMIN } from '../../graphql/mutation/deleteProductFileByAdmin';
+import { findManyProductOptionByProduct_findManyProductOptionByProduct } from '../../graphql/generated/findManyProductOptionByProduct';
+import { findManyProductOptionByProduct_findManyProductOptionByProduct_children } from '../../graphql/generated/findManyProductOptionByProduct';
 
 type Props = {
   isEdit?: boolean;
@@ -81,6 +90,7 @@ export function ProductAdd({ isEdit }: Props) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
+  const [updateCategoryId, setUpdateCategoryId] = useState<string>();
 
   const handleChangeOption = (
     key: string,
@@ -134,6 +144,12 @@ export function ProductAdd({ isEdit }: Props) {
       setVariables((prev: any) => {
         let newVariables: any = { ...prev };
         newVariables[key] = value;
+        return newVariables;
+      });
+    } else {
+      setVariables((prev: any) => {
+        let newVariables: any = { ...prev };
+        newVariables[key] = [];
         return newVariables;
       });
     }
@@ -255,27 +271,42 @@ export function ProductAdd({ isEdit }: Props) {
         },
       });
     } else if (projectImageFileList.length > e.fileList.length) {
-      // deleteProjectFileByAdmin({
-      //   variables: {
-      //     id: +e.file.uid,
-      //   },
-      //   onCompleted: (_data) => {
-      //     projectimageChange(e);
-      //   },
-      // });
+      deleteProductFileByAdmin({
+        variables: { deleteProductFileByAdminId: e.file.uid },
+        onCompleted: (_data) => {
+          projectimageChange(e);
+          message.success('해당 이미지를 삭제했습니다.');
+        },
+      });
     }
   };
 
   const handleCancel = () => setPreviewOpen(false);
 
-  const onClickEditProduct = () => {};
-
+  const onClickEditProduct = () => {
+    const newHashTag = variables?.hashTagIds?.split(',');
+    updateProduct({
+      variables: {
+        ...variables,
+        updateProductId: productId,
+        productCategoryId: updateCategoryId
+          ? updateCategoryId
+          : variables.productCategoryId,
+        pointRate: +variables.pointRate,
+        sellingPrice: +variables.sellingPrice,
+        salePrice: +variables.salePrice,
+        hashTagNames: newHashTag[0] === '' ? [] : newHashTag,
+      },
+    });
+  };
   const [findProductByAdmin] = useLazyQuery<
     findProductByAdmin,
     findProductByAdminVariables
   >(FIND_PRODUCT_BY_ADMIN, {
     onError: (e) => message.error(e.message ?? `${e}`),
     onCompleted(data) {
+      const categorys = data.findProductByAdmin.productCategories;
+      setUpdateCategoryId(categorys[1] ? categorys[1].id : categorys[0].id);
       setVariables(data.findProductByAdmin);
       data.findProductByAdmin.productFiles.map((data) =>
         setProjectImageFileList((prevImageFileList) => [
@@ -316,6 +347,60 @@ export function ProductAdd({ isEdit }: Props) {
     },
   });
 
+  const [updateProduct] = useMutation(UPDATE_PRODUCT, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted(_data) {
+      message.success('상품정보를 수정했습니다.');
+    },
+  });
+
+  const [findManyProductOptionByProduct] = useLazyQuery<
+    findManyProductOptionByProduct,
+    findManyProductOptionByProductVariables
+  >(FIND_MANY_PRODUCT_OPTION_BY_PRODUCT, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+    onCompleted(data) {
+      const transformedArray = data.findManyProductOptionByProduct.map(
+        (item) => ({
+          name: item.name,
+          extraPrice: item.extraPrice || 0,
+          finalPrice: item.finalPrice || 0,
+          stock: item.stock || 0,
+          children: item.children
+            ? item.children.map((child) => ({
+                name: child.name,
+                extraPrice: child.extraPrice || 0,
+                finalPrice: child.finalPrice || 0,
+                stock: child.stock || 0,
+              }))
+            : [],
+        }),
+      );
+      setFirstOptionArr(transformedArray);
+
+      const transformedChildrenArray =
+        data.findManyProductOptionByProduct.reduce((result: any, item: any) => {
+          if (item.children && item.children.length > 0) {
+            const childrenArr = item.children.map((child: any) => ({
+              name: item.name,
+              extraPrice: child.extraPrice || 0,
+              finalPrice: child.finalPrice || 0,
+              stock: child.stock || 0,
+              parent: item.name,
+            }));
+            return [...result, ...childrenArr];
+          }
+          return result;
+        }, []);
+
+      setSecondOptionArr(transformedChildrenArray);
+    },
+  });
+
+  const [deleteProductFileByAdmin] = useMutation(DELETE_PRODUCT_FILE_BY_ADMIN, {
+    onError: (e) => message.error(e.message ?? `${e}`),
+  });
+
   const uploadButton = (
     <div>
       <PlusOutlined />
@@ -325,10 +410,13 @@ export function ProductAdd({ isEdit }: Props) {
 
   useEffect(() => {
     setProjectImageFileList([]);
-    if (isEdit && params.productId) {
+    if (isEdit && params.productId && secondOptionArr.length === 0) {
       setProductId(params.productId);
       findProductByAdmin({
         variables: { findProductByAdminId: params.productId },
+      });
+      findManyProductOptionByProduct({
+        variables: { productId: params?.productId },
       });
     }
 
